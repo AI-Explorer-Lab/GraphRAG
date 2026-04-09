@@ -1,0 +1,10 @@
+{
+  "graph_id": "video_demo",
+  "change_spec": {
+    "source": "job_video_tag_enrich",
+    "target": "dwd_video_profile",
+    "relation": "transitions",
+    "scope": "moderation",
+    "max_depth": 3
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "entities": [
+    {
+      "id": "ods_video_raw",
+      "properties": {
+        "type": "table",
+        "system": "ods",
+        "owner": "content_data"
+      },
+      "description": "Raw video metadata table",
+      "children": ["field_video_id", "field_title", "field_tags", "field_creator_id"]
+    },
+    {
+      "id": "dim_tag_taxonomy",
+      "properties": {
+        "type": "table",
+        "system": "dim",
+        "owner": "content_ops"
+      },
+      "description": "Tag taxonomy table",
+      "children": ["field_tag_id", "field_parent_tag_id", "field_normalized_name"]
+    },
+    {
+      "id": "job_video_tag_enrich",
+      "properties": {
+        "type": "task",
+        "system": "airflow",
+        "owner": "algo_platform",
+        "schedule": "hourly"
+      },
+      "description": "Normalize and enrich tags",
+      "children": ["rule_tag_normalize", "rule_sensitive_tag_map"]
+    },
+    {
+      "id": "dwd_video_profile",
+      "properties": {
+        "type": "table",
+        "system": "dwd",
+        "owner": "content_data"
+      },
+      "description": "Video profile wide table",
+      "children": ["field_video_id", "field_primary_tags", "field_risk_tags", "field_quality_score"]
+    },
+    {
+      "id": "rec_feature_store",
+      "properties": {
+        "type": "feature_view",
+        "domain": "recommendation",
+        "owner": "rec_team"
+      },
+      "description": "Recommendation feature view",
+      "children": ["feature_ctr_tag", "feature_quality_score"]
+    },
+    {
+      "id": "search_video_index",
+      "properties": {
+        "type": "search_index",
+        "domain": "search",
+        "owner": "search_team"
+      },
+      "description": "Search index",
+      "children": ["doc_title", "doc_tags"]
+    },
+    {
+      "id": "moderation_rule_engine",
+      "properties": {
+        "type": "control_service",
+        "domain": "moderation",
+        "owner": "safety_team"
+      },
+      "description": "Moderation rule engine",
+      "children": ["control_sensitive_tag_hit", "control_manual_review"]
+    }
+  ],
+  "transitions": [
+    {
+      "source": "ods_video_raw",
+      "target": "job_video_tag_enrich",
+      "properties": {
+        "mode": "read",
+        "fields": ["video_id", "title", "tags", "creator_id"]
+      }
+    },
+    {
+      "source": "dim_tag_taxonomy",
+      "target": "job_video_tag_enrich",
+      "properties": {
+        "mode": "join",
+        "fields": ["tag_id", "normalized_name", "parent_tag_id"]
+      }
+    },
+    {
+      "source": "job_video_tag_enrich",
+      "target": "dwd_video_profile",
+      "properties": {
+        "mode": "write",
+        "logic": "tag_normalize + tag_complete + risk_tag_map"
+      }
+    },
+    {
+      "source": "dwd_video_profile",
+      "target": "rec_feature_store",
+      "properties": {
+        "mode": "feature_extract",
+        "features": ["primary_tags", "quality_score"]
+      }
+    },
+    {
+      "source": "dwd_video_profile",
+      "target": "search_video_index",
+      "properties": {
+        "mode": "index",
+        "fields": ["title", "primary_tags"]
+      }
+    },
+    {
+      "source": "dwd_video_profile",
+      "target": "moderation_rule_engine",
+      "properties": {
+        "mode": "check",
+        "signals": ["risk_tags", "quality_score"]
+      }
+    }
+  ]
+}
+

@@ -1,0 +1,10 @@
+app:
+  use_falkordb: true
+  falkordb_url: redis://127.0.0.1:6379/0
+  snapshot_dir: data/normalized
+  default_top_k: 8
+  llm_provider: openai
+  llm_model: gpt-4o-mini
+  openai_api_key: "replace_with_your_openai_api_key"
+  openai_base_url: null
+  openai_timeout_seconds: 30

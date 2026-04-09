@@ -1,0 +1,6 @@
+{
+  "Nodes": ["table", "task", "feature_view", "search_index", "control_service", "attribute", "community", "keyword"],
+  "Relations": ["transitions", "has", "has_attribute", "member_of", "represented_by", "keyword_of"],
+  "Attributes": ["type", "system", "owner", "domain", "description", "schedule"]
+}
+

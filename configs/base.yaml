@@ -1,0 +1,9 @@
+app:
+  use_falkordb: false
+  falkordb_url: redis://localhost:6379/0
+  snapshot_dir: data/normalized
+  default_top_k: 8
+  llm_provider: stub
+  llm_model: gpt-4o-mini
+  openai_base_url: null
+  openai_timeout_seconds: 30
