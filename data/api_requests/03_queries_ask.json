@@ -1,7 +1,7 @@
 {
-  "graph_id": "video_demo",
-  "question": "what is job_video_tag_enrich",
-  "top_k": 6,
+  "graph_id": "enterprise_video_lineage_complex",
+  "question": "请按社区解释这个图里的主链路，并指出每个社区的代表结点及其下游影响范围。",
+  "top_k": 10,
   "mode": "agent",
-  "max_steps": 4
+  "max_steps": 5
 }

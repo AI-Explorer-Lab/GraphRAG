@@ -19,16 +19,21 @@ python scripts/run_api.py --config configs/local.yaml
 ## API
 
 - `POST /v1/graphs/import`
-- `POST /v1/graphs/build`
 - `POST /v1/queries/ask`
 - `POST /v1/impact/what-if`
 - `GET /v1/graphs/{graph_id}/subgraph`
 
 ## Notes
 
-- `POST /v1/graphs/import` only imports and normalizes lineage JSON.
-- Use `POST /v1/graphs/build` to construct graph and mirror it to FalkorDB (when `LINEAGE_USE_FALKORDB=true`).
-- `/v1/graphs/build` response now includes `falkordb` status (enabled/available/written/error).
+- `POST /v1/graphs/import` now does import + normalize + build + snapshot + FalkorDB mirror in one step.
+- `/v1/graphs/import` response includes `metadata/chunks/falkordb` and `auto_built=true`.
+- New lineage import format:
+  - `entities` is an object map keyed by entity id.
+  - each entity includes `name/id/properties/description/children`, and `children` must be existing entity ids (or `[]`).
+  - each transition includes `id/source/target/properties`, where `source/target` are entity ids.
+- On service startup, graphs are auto-hydrated into memory:
+  - First from snapshot files in `snapshot_dir` (`*_graph.json` + `*_chunks.json`).
+  - Then from FalkorDB for graph IDs not already loaded (when FalkorDB is enabled/available).
 - `POST /v1/queries/ask` supports `mode`:
   - `agent`: LLM decomposition + IRCoT iterative retrieval chain.
   - `noagent`: one-pass retrieval and answer generation.

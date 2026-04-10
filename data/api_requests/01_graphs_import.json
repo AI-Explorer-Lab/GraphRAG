@@ -1,170 +1,651 @@
 {
-  "graph_id": "video_demo",
+  "graph_id": "enterprise_video_lineage_complex",
   "lineage_json": {
-    "entities": [
-      {
-        "id": "ods_video_raw",
+    "entities": {
+      "platform_lineage_root": {
+        "id": "platform_lineage_root",
+        "name": "platform_lineage_root",
         "properties": {
-          "type": "table",
-          "system": "ods",
+          "type": "domain_root",
+          "owner": "data_arch"
+        },
+        "description": "Top-level domain root for enterprise lineage graph",
+        "children": [
+          "domain_content_pipeline",
+          "domain_recommendation",
+          "domain_search",
+          "domain_governance",
+          "domain_monetization"
+        ]
+      },
+      "domain_content_pipeline": {
+        "id": "domain_content_pipeline",
+        "name": "domain_content_pipeline",
+        "properties": {
+          "type": "domain",
           "owner": "content_data"
         },
-        "description": "Raw video metadata table",
+        "description": "Content ingestion and profile construction domain",
         "children": [
-          "field_video_id",
-          "field_title",
-          "field_tags",
-          "field_creator_id"
+          "ods_video_raw",
+          "dim_tag_taxonomy",
+          "ods_creator_raw",
+          "ods_search_query_log",
+          "etl_video_clean_job",
+          "etl_creator_aggregate_job",
+          "intent_feature_job",
+          "dwd_video_profile",
+          "dws_creator_profile"
         ]
       },
-      {
-        "id": "dim_tag_taxonomy",
+      "domain_recommendation": {
+        "id": "domain_recommendation",
+        "name": "domain_recommendation",
+        "properties": {
+          "type": "domain",
+          "owner": "rec_team"
+        },
+        "description": "Recommendation feature and ranking domain",
+        "children": [
+          "feature_generate_job",
+          "rec_feature_store",
+          "rec_rank_service",
+          "rec_feedback_topic"
+        ]
+      },
+      "domain_search": {
+        "id": "domain_search",
+        "name": "domain_search",
+        "properties": {
+          "type": "domain",
+          "owner": "search_team"
+        },
+        "description": "Search indexing and ranking domain",
+        "children": [
+          "index_build_job",
+          "search_query_intent_feature",
+          "search_video_index",
+          "search_ranking_service"
+        ]
+      },
+      "domain_governance": {
+        "id": "domain_governance",
+        "name": "domain_governance",
+        "properties": {
+          "type": "domain",
+          "owner": "safety_team"
+        },
+        "description": "Risk governance and audit domain",
+        "children": [
+          "moderation_enrich_job",
+          "risk_label_dict",
+          "moderation_rule_engine",
+          "audit_event_log"
+        ]
+      },
+      "domain_monetization": {
+        "id": "domain_monetization",
+        "name": "domain_monetization",
+        "properties": {
+          "type": "domain",
+          "owner": "ad_platform"
+        },
+        "description": "Ad targeting and settlement domain",
+        "children": [
+          "ad_inventory_feature",
+          "ad_targeting_service",
+          "billing_settlement_fact"
+        ]
+      },
+      "ods_video_raw": {
+        "id": "ods_video_raw",
+        "name": "ods_video_raw",
         "properties": {
           "type": "table",
-          "system": "dim",
+          "layer": "ods",
+          "owner": "content_data"
+        },
+        "description": "Raw video metadata source",
+        "children": []
+      },
+      "dim_tag_taxonomy": {
+        "id": "dim_tag_taxonomy",
+        "name": "dim_tag_taxonomy",
+        "properties": {
+          "type": "table",
+          "layer": "dim",
           "owner": "content_ops"
         },
-        "description": "Tag taxonomy table",
-        "children": [
-          "field_tag_id",
-          "field_parent_tag_id",
-          "field_normalized_name"
-        ]
+        "description": "Tag taxonomy dimension",
+        "children": []
       },
-      {
-        "id": "job_video_tag_enrich",
-        "properties": {
-          "type": "task",
-          "system": "airflow",
-          "owner": "algo_platform",
-          "schedule": "hourly"
-        },
-        "description": "Normalize and enrich tags",
-        "children": [
-          "rule_tag_normalize",
-          "rule_sensitive_tag_map"
-        ]
-      },
-      {
-        "id": "dwd_video_profile",
+      "ods_creator_raw": {
+        "id": "ods_creator_raw",
+        "name": "ods_creator_raw",
         "properties": {
           "type": "table",
-          "system": "dwd",
+          "layer": "ods",
+          "owner": "creator_data"
+        },
+        "description": "Raw creator profile source",
+        "children": []
+      },
+      "ods_search_query_log": {
+        "id": "ods_search_query_log",
+        "name": "ods_search_query_log",
+        "properties": {
+          "type": "table",
+          "layer": "ods",
+          "owner": "search_data"
+        },
+        "description": "Search query click logs",
+        "children": []
+      },
+      "etl_video_clean_job": {
+        "id": "etl_video_clean_job",
+        "name": "etl_video_clean_job",
+        "properties": {
+          "type": "task",
+          "engine": "spark",
+          "owner": "content_data"
+        },
+        "description": "Video data cleaning and normalization job",
+        "children": []
+      },
+      "etl_creator_aggregate_job": {
+        "id": "etl_creator_aggregate_job",
+        "name": "etl_creator_aggregate_job",
+        "properties": {
+          "type": "task",
+          "engine": "spark",
+          "owner": "creator_data"
+        },
+        "description": "Creator profile aggregation job",
+        "children": []
+      },
+      "intent_feature_job": {
+        "id": "intent_feature_job",
+        "name": "intent_feature_job",
+        "properties": {
+          "type": "task",
+          "engine": "flink",
+          "owner": "search_team"
+        },
+        "description": "Intent feature extraction from search logs",
+        "children": []
+      },
+      "dwd_video_profile": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "properties": {
+          "type": "table",
+          "layer": "dwd",
           "owner": "content_data"
         },
         "description": "Video profile wide table",
-        "children": [
-          "field_video_id",
-          "field_primary_tags",
-          "field_risk_tags",
-          "field_quality_score"
-        ]
+        "children": []
       },
-      {
-        "id": "rec_feature_store",
+      "dws_creator_profile": {
+        "id": "dws_creator_profile",
+        "name": "dws_creator_profile",
         "properties": {
-          "type": "feature_view",
-          "domain": "recommendation",
+          "type": "table",
+          "layer": "dws",
+          "owner": "creator_data"
+        },
+        "description": "Creator behavior summary table",
+        "children": []
+      },
+      "feature_generate_job": {
+        "id": "feature_generate_job",
+        "name": "feature_generate_job",
+        "properties": {
+          "type": "task",
+          "engine": "spark",
           "owner": "rec_team"
         },
-        "description": "Recommendation feature view",
-        "children": [
-          "feature_ctr_tag",
-          "feature_quality_score"
-        ]
+        "description": "Generate recommendation features from profile tables",
+        "children": []
       },
-      {
-        "id": "search_video_index",
+      "rec_feature_store": {
+        "id": "rec_feature_store",
+        "name": "rec_feature_store",
         "properties": {
-          "type": "search_index",
-          "domain": "search",
+          "type": "feature_view",
+          "owner": "rec_team",
+          "sla": "hourly"
+        },
+        "description": "Recommendation online/offline feature store",
+        "children": []
+      },
+      "rec_rank_service": {
+        "id": "rec_rank_service",
+        "name": "rec_rank_service",
+        "properties": {
+          "type": "service",
+          "owner": "rec_team",
+          "runtime": "online"
+        },
+        "description": "Recommendation ranking service",
+        "children": []
+      },
+      "rec_feedback_topic": {
+        "id": "rec_feedback_topic",
+        "name": "rec_feedback_topic",
+        "properties": {
+          "type": "topic",
+          "owner": "rec_team",
+          "broker": "kafka"
+        },
+        "description": "User feedback topic for recommendation loop",
+        "children": []
+      },
+      "index_build_job": {
+        "id": "index_build_job",
+        "name": "index_build_job",
+        "properties": {
+          "type": "task",
+          "engine": "spark",
           "owner": "search_team"
         },
-        "description": "Search index",
-        "children": [
-          "doc_title",
-          "doc_tags"
-        ]
+        "description": "Build search index payload",
+        "children": []
       },
-      {
-        "id": "moderation_rule_engine",
+      "search_query_intent_feature": {
+        "id": "search_query_intent_feature",
+        "name": "search_query_intent_feature",
         "properties": {
-          "type": "control_service",
-          "domain": "moderation",
+          "type": "feature_view",
+          "owner": "search_team",
+          "sla": "realtime"
+        },
+        "description": "Search query intent features",
+        "children": []
+      },
+      "search_video_index": {
+        "id": "search_video_index",
+        "name": "search_video_index",
+        "properties": {
+          "type": "search_index",
+          "owner": "search_team"
+        },
+        "description": "Search engine video index",
+        "children": []
+      },
+      "search_ranking_service": {
+        "id": "search_ranking_service",
+        "name": "search_ranking_service",
+        "properties": {
+          "type": "service",
+          "owner": "search_team",
+          "runtime": "online"
+        },
+        "description": "Search ranking serving service",
+        "children": []
+      },
+      "moderation_enrich_job": {
+        "id": "moderation_enrich_job",
+        "name": "moderation_enrich_job",
+        "properties": {
+          "type": "task",
+          "engine": "flink",
           "owner": "safety_team"
         },
-        "description": "Moderation rule engine",
-        "children": [
-          "control_sensitive_tag_hit",
-          "control_manual_review"
-        ]
+        "description": "Generate moderation signals from profile data",
+        "children": []
+      },
+      "risk_label_dict": {
+        "id": "risk_label_dict",
+        "name": "risk_label_dict",
+        "properties": {
+          "type": "table",
+          "layer": "dim",
+          "owner": "safety_team"
+        },
+        "description": "Risk label and policy dictionary",
+        "children": []
+      },
+      "moderation_rule_engine": {
+        "id": "moderation_rule_engine",
+        "name": "moderation_rule_engine",
+        "properties": {
+          "type": "service",
+          "owner": "safety_team",
+          "runtime": "online"
+        },
+        "description": "Moderation decision engine",
+        "children": []
+      },
+      "audit_event_log": {
+        "id": "audit_event_log",
+        "name": "audit_event_log",
+        "properties": {
+          "type": "table",
+          "layer": "dwd",
+          "owner": "governance_team"
+        },
+        "description": "Audit event sink table",
+        "children": []
+      },
+      "ad_inventory_feature": {
+        "id": "ad_inventory_feature",
+        "name": "ad_inventory_feature",
+        "properties": {
+          "type": "feature_view",
+          "owner": "ad_platform"
+        },
+        "description": "Ad inventory and supply feature set",
+        "children": []
+      },
+      "ad_targeting_service": {
+        "id": "ad_targeting_service",
+        "name": "ad_targeting_service",
+        "properties": {
+          "type": "service",
+          "owner": "ad_platform",
+          "runtime": "online"
+        },
+        "description": "Ad targeting service",
+        "children": []
+      },
+      "billing_settlement_fact": {
+        "id": "billing_settlement_fact",
+        "name": "billing_settlement_fact",
+        "properties": {
+          "type": "table",
+          "layer": "dws",
+          "owner": "finance_data"
+        },
+        "description": "Billing settlement fact table",
+        "children": []
       }
-    ],
+    },
     "transitions": [
       {
+        "id": "tr_ods_video_to_clean",
         "source": "ods_video_raw",
-        "target": "job_video_tag_enrich",
+        "target": "etl_video_clean_job",
         "properties": {
           "mode": "read",
           "fields": [
             "video_id",
             "title",
-            "tags",
+            "category",
             "creator_id"
           ]
         }
       },
       {
+        "id": "tr_dim_tag_to_clean",
         "source": "dim_tag_taxonomy",
-        "target": "job_video_tag_enrich",
+        "target": "etl_video_clean_job",
         "properties": {
           "mode": "join",
-          "fields": [
-            "tag_id",
-            "normalized_name",
-            "parent_tag_id"
+          "keys": [
+            "tag_id"
           ]
         }
       },
       {
-        "source": "job_video_tag_enrich",
+        "id": "tr_clean_to_dwd_video",
+        "source": "etl_video_clean_job",
         "target": "dwd_video_profile",
         "properties": {
           "mode": "write",
-          "logic": "tag_normalize + tag_complete + risk_tag_map"
+          "logic": "quality_score + normalized_tags"
         }
       },
       {
-        "source": "dwd_video_profile",
-        "target": "rec_feature_store",
+        "id": "tr_ods_creator_to_agg",
+        "source": "ods_creator_raw",
+        "target": "etl_creator_aggregate_job",
         "properties": {
-          "mode": "feature_extract",
+          "mode": "read",
+          "fields": [
+            "creator_id",
+            "region",
+            "fan_count"
+          ]
+        }
+      },
+      {
+        "id": "tr_dwd_video_to_agg",
+        "source": "dwd_video_profile",
+        "target": "etl_creator_aggregate_job",
+        "properties": {
+          "mode": "aggregate",
+          "metrics": [
+            "play_cnt",
+            "watch_time"
+          ]
+        }
+      },
+      {
+        "id": "tr_agg_to_dws_creator",
+        "source": "etl_creator_aggregate_job",
+        "target": "dws_creator_profile",
+        "properties": {
+          "mode": "write",
+          "grain": "creator_id"
+        }
+      },
+      {
+        "id": "tr_querylog_to_intent_job",
+        "source": "ods_search_query_log",
+        "target": "intent_feature_job",
+        "properties": {
+          "mode": "read",
+          "fields": [
+            "query",
+            "click_doc",
+            "session_id"
+          ]
+        }
+      },
+      {
+        "id": "tr_intent_job_to_intent_feature",
+        "source": "intent_feature_job",
+        "target": "search_query_intent_feature",
+        "properties": {
+          "mode": "write",
           "features": [
+            "intent_type",
+            "query_embedding"
+          ]
+        }
+      },
+      {
+        "id": "tr_dwd_video_to_feature_job",
+        "source": "dwd_video_profile",
+        "target": "feature_generate_job",
+        "properties": {
+          "mode": "read",
+          "fields": [
+            "video_id",
             "primary_tags",
             "quality_score"
           ]
         }
       },
       {
-        "source": "dwd_video_profile",
-        "target": "search_video_index",
+        "id": "tr_dws_creator_to_feature_job",
+        "source": "dws_creator_profile",
+        "target": "feature_generate_job",
         "properties": {
-          "mode": "index",
-          "fields": [
-            "title",
-            "primary_tags"
+          "mode": "join",
+          "keys": [
+            "creator_id"
           ]
         }
       },
       {
-        "source": "dwd_video_profile",
-        "target": "moderation_rule_engine",
+        "id": "tr_feature_job_to_rec_store",
+        "source": "feature_generate_job",
+        "target": "rec_feature_store",
         "properties": {
-          "mode": "check",
+          "mode": "write",
+          "target_view": "video_rec_features"
+        }
+      },
+      {
+        "id": "tr_rec_store_to_rank",
+        "source": "rec_feature_store",
+        "target": "rec_rank_service",
+        "properties": {
+          "mode": "serve",
+          "latency_ms": 30
+        }
+      },
+      {
+        "id": "tr_rank_to_feedback",
+        "source": "rec_rank_service",
+        "target": "rec_feedback_topic",
+        "properties": {
+          "mode": "emit",
+          "event": "exposure_click_feedback"
+        }
+      },
+      {
+        "id": "tr_dwd_video_to_index_job",
+        "source": "dwd_video_profile",
+        "target": "index_build_job",
+        "properties": {
+          "mode": "read",
+          "fields": [
+            "video_id",
+            "title",
+            "tags"
+          ]
+        }
+      },
+      {
+        "id": "tr_intent_feature_to_index_job",
+        "source": "search_query_intent_feature",
+        "target": "index_build_job",
+        "properties": {
+          "mode": "join",
+          "keys": [
+            "query_intent_bucket"
+          ]
+        }
+      },
+      {
+        "id": "tr_index_job_to_search_index",
+        "source": "index_build_job",
+        "target": "search_video_index",
+        "properties": {
+          "mode": "write",
+          "index_type": "hybrid_ann_bm25"
+        }
+      },
+      {
+        "id": "tr_search_index_to_ranking",
+        "source": "search_video_index",
+        "target": "search_ranking_service",
+        "properties": {
+          "mode": "serve",
+          "latency_ms": 25
+        }
+      },
+      {
+        "id": "tr_dwd_video_to_moderation_job",
+        "source": "dwd_video_profile",
+        "target": "moderation_enrich_job",
+        "properties": {
+          "mode": "read",
           "signals": [
             "risk_tags",
             "quality_score"
           ]
+        }
+      },
+      {
+        "id": "tr_risk_dict_to_moderation_job",
+        "source": "risk_label_dict",
+        "target": "moderation_enrich_job",
+        "properties": {
+          "mode": "join",
+          "keys": [
+            "risk_label"
+          ]
+        }
+      },
+      {
+        "id": "tr_moderation_job_to_engine",
+        "source": "moderation_enrich_job",
+        "target": "moderation_rule_engine",
+        "properties": {
+          "mode": "write",
+          "output": "risk_decision_payload"
+        }
+      },
+      {
+        "id": "tr_engine_to_audit",
+        "source": "moderation_rule_engine",
+        "target": "audit_event_log",
+        "properties": {
+          "mode": "sink",
+          "retention": "180d"
+        }
+      },
+      {
+        "id": "tr_rec_store_to_ad_targeting",
+        "source": "rec_feature_store",
+        "target": "ad_targeting_service",
+        "properties": {
+          "mode": "feature_feed",
+          "fields": [
+            "user_interest_vector",
+            "video_topic_score"
+          ]
+        }
+      },
+      {
+        "id": "tr_ad_inventory_to_targeting",
+        "source": "ad_inventory_feature",
+        "target": "ad_targeting_service",
+        "properties": {
+          "mode": "feature_feed",
+          "fields": [
+            "inventory_id",
+            "supply_quality_score"
+          ]
+        }
+      },
+      {
+        "id": "tr_ad_targeting_to_billing",
+        "source": "ad_targeting_service",
+        "target": "billing_settlement_fact",
+        "properties": {
+          "mode": "write",
+          "grain": "campaign_id_day"
+        }
+      },
+      {
+        "id": "tr_rec_feedback_to_audit",
+        "source": "rec_feedback_topic",
+        "target": "audit_event_log",
+        "properties": {
+          "mode": "stream_sync",
+          "payload": "feedback_event"
+        }
+      },
+      {
+        "id": "tr_search_ranking_to_audit",
+        "source": "search_ranking_service",
+        "target": "audit_event_log",
+        "properties": {
+          "mode": "stream_sync",
+          "payload": "ranking_decision_log"
+        }
+      },
+      {
+        "id": "tr_audit_to_billing",
+        "source": "audit_event_log",
+        "target": "billing_settlement_fact",
+        "properties": {
+          "mode": "batch_sync",
+          "grain": "event_id"
         }
       }
     ]

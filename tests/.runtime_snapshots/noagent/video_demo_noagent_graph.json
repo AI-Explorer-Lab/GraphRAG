@@ -1,0 +1,1995 @@
+[
+  {
+    "start_node": {
+      "id": "dim_tag_taxonomy",
+      "label": "entity",
+      "properties": {
+        "id": "dim_tag_taxonomy",
+        "name": "dim_tag_taxonomy",
+        "description": "Tag taxonomy table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dim",
+          "owner": "content_ops"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::dim_tag_taxonomy"
+    ],
+    "end_node": {
+      "id": "attr::dim_tag_taxonomy::type",
+      "label": "attribute",
+      "properties": {
+        "name": "type:table",
+        "attr_key": "type",
+        "attr_value": "table"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dim_tag_taxonomy",
+      "label": "entity",
+      "properties": {
+        "id": "dim_tag_taxonomy",
+        "name": "dim_tag_taxonomy",
+        "description": "Tag taxonomy table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dim",
+          "owner": "content_ops"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::dim_tag_taxonomy"
+    ],
+    "end_node": {
+      "id": "attr::dim_tag_taxonomy::system",
+      "label": "attribute",
+      "properties": {
+        "name": "system:dim",
+        "attr_key": "system",
+        "attr_value": "dim"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dim_tag_taxonomy",
+      "label": "entity",
+      "properties": {
+        "id": "dim_tag_taxonomy",
+        "name": "dim_tag_taxonomy",
+        "description": "Tag taxonomy table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dim",
+          "owner": "content_ops"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::dim_tag_taxonomy"
+    ],
+    "end_node": {
+      "id": "attr::dim_tag_taxonomy::owner",
+      "label": "attribute",
+      "properties": {
+        "name": "owner:content_ops",
+        "attr_key": "owner",
+        "attr_value": "content_ops"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dim_tag_taxonomy",
+      "label": "entity",
+      "properties": {
+        "id": "dim_tag_taxonomy",
+        "name": "dim_tag_taxonomy",
+        "description": "Tag taxonomy table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dim",
+          "owner": "content_ops"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::dim_tag_taxonomy"
+    ],
+    "end_node": {
+      "id": "attr::dim_tag_taxonomy::description",
+      "label": "attribute",
+      "properties": {
+        "name": "description:Tag taxonomy table",
+        "attr_key": "description",
+        "attr_value": "Tag taxonomy table"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dim_tag_taxonomy",
+      "label": "entity",
+      "properties": {
+        "id": "dim_tag_taxonomy",
+        "name": "dim_tag_taxonomy",
+        "description": "Tag taxonomy table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dim",
+          "owner": "content_ops"
+        }
+      }
+    },
+    "relation": "transitions",
+    "relation_properties": {
+      "mode": "join",
+      "fields": [
+        "tag_id",
+        "normalized_name",
+        "parent_tag_id"
+      ],
+      "transition_id": "tr_dim_to_enrich"
+    },
+    "evidence_refs": [
+      "transition::tr_dim_to_enrich"
+    ],
+    "end_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dim_tag_taxonomy",
+      "label": "entity",
+      "properties": {
+        "id": "dim_tag_taxonomy",
+        "name": "dim_tag_taxonomy",
+        "description": "Tag taxonomy table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dim",
+          "owner": "content_ops"
+        }
+      }
+    },
+    "relation": "represented_by",
+    "relation_properties": {
+      "community_id": "comm_4_1"
+    },
+    "evidence_refs": [],
+    "end_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dim_tag_taxonomy",
+      "label": "entity",
+      "properties": {
+        "id": "dim_tag_taxonomy",
+        "name": "dim_tag_taxonomy",
+        "description": "Tag taxonomy table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dim",
+          "owner": "content_ops"
+        }
+      }
+    },
+    "relation": "member_of",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "comm_4_1",
+      "label": "community",
+      "properties": {
+        "name": "community_ods_video_raw_raw",
+        "description": "Representatives: job_video_tag_enrich; Keywords: ods_video_raw, raw, video",
+        "members": [
+          "ods_video_raw",
+          "dim_tag_taxonomy",
+          "job_video_tag_enrich"
+        ],
+        "representative": "job_video_tag_enrich"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::dwd_video_profile"
+    ],
+    "end_node": {
+      "id": "attr::dwd_video_profile::type",
+      "label": "attribute",
+      "properties": {
+        "name": "type:table",
+        "attr_key": "type",
+        "attr_value": "table"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::dwd_video_profile"
+    ],
+    "end_node": {
+      "id": "attr::dwd_video_profile::system",
+      "label": "attribute",
+      "properties": {
+        "name": "system:dwd",
+        "attr_key": "system",
+        "attr_value": "dwd"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::dwd_video_profile"
+    ],
+    "end_node": {
+      "id": "attr::dwd_video_profile::owner",
+      "label": "attribute",
+      "properties": {
+        "name": "owner:content_data",
+        "attr_key": "owner",
+        "attr_value": "content_data"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::dwd_video_profile"
+    ],
+    "end_node": {
+      "id": "attr::dwd_video_profile::description",
+      "label": "attribute",
+      "properties": {
+        "name": "description:Video profile wide table",
+        "attr_key": "description",
+        "attr_value": "Video profile wide table"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "has",
+    "relation_properties": {
+      "origin": "children"
+    },
+    "evidence_refs": [
+      "subgraph::dwd_video_profile"
+    ],
+    "end_node": {
+      "id": "rec_feature_store",
+      "label": "entity",
+      "properties": {
+        "id": "rec_feature_store",
+        "name": "rec_feature_store",
+        "description": "Recommendation feature view",
+        "schema_type": "feature_view",
+        "raw_properties": {
+          "type": "feature_view",
+          "domain": "recommendation",
+          "owner": "rec_team"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "transitions",
+    "relation_properties": {
+      "mode": "feature_extract",
+      "features": [
+        "primary_tags",
+        "quality_score"
+      ],
+      "transition_id": "tr_profile_to_feature"
+    },
+    "evidence_refs": [
+      "transition::tr_profile_to_feature"
+    ],
+    "end_node": {
+      "id": "rec_feature_store",
+      "label": "entity",
+      "properties": {
+        "id": "rec_feature_store",
+        "name": "rec_feature_store",
+        "description": "Recommendation feature view",
+        "schema_type": "feature_view",
+        "raw_properties": {
+          "type": "feature_view",
+          "domain": "recommendation",
+          "owner": "rec_team"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "has",
+    "relation_properties": {
+      "origin": "children"
+    },
+    "evidence_refs": [
+      "subgraph::dwd_video_profile"
+    ],
+    "end_node": {
+      "id": "search_video_index",
+      "label": "entity",
+      "properties": {
+        "id": "search_video_index",
+        "name": "search_video_index",
+        "description": "Search index",
+        "schema_type": "search_index",
+        "raw_properties": {
+          "type": "search_index",
+          "domain": "search",
+          "owner": "search_team"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "transitions",
+    "relation_properties": {
+      "mode": "index",
+      "fields": [
+        "title",
+        "primary_tags"
+      ],
+      "transition_id": "tr_profile_to_search"
+    },
+    "evidence_refs": [
+      "transition::tr_profile_to_search"
+    ],
+    "end_node": {
+      "id": "search_video_index",
+      "label": "entity",
+      "properties": {
+        "id": "search_video_index",
+        "name": "search_video_index",
+        "description": "Search index",
+        "schema_type": "search_index",
+        "raw_properties": {
+          "type": "search_index",
+          "domain": "search",
+          "owner": "search_team"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "has",
+    "relation_properties": {
+      "origin": "children"
+    },
+    "evidence_refs": [
+      "subgraph::dwd_video_profile"
+    ],
+    "end_node": {
+      "id": "moderation_rule_engine",
+      "label": "entity",
+      "properties": {
+        "id": "moderation_rule_engine",
+        "name": "moderation_rule_engine",
+        "description": "Moderation rule engine",
+        "schema_type": "control_service",
+        "raw_properties": {
+          "type": "control_service",
+          "domain": "moderation",
+          "owner": "safety_team"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "transitions",
+    "relation_properties": {
+      "mode": "check",
+      "signals": [
+        "risk_tags",
+        "quality_score"
+      ],
+      "transition_id": "tr_profile_to_moderation"
+    },
+    "evidence_refs": [
+      "transition::tr_profile_to_moderation"
+    ],
+    "end_node": {
+      "id": "moderation_rule_engine",
+      "label": "entity",
+      "properties": {
+        "id": "moderation_rule_engine",
+        "name": "moderation_rule_engine",
+        "description": "Moderation rule engine",
+        "schema_type": "control_service",
+        "raw_properties": {
+          "type": "control_service",
+          "domain": "moderation",
+          "owner": "safety_team"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "member_of",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "comm_4_0",
+      "label": "community",
+      "properties": {
+        "name": "community_moderation_rule_engine_moderation",
+        "description": "Representatives: dwd_video_profile; Keywords: moderation_rule_engine, moderation, rule",
+        "members": [
+          "moderation_rule_engine",
+          "rec_feature_store",
+          "dwd_video_profile",
+          "search_video_index"
+        ],
+        "representative": "dwd_video_profile"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "represents_community",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "comm_4_0",
+      "label": "community",
+      "properties": {
+        "name": "community_moderation_rule_engine_moderation",
+        "description": "Representatives: dwd_video_profile; Keywords: moderation_rule_engine, moderation, rule",
+        "members": [
+          "moderation_rule_engine",
+          "rec_feature_store",
+          "dwd_video_profile",
+          "search_video_index"
+        ],
+        "representative": "dwd_video_profile"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::job_video_tag_enrich"
+    ],
+    "end_node": {
+      "id": "attr::job_video_tag_enrich::type",
+      "label": "attribute",
+      "properties": {
+        "name": "type:task",
+        "attr_key": "type",
+        "attr_value": "task"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::job_video_tag_enrich"
+    ],
+    "end_node": {
+      "id": "attr::job_video_tag_enrich::system",
+      "label": "attribute",
+      "properties": {
+        "name": "system:airflow",
+        "attr_key": "system",
+        "attr_value": "airflow"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::job_video_tag_enrich"
+    ],
+    "end_node": {
+      "id": "attr::job_video_tag_enrich::owner",
+      "label": "attribute",
+      "properties": {
+        "name": "owner:algo_platform",
+        "attr_key": "owner",
+        "attr_value": "algo_platform"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::job_video_tag_enrich"
+    ],
+    "end_node": {
+      "id": "attr::job_video_tag_enrich::schedule",
+      "label": "attribute",
+      "properties": {
+        "name": "schedule:hourly",
+        "attr_key": "schedule",
+        "attr_value": "hourly"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::job_video_tag_enrich"
+    ],
+    "end_node": {
+      "id": "attr::job_video_tag_enrich::description",
+      "label": "attribute",
+      "properties": {
+        "name": "description:Normalize and enrich tags",
+        "attr_key": "description",
+        "attr_value": "Normalize and enrich tags"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    },
+    "relation": "has",
+    "relation_properties": {
+      "origin": "children"
+    },
+    "evidence_refs": [
+      "subgraph::job_video_tag_enrich"
+    ],
+    "end_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    },
+    "relation": "transitions",
+    "relation_properties": {
+      "mode": "write",
+      "logic": "tag_normalize + tag_complete + risk_tag_map",
+      "transition_id": "tr_enrich_to_profile"
+    },
+    "evidence_refs": [
+      "transition::tr_enrich_to_profile"
+    ],
+    "end_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    },
+    "relation": "member_of",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "comm_4_1",
+      "label": "community",
+      "properties": {
+        "name": "community_ods_video_raw_raw",
+        "description": "Representatives: job_video_tag_enrich; Keywords: ods_video_raw, raw, video",
+        "members": [
+          "ods_video_raw",
+          "dim_tag_taxonomy",
+          "job_video_tag_enrich"
+        ],
+        "representative": "job_video_tag_enrich"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    },
+    "relation": "represents_community",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "comm_4_1",
+      "label": "community",
+      "properties": {
+        "name": "community_ods_video_raw_raw",
+        "description": "Representatives: job_video_tag_enrich; Keywords: ods_video_raw, raw, video",
+        "members": [
+          "ods_video_raw",
+          "dim_tag_taxonomy",
+          "job_video_tag_enrich"
+        ],
+        "representative": "job_video_tag_enrich"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "moderation_rule_engine",
+      "label": "entity",
+      "properties": {
+        "id": "moderation_rule_engine",
+        "name": "moderation_rule_engine",
+        "description": "Moderation rule engine",
+        "schema_type": "control_service",
+        "raw_properties": {
+          "type": "control_service",
+          "domain": "moderation",
+          "owner": "safety_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::moderation_rule_engine"
+    ],
+    "end_node": {
+      "id": "attr::moderation_rule_engine::type",
+      "label": "attribute",
+      "properties": {
+        "name": "type:control_service",
+        "attr_key": "type",
+        "attr_value": "control_service"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "moderation_rule_engine",
+      "label": "entity",
+      "properties": {
+        "id": "moderation_rule_engine",
+        "name": "moderation_rule_engine",
+        "description": "Moderation rule engine",
+        "schema_type": "control_service",
+        "raw_properties": {
+          "type": "control_service",
+          "domain": "moderation",
+          "owner": "safety_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::moderation_rule_engine"
+    ],
+    "end_node": {
+      "id": "attr::moderation_rule_engine::domain",
+      "label": "attribute",
+      "properties": {
+        "name": "domain:moderation",
+        "attr_key": "domain",
+        "attr_value": "moderation"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "moderation_rule_engine",
+      "label": "entity",
+      "properties": {
+        "id": "moderation_rule_engine",
+        "name": "moderation_rule_engine",
+        "description": "Moderation rule engine",
+        "schema_type": "control_service",
+        "raw_properties": {
+          "type": "control_service",
+          "domain": "moderation",
+          "owner": "safety_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::moderation_rule_engine"
+    ],
+    "end_node": {
+      "id": "attr::moderation_rule_engine::owner",
+      "label": "attribute",
+      "properties": {
+        "name": "owner:safety_team",
+        "attr_key": "owner",
+        "attr_value": "safety_team"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "moderation_rule_engine",
+      "label": "entity",
+      "properties": {
+        "id": "moderation_rule_engine",
+        "name": "moderation_rule_engine",
+        "description": "Moderation rule engine",
+        "schema_type": "control_service",
+        "raw_properties": {
+          "type": "control_service",
+          "domain": "moderation",
+          "owner": "safety_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::moderation_rule_engine"
+    ],
+    "end_node": {
+      "id": "attr::moderation_rule_engine::description",
+      "label": "attribute",
+      "properties": {
+        "name": "description:Moderation rule engine",
+        "attr_key": "description",
+        "attr_value": "Moderation rule engine"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "moderation_rule_engine",
+      "label": "entity",
+      "properties": {
+        "id": "moderation_rule_engine",
+        "name": "moderation_rule_engine",
+        "description": "Moderation rule engine",
+        "schema_type": "control_service",
+        "raw_properties": {
+          "type": "control_service",
+          "domain": "moderation",
+          "owner": "safety_team"
+        }
+      }
+    },
+    "relation": "member_of",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "comm_4_0",
+      "label": "community",
+      "properties": {
+        "name": "community_moderation_rule_engine_moderation",
+        "description": "Representatives: dwd_video_profile; Keywords: moderation_rule_engine, moderation, rule",
+        "members": [
+          "moderation_rule_engine",
+          "rec_feature_store",
+          "dwd_video_profile",
+          "search_video_index"
+        ],
+        "representative": "dwd_video_profile"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "moderation_rule_engine",
+      "label": "entity",
+      "properties": {
+        "id": "moderation_rule_engine",
+        "name": "moderation_rule_engine",
+        "description": "Moderation rule engine",
+        "schema_type": "control_service",
+        "raw_properties": {
+          "type": "control_service",
+          "domain": "moderation",
+          "owner": "safety_team"
+        }
+      }
+    },
+    "relation": "represented_by",
+    "relation_properties": {
+      "community_id": "comm_4_0"
+    },
+    "evidence_refs": [],
+    "end_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "ods_video_raw",
+      "label": "entity",
+      "properties": {
+        "id": "ods_video_raw",
+        "name": "ods_video_raw",
+        "description": "Raw video metadata table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "ods",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::ods_video_raw"
+    ],
+    "end_node": {
+      "id": "attr::ods_video_raw::type",
+      "label": "attribute",
+      "properties": {
+        "name": "type:table",
+        "attr_key": "type",
+        "attr_value": "table"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "ods_video_raw",
+      "label": "entity",
+      "properties": {
+        "id": "ods_video_raw",
+        "name": "ods_video_raw",
+        "description": "Raw video metadata table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "ods",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::ods_video_raw"
+    ],
+    "end_node": {
+      "id": "attr::ods_video_raw::system",
+      "label": "attribute",
+      "properties": {
+        "name": "system:ods",
+        "attr_key": "system",
+        "attr_value": "ods"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "ods_video_raw",
+      "label": "entity",
+      "properties": {
+        "id": "ods_video_raw",
+        "name": "ods_video_raw",
+        "description": "Raw video metadata table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "ods",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::ods_video_raw"
+    ],
+    "end_node": {
+      "id": "attr::ods_video_raw::owner",
+      "label": "attribute",
+      "properties": {
+        "name": "owner:content_data",
+        "attr_key": "owner",
+        "attr_value": "content_data"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "ods_video_raw",
+      "label": "entity",
+      "properties": {
+        "id": "ods_video_raw",
+        "name": "ods_video_raw",
+        "description": "Raw video metadata table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "ods",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::ods_video_raw"
+    ],
+    "end_node": {
+      "id": "attr::ods_video_raw::description",
+      "label": "attribute",
+      "properties": {
+        "name": "description:Raw video metadata table",
+        "attr_key": "description",
+        "attr_value": "Raw video metadata table"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "ods_video_raw",
+      "label": "entity",
+      "properties": {
+        "id": "ods_video_raw",
+        "name": "ods_video_raw",
+        "description": "Raw video metadata table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "ods",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "transitions",
+    "relation_properties": {
+      "mode": "read",
+      "fields": [
+        "video_id",
+        "title",
+        "tags",
+        "creator_id"
+      ],
+      "transition_id": "tr_ods_to_enrich"
+    },
+    "evidence_refs": [
+      "transition::tr_ods_to_enrich"
+    ],
+    "end_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "ods_video_raw",
+      "label": "entity",
+      "properties": {
+        "id": "ods_video_raw",
+        "name": "ods_video_raw",
+        "description": "Raw video metadata table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "ods",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "represented_by",
+    "relation_properties": {
+      "community_id": "comm_4_1"
+    },
+    "evidence_refs": [],
+    "end_node": {
+      "id": "job_video_tag_enrich",
+      "label": "entity",
+      "properties": {
+        "id": "job_video_tag_enrich",
+        "name": "job_video_tag_enrich",
+        "description": "Normalize and enrich tags",
+        "schema_type": "task",
+        "raw_properties": {
+          "type": "task",
+          "system": "airflow",
+          "owner": "algo_platform",
+          "schedule": "hourly"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "ods_video_raw",
+      "label": "entity",
+      "properties": {
+        "id": "ods_video_raw",
+        "name": "ods_video_raw",
+        "description": "Raw video metadata table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "ods",
+          "owner": "content_data"
+        }
+      }
+    },
+    "relation": "member_of",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "comm_4_1",
+      "label": "community",
+      "properties": {
+        "name": "community_ods_video_raw_raw",
+        "description": "Representatives: job_video_tag_enrich; Keywords: ods_video_raw, raw, video",
+        "members": [
+          "ods_video_raw",
+          "dim_tag_taxonomy",
+          "job_video_tag_enrich"
+        ],
+        "representative": "job_video_tag_enrich"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "rec_feature_store",
+      "label": "entity",
+      "properties": {
+        "id": "rec_feature_store",
+        "name": "rec_feature_store",
+        "description": "Recommendation feature view",
+        "schema_type": "feature_view",
+        "raw_properties": {
+          "type": "feature_view",
+          "domain": "recommendation",
+          "owner": "rec_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::rec_feature_store"
+    ],
+    "end_node": {
+      "id": "attr::rec_feature_store::type",
+      "label": "attribute",
+      "properties": {
+        "name": "type:feature_view",
+        "attr_key": "type",
+        "attr_value": "feature_view"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "rec_feature_store",
+      "label": "entity",
+      "properties": {
+        "id": "rec_feature_store",
+        "name": "rec_feature_store",
+        "description": "Recommendation feature view",
+        "schema_type": "feature_view",
+        "raw_properties": {
+          "type": "feature_view",
+          "domain": "recommendation",
+          "owner": "rec_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::rec_feature_store"
+    ],
+    "end_node": {
+      "id": "attr::rec_feature_store::domain",
+      "label": "attribute",
+      "properties": {
+        "name": "domain:recommendation",
+        "attr_key": "domain",
+        "attr_value": "recommendation"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "rec_feature_store",
+      "label": "entity",
+      "properties": {
+        "id": "rec_feature_store",
+        "name": "rec_feature_store",
+        "description": "Recommendation feature view",
+        "schema_type": "feature_view",
+        "raw_properties": {
+          "type": "feature_view",
+          "domain": "recommendation",
+          "owner": "rec_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::rec_feature_store"
+    ],
+    "end_node": {
+      "id": "attr::rec_feature_store::owner",
+      "label": "attribute",
+      "properties": {
+        "name": "owner:rec_team",
+        "attr_key": "owner",
+        "attr_value": "rec_team"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "rec_feature_store",
+      "label": "entity",
+      "properties": {
+        "id": "rec_feature_store",
+        "name": "rec_feature_store",
+        "description": "Recommendation feature view",
+        "schema_type": "feature_view",
+        "raw_properties": {
+          "type": "feature_view",
+          "domain": "recommendation",
+          "owner": "rec_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::rec_feature_store"
+    ],
+    "end_node": {
+      "id": "attr::rec_feature_store::description",
+      "label": "attribute",
+      "properties": {
+        "name": "description:Recommendation feature view",
+        "attr_key": "description",
+        "attr_value": "Recommendation feature view"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "rec_feature_store",
+      "label": "entity",
+      "properties": {
+        "id": "rec_feature_store",
+        "name": "rec_feature_store",
+        "description": "Recommendation feature view",
+        "schema_type": "feature_view",
+        "raw_properties": {
+          "type": "feature_view",
+          "domain": "recommendation",
+          "owner": "rec_team"
+        }
+      }
+    },
+    "relation": "member_of",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "comm_4_0",
+      "label": "community",
+      "properties": {
+        "name": "community_moderation_rule_engine_moderation",
+        "description": "Representatives: dwd_video_profile; Keywords: moderation_rule_engine, moderation, rule",
+        "members": [
+          "moderation_rule_engine",
+          "rec_feature_store",
+          "dwd_video_profile",
+          "search_video_index"
+        ],
+        "representative": "dwd_video_profile"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "rec_feature_store",
+      "label": "entity",
+      "properties": {
+        "id": "rec_feature_store",
+        "name": "rec_feature_store",
+        "description": "Recommendation feature view",
+        "schema_type": "feature_view",
+        "raw_properties": {
+          "type": "feature_view",
+          "domain": "recommendation",
+          "owner": "rec_team"
+        }
+      }
+    },
+    "relation": "represented_by",
+    "relation_properties": {
+      "community_id": "comm_4_0"
+    },
+    "evidence_refs": [],
+    "end_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "search_video_index",
+      "label": "entity",
+      "properties": {
+        "id": "search_video_index",
+        "name": "search_video_index",
+        "description": "Search index",
+        "schema_type": "search_index",
+        "raw_properties": {
+          "type": "search_index",
+          "domain": "search",
+          "owner": "search_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::search_video_index"
+    ],
+    "end_node": {
+      "id": "attr::search_video_index::type",
+      "label": "attribute",
+      "properties": {
+        "name": "type:search_index",
+        "attr_key": "type",
+        "attr_value": "search_index"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "search_video_index",
+      "label": "entity",
+      "properties": {
+        "id": "search_video_index",
+        "name": "search_video_index",
+        "description": "Search index",
+        "schema_type": "search_index",
+        "raw_properties": {
+          "type": "search_index",
+          "domain": "search",
+          "owner": "search_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::search_video_index"
+    ],
+    "end_node": {
+      "id": "attr::search_video_index::domain",
+      "label": "attribute",
+      "properties": {
+        "name": "domain:search",
+        "attr_key": "domain",
+        "attr_value": "search"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "search_video_index",
+      "label": "entity",
+      "properties": {
+        "id": "search_video_index",
+        "name": "search_video_index",
+        "description": "Search index",
+        "schema_type": "search_index",
+        "raw_properties": {
+          "type": "search_index",
+          "domain": "search",
+          "owner": "search_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::search_video_index"
+    ],
+    "end_node": {
+      "id": "attr::search_video_index::owner",
+      "label": "attribute",
+      "properties": {
+        "name": "owner:search_team",
+        "attr_key": "owner",
+        "attr_value": "search_team"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "search_video_index",
+      "label": "entity",
+      "properties": {
+        "id": "search_video_index",
+        "name": "search_video_index",
+        "description": "Search index",
+        "schema_type": "search_index",
+        "raw_properties": {
+          "type": "search_index",
+          "domain": "search",
+          "owner": "search_team"
+        }
+      }
+    },
+    "relation": "has_attribute",
+    "relation_properties": {},
+    "evidence_refs": [
+      "entity::search_video_index"
+    ],
+    "end_node": {
+      "id": "attr::search_video_index::description",
+      "label": "attribute",
+      "properties": {
+        "name": "description:Search index",
+        "attr_key": "description",
+        "attr_value": "Search index"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "search_video_index",
+      "label": "entity",
+      "properties": {
+        "id": "search_video_index",
+        "name": "search_video_index",
+        "description": "Search index",
+        "schema_type": "search_index",
+        "raw_properties": {
+          "type": "search_index",
+          "domain": "search",
+          "owner": "search_team"
+        }
+      }
+    },
+    "relation": "member_of",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "comm_4_0",
+      "label": "community",
+      "properties": {
+        "name": "community_moderation_rule_engine_moderation",
+        "description": "Representatives: dwd_video_profile; Keywords: moderation_rule_engine, moderation, rule",
+        "members": [
+          "moderation_rule_engine",
+          "rec_feature_store",
+          "dwd_video_profile",
+          "search_video_index"
+        ],
+        "representative": "dwd_video_profile"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "search_video_index",
+      "label": "entity",
+      "properties": {
+        "id": "search_video_index",
+        "name": "search_video_index",
+        "description": "Search index",
+        "schema_type": "search_index",
+        "raw_properties": {
+          "type": "search_index",
+          "domain": "search",
+          "owner": "search_team"
+        }
+      }
+    },
+    "relation": "represented_by",
+    "relation_properties": {
+      "community_id": "comm_4_0"
+    },
+    "evidence_refs": [],
+    "end_node": {
+      "id": "dwd_video_profile",
+      "label": "entity",
+      "properties": {
+        "id": "dwd_video_profile",
+        "name": "dwd_video_profile",
+        "description": "Video profile wide table",
+        "schema_type": "table",
+        "raw_properties": {
+          "type": "table",
+          "system": "dwd",
+          "owner": "content_data"
+        }
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "comm_4_0",
+      "label": "community",
+      "properties": {
+        "name": "community_moderation_rule_engine_moderation",
+        "description": "Representatives: dwd_video_profile; Keywords: moderation_rule_engine, moderation, rule",
+        "members": [
+          "moderation_rule_engine",
+          "rec_feature_store",
+          "dwd_video_profile",
+          "search_video_index"
+        ],
+        "representative": "dwd_video_profile"
+      }
+    },
+    "relation": "has_keyword",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "kw_term_0_0",
+      "label": "keyword",
+      "properties": {
+        "name": "moderation_rule_engine",
+        "kind": "lexical"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "comm_4_0",
+      "label": "community",
+      "properties": {
+        "name": "community_moderation_rule_engine_moderation",
+        "description": "Representatives: dwd_video_profile; Keywords: moderation_rule_engine, moderation, rule",
+        "members": [
+          "moderation_rule_engine",
+          "rec_feature_store",
+          "dwd_video_profile",
+          "search_video_index"
+        ],
+        "representative": "dwd_video_profile"
+      }
+    },
+    "relation": "has_keyword",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "kw_term_0_1",
+      "label": "keyword",
+      "properties": {
+        "name": "moderation",
+        "kind": "lexical"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "comm_4_0",
+      "label": "community",
+      "properties": {
+        "name": "community_moderation_rule_engine_moderation",
+        "description": "Representatives: dwd_video_profile; Keywords: moderation_rule_engine, moderation, rule",
+        "members": [
+          "moderation_rule_engine",
+          "rec_feature_store",
+          "dwd_video_profile",
+          "search_video_index"
+        ],
+        "representative": "dwd_video_profile"
+      }
+    },
+    "relation": "has_keyword",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "kw_term_0_2",
+      "label": "keyword",
+      "properties": {
+        "name": "rule",
+        "kind": "lexical"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "comm_4_1",
+      "label": "community",
+      "properties": {
+        "name": "community_ods_video_raw_raw",
+        "description": "Representatives: job_video_tag_enrich; Keywords: ods_video_raw, raw, video",
+        "members": [
+          "ods_video_raw",
+          "dim_tag_taxonomy",
+          "job_video_tag_enrich"
+        ],
+        "representative": "job_video_tag_enrich"
+      }
+    },
+    "relation": "has_keyword",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "kw_term_1_0",
+      "label": "keyword",
+      "properties": {
+        "name": "ods_video_raw",
+        "kind": "lexical"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "comm_4_1",
+      "label": "community",
+      "properties": {
+        "name": "community_ods_video_raw_raw",
+        "description": "Representatives: job_video_tag_enrich; Keywords: ods_video_raw, raw, video",
+        "members": [
+          "ods_video_raw",
+          "dim_tag_taxonomy",
+          "job_video_tag_enrich"
+        ],
+        "representative": "job_video_tag_enrich"
+      }
+    },
+    "relation": "has_keyword",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "kw_term_1_1",
+      "label": "keyword",
+      "properties": {
+        "name": "raw",
+        "kind": "lexical"
+      }
+    }
+  },
+  {
+    "start_node": {
+      "id": "comm_4_1",
+      "label": "community",
+      "properties": {
+        "name": "community_ods_video_raw_raw",
+        "description": "Representatives: job_video_tag_enrich; Keywords: ods_video_raw, raw, video",
+        "members": [
+          "ods_video_raw",
+          "dim_tag_taxonomy",
+          "job_video_tag_enrich"
+        ],
+        "representative": "job_video_tag_enrich"
+      }
+    },
+    "relation": "has_keyword",
+    "relation_properties": {},
+    "evidence_refs": [],
+    "end_node": {
+      "id": "kw_term_1_2",
+      "label": "keyword",
+      "properties": {
+        "name": "video",
+        "kind": "lexical"
+      }
+    }
+  }
+]

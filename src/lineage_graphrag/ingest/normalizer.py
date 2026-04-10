@@ -8,9 +8,10 @@ class LineageNormalizer:
 
     def normalize(self, lineage: LineageInput) -> NormalizedLineage:
         has_relations = list(lineage.has_relations)
+        entities = [lineage.entities[k] for k in sorted(lineage.entities.keys())]
 
         if not has_relations:
-            for entity in lineage.entities:
+            for entity in entities:
                 for child in entity.children:
                     has_relations.append(
                         HasRelation(
@@ -21,8 +22,7 @@ class LineageNormalizer:
                     )
 
         return NormalizedLineage(
-            entities=lineage.entities,
+            entities=entities,
             transitions=lineage.transitions,
             has_relations=has_relations,
         )
-

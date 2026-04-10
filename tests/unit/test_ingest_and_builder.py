@@ -29,4 +29,9 @@ def test_parser_normalizer_build(fixture_payload: dict) -> None:
     )
     assert any(d.get("label") == "community" for _, d in graph.nodes(data=True))
     assert any(d.get("label") == "keyword" for _, d in graph.nodes(data=True))
-
+    assert not any(d.get("relation") == "keyword_of" for _, _, d in graph.edges(data=True))
+    assert any(
+        d.get("relation") == "represented_by" and graph.nodes[v].get("label") == "entity"
+        for u, v, d in graph.edges(data=True)
+    )
+    assert any(d.get("relation") == "has_keyword" for _, _, d in graph.edges(data=True))

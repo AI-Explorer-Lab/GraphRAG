@@ -49,11 +49,69 @@ class GraphRepository:
         }
         if self.falkor is not None:
             try:
-                mirror_status = self.falkor.write_graph(graph, graph_name=graph_id)
+                mirror_status = self.falkor.write_graph(graph, graph_name=graph_id, chunks=chunks)
             except Exception as exc:  # pragma: no cover - external system path
                 logger.warning("Failed to mirror graph to FalkorDB: %s", exc)
                 mirror_status["error"] = str(exc)
         return mirror_status
+
+    def restore_graph(
+        self,
+        graph_id: str,
+        graph: nx.MultiDiGraph,
+        chunks: dict[str, str] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> None:
+        self._graphs[graph_id] = graph
+        self._chunks[graph_id] = chunks or {}
+        self._metadata[graph_id] = metadata or {}
+
+    def hydrate_startup(self, snapshot_store: Any | None = None) -> dict[str, Any]:
+        status: dict[str, Any] = {
+            "snapshots_loaded": 0,
+            "falkordb_loaded": 0,
+            "errors": [],
+        }
+
+        if snapshot_store is not None:
+            try:
+                graph_ids = snapshot_store.list_graph_ids()
+            except Exception as exc:
+                status["errors"].append(f"snapshot_list_failed: {exc}")
+                graph_ids = []
+
+            for graph_id in graph_ids:
+                try:
+                    loaded = snapshot_store.load(graph_id)
+                    if loaded is None:
+                        continue
+                    graph, chunks = loaded
+                    self.restore_graph(graph_id, graph, chunks=chunks, metadata={"source": "snapshot"})
+                    status["snapshots_loaded"] += 1
+                except Exception as exc:
+                    status["errors"].append(f"snapshot_load_failed:{graph_id}:{exc}")
+
+        if self.falkor is not None and self.falkor.is_available():
+            try:
+                remote_graphs = self.falkor.list_graphs()
+            except Exception as exc:
+                status["errors"].append(f"falkordb_list_failed: {exc}")
+                remote_graphs = []
+
+            for graph_id in remote_graphs:
+                if graph_id in self._graphs:
+                    continue
+                try:
+                    graph = self.falkor.read_graph(graph_id)
+                    if graph is None:
+                        continue
+                    chunks = self.falkor.read_chunks(graph_id)
+                    self.restore_graph(graph_id, graph, chunks=chunks, metadata={"source": "falkordb"})
+                    status["falkordb_loaded"] += 1
+                except Exception as exc:
+                    status["errors"].append(f"falkordb_load_failed:{graph_id}:{exc}")
+
+        return status
 
     def get_graph(self, graph_id: str) -> nx.MultiDiGraph | None:
         return self._graphs.get(graph_id)
@@ -63,3 +121,6 @@ class GraphRepository:
 
     def get_metadata(self, graph_id: str) -> dict[str, Any]:
         return self._metadata.get(graph_id, {})
+
+    def list_graph_ids(self) -> list[str]:
+        return sorted(self._graphs.keys())

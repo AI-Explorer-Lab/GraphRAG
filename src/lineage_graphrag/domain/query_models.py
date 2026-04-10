@@ -12,10 +12,6 @@ class ImportRequest(BaseModel):
     lineage_json: dict[str, Any]
 
 
-class BuildRequest(BaseModel):
-    graph_id: str
-
-
 class AskRequest(BaseModel):
     graph_id: str
     question: str

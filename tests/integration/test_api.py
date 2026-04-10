@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import os
+import tempfile
 from pathlib import Path
+from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
@@ -14,13 +16,13 @@ def _prepare_graph(client: TestClient, fixture_payload: dict, graph_id: str) -> 
         json={"graph_id": graph_id, "lineage_json": fixture_payload},
     )
     assert import_resp.status_code == 200
-
-    build_resp = client.post("/v1/graphs/build", json={"graph_id": graph_id})
-    assert build_resp.status_code == 200
+    body = import_resp.json()
+    assert body.get("auto_built") is True
+    assert "falkordb" in body
 
 
 def _set_snapshot_dir(subdir: str) -> None:
-    runtime_dir = Path("tests/.runtime_snapshots") / subdir
+    runtime_dir = Path(tempfile.gettempdir()) / "lineage_graphrag_snapshots" / f"{subdir}_{uuid4().hex[:8]}"
     runtime_dir.mkdir(parents=True, exist_ok=True)
     os.environ["LINEAGE_SNAPSHOT_DIR"] = str(runtime_dir)
 
@@ -89,3 +91,30 @@ def test_api_flow_noagent_mode(fixture_payload: dict) -> None:
     ask_body = ask_resp.json()
     assert ask_body["retrieval"]["mode"] == "noagent"
     assert isinstance(ask_body["retrieval"]["chunk_ids"], list)
+
+
+def test_restart_can_query_from_snapshot(fixture_payload: dict) -> None:
+    _set_snapshot_dir("restart")
+    graph_id = "video_demo_restart"
+
+    app_first = create_app("configs/base.yaml")
+    client_first = TestClient(app_first)
+    _prepare_graph(client_first, fixture_payload, graph_id)
+
+    app_second = create_app("configs/base.yaml")
+    client_second = TestClient(app_second)
+
+    ask_resp = client_second.post(
+        "/v1/queries/ask",
+        json={
+            "graph_id": graph_id,
+            "question": "What is downstream impact of dwd_video_profile?",
+            "top_k": 6,
+            "mode": "noagent",
+            "max_steps": 2,
+        },
+    )
+    assert ask_resp.status_code == 200
+    body = ask_resp.json()
+    assert "answer" in body
+    assert isinstance(body["retrieval"]["triples"], list)

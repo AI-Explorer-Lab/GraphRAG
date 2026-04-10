@@ -15,8 +15,8 @@ class EvidenceBuilder:
             chunk_id = f"entity::{entity.id}"
             chunks[chunk_id] = json.dumps(entity.model_dump(), ensure_ascii=False)
 
-        for i, transition in enumerate(lineage.transitions):
-            chunk_id = f"transition::{transition.source}->{transition.target}::{i}"
+        for transition in lineage.transitions:
+            chunk_id = f"transition::{transition.id}"
             chunks[chunk_id] = json.dumps(transition.model_dump(), ensure_ascii=False)
 
         for entity in lineage.entities:
@@ -31,4 +31,3 @@ class EvidenceBuilder:
             chunks[chunk_id] = json.dumps(payload, ensure_ascii=False)
 
         return chunks
-

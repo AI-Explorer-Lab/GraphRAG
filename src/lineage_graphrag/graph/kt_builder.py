@@ -23,13 +23,16 @@ class LineageKTBuilder:
             entity_id = entity.id
             entity_chunk = f"entity::{entity_id}"
             schema_type = str(entity.properties.get("type", "entity"))
+            entity_name = entity.name.strip() if isinstance(entity.name, str) else ""
+            if not entity_name:
+                entity_name = entity_id
             graph.add_node(
                 entity_id,
                 label="entity",
                 level=2,
                 properties={
                     "id": entity_id,
-                    "name": entity_id,
+                    "name": entity_name,
                     "description": entity.description,
                     "schema_type": schema_type,
                     "raw_properties": dict(entity.properties),
@@ -92,17 +95,19 @@ class LineageKTBuilder:
                 evidence_refs=[f"subgraph::{relation.source}"],
             )
 
-        for i, transition in enumerate(lineage.transitions):
+        for transition in lineage.transitions:
             self._ensure_child_entity_node(graph, transition.source)
             self._ensure_child_entity_node(graph, transition.target)
+            rel_props = dict(transition.properties)
+            rel_props["transition_id"] = transition.id
             graph.add_edge(
                 transition.source,
                 transition.target,
                 relation="transitions",
-                relation_properties=dict(transition.properties),
+                relation_properties=rel_props,
                 source_id=transition.source,
                 target_id=transition.target,
-                evidence_refs=[f"transition::{transition.source}->{transition.target}::{i}"],
+                evidence_refs=[f"transition::{transition.id}"],
             )
 
         self.community_builder.build(graph)
@@ -130,4 +135,3 @@ class LineageKTBuilder:
                 "raw_properties": {},
             },
         )
-

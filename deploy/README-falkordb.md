@@ -10,8 +10,7 @@ docker run -d --name falkordb -p 3000:3000 -p 6379:6379 falkordb/falkordb:latest
 
 ## API Import/Build Sequence
 
-`/v1/graphs/import` only stores normalized lineage in memory.  
-It does not write graph data into FalkorDB.
+`/v1/graphs/import` now does import + build + FalkorDB mirror in one request.
 
 To write graph data into FalkorDB:
 
@@ -21,5 +20,4 @@ $env:LINEAGE_USE_FALKORDB="true"
 python scripts/run_api.py
 ```
 2. Call `POST /v1/graphs/import`
-3. Call `POST /v1/graphs/build`
-4. Check build response field `falkordb.written` is `true`
+3. Check import response field `falkordb.written` is `true`

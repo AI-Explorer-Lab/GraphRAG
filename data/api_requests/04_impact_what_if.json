@@ -1,10 +1,10 @@
 {
-  "graph_id": "video_demo",
+  "graph_id": "enterprise_video_lineage_complex",
   "change_spec": {
-    "source": "job_video_tag_enrich",
-    "target": "dwd_video_profile",
+    "source": "feature_generate_job",
+    "target": "rec_feature_store",
     "relation": "transitions",
-    "scope": "moderation",
-    "max_depth": 3
+    "scope": "recommendation",
+    "max_depth": 4
   }
 }
