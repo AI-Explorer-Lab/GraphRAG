@@ -3,7 +3,24 @@ app:
   falkordb_url: redis://localhost:6379/0
   snapshot_dir: data/normalized
   default_top_k: 8
-  llm_provider: stub
-  llm_model: gpt-4o-mini
-  openai_base_url: null
-  openai_timeout_seconds: 30
+  default_ask_mode: agent
+  agent_max_steps: 4
+  decomposer_max_sub_questions: 3
+  retrieval_embedding_model: all-MiniLM-L6-v2
+  enable_faiss: true
+
+  llm:
+    active_provider: stub
+    providers:
+      stub:
+        provider: stub
+        model: gpt-4o-mini
+        api_key: null
+        base_url: null
+        timeout_seconds: 30
+      openai:
+        provider: openai
+        model: gpt-4o-mini
+        api_key: null
+        base_url: null
+        timeout_seconds: 30

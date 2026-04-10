@@ -58,6 +58,7 @@ class LLMClient:
     def generate(self, prompt: str, system_prompt: str | None = None) -> str | None:
         if not self.is_available():
             return None
+        chat_error: Exception | None = None
         messages: list[dict[str, Any]] = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
@@ -70,10 +71,33 @@ class LLMClient:
                 temperature=self.settings.temperature,
             )
             content = resp.choices[0].message.content if resp.choices else None
-            return _normalize_content(content)
+            normalized = _normalize_content(content)
+            if normalized:
+                return normalized
         except Exception as exc:  # pragma: no cover - external system path
-            logger.warning("OpenAI generation failed: %s", exc)
+            chat_error = exc
+
+        # Some gateways/models (for example GPT-5 series on router providers) expose
+        # only the Responses API route.
+        try:
+            response_input = _build_responses_input(prompt=prompt, system_prompt=system_prompt)
+            resp2 = self.client.responses.create(
+                model=self.settings.model,
+                input=response_input,
+            )
+            normalized2 = _normalize_responses_output(resp2)
+            if normalized2:
+                return normalized2
+        except Exception as exc2:  # pragma: no cover - external system path
+            if chat_error is not None:
+                logger.warning("OpenAI generation failed: chat=%s ; responses=%s", chat_error, exc2)
+            else:
+                logger.warning("OpenAI generation failed: responses=%s", exc2)
             return None
+
+        if chat_error is not None:
+            logger.warning("OpenAI generation failed: %s", chat_error)
+        return None
 
 
 def _normalize_content(content: Any) -> str | None:
@@ -94,3 +118,44 @@ def _normalize_content(content: Any) -> str | None:
         merged = "\n".join(p for p in parts if p.strip()).strip()
         return merged if merged else None
     return str(content).strip() or None
+
+
+def _build_responses_input(prompt: str, system_prompt: str | None) -> list[dict[str, Any]]:
+    items: list[dict[str, Any]] = []
+    if system_prompt:
+        items.append(
+            {
+                "role": "system",
+                "content": [{"type": "input_text", "text": system_prompt}],
+            }
+        )
+    items.append(
+        {
+            "role": "user",
+            "content": [{"type": "input_text", "text": prompt}],
+        }
+    )
+    return items
+
+
+def _normalize_responses_output(resp: Any) -> str | None:
+    output_text = getattr(resp, "output_text", None)
+    normalized = _normalize_content(output_text)
+    if normalized:
+        return normalized
+
+    output = getattr(resp, "output", None)
+    if not isinstance(output, list):
+        return None
+
+    parts: list[str] = []
+    for item in output:
+        content = getattr(item, "content", None)
+        if not isinstance(content, list):
+            continue
+        for c in content:
+            text = getattr(c, "text", None)
+            if isinstance(text, str) and text.strip():
+                parts.append(text.strip())
+    merged = "\n".join(parts).strip()
+    return merged or None

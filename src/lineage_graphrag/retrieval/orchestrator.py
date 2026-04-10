@@ -4,15 +4,28 @@ from typing import Any
 
 import networkx as nx
 
-from lineage_graphrag.retrieval.community_retriever import CommunityRetriever
+from lineage_graphrag.common.config import AppConfig
+from lineage_graphrag.retrieval.dual_faiss_retriever import DualPathFAISSRetriever
 from lineage_graphrag.retrieval.evidence_ranker import rank_chunk_ids
-from lineage_graphrag.retrieval.node_relation_retriever import NodeRelationRetriever
 
 
 class LineageRetriever:
-    def __init__(self) -> None:
-        self.path1 = NodeRelationRetriever()
-        self.path2 = CommunityRetriever()
+    def __init__(
+        self,
+        embedding_model: str = "all-MiniLM-L6-v2",
+        enable_faiss: bool = True,
+    ) -> None:
+        self.dual = DualPathFAISSRetriever(
+            embedding_model=embedding_model,
+            enable_faiss=enable_faiss,
+        )
+
+    @classmethod
+    def from_config(cls, cfg: AppConfig) -> "LineageRetriever":
+        return cls(
+            embedding_model=cfg.retrieval_embedding_model,
+            enable_faiss=cfg.enable_faiss,
+        )
 
     def retrieve(
         self,
@@ -22,11 +35,13 @@ class LineageRetriever:
         top_k: int = 8,
         involved_types: dict[str, list[str]] | None = None,
     ) -> dict[str, Any]:
-        path1_results = self.path1.retrieve(graph, chunks, question, top_k=top_k, involved_types=involved_types)
-        path2_results = self.path2.retrieve(graph, question, top_k=top_k)
+        _ = involved_types  # kept for compatibility; not required in lineage has/transitions scope
+        dual_result = self.dual.retrieve(graph=graph, chunks=chunks, question=question, top_k=top_k)
+        path1_results = dual_result["path1_results"]
+        path2_results = dual_result["path2_results"]
 
         triples: list[str] = []
-        all_chunk_ids: list[str] = list(path1_results.get("chunk_ids", []))
+        all_chunk_ids: list[str] = list(dual_result.get("chunk_ids", []))
 
         for u, r, v, _ in path1_results.get("one_hop_triples", []):
             triples.append(f"({u}, {r}, {v})")
@@ -34,8 +49,8 @@ class LineageRetriever:
         for u, r, v, _ in path2_results.get("scored_triples", []):
             triples.append(f"({u}, {r}, {v})")
 
-        dedup_triples = list(dict.fromkeys(triples))[:top_k]
-        ranked_chunk_ids = rank_chunk_ids(question, chunks, all_chunk_ids, top_k=top_k)
+        dedup_triples = list(dict.fromkeys(triples))[: max(top_k * 2, top_k)]
+        ranked_chunk_ids = rank_chunk_ids(question, chunks, all_chunk_ids, top_k=max(top_k * 2, top_k))
         chunk_contents = [chunks[cid] for cid in ranked_chunk_ids if cid in chunks]
 
         return {

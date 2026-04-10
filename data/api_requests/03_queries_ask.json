@@ -1,5 +1,7 @@
 {
   "graph_id": "video_demo",
   "question": "what is job_video_tag_enrich",
-  "top_k": 6
+  "top_k": 6,
+  "mode": "agent",
+  "max_steps": 4
 }

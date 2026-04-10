@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -19,7 +19,9 @@ class BuildRequest(BaseModel):
 class AskRequest(BaseModel):
     graph_id: str
     question: str
-    top_k: int = 8
+    top_k: int = Field(default=8, ge=1, le=50)
+    mode: Literal["agent", "noagent"] = "agent"
+    max_steps: int = Field(default=4, ge=1, le=10)
 
 
 class ImpactRequest(BaseModel):
@@ -33,4 +35,3 @@ class AskResponse(BaseModel):
     sub_questions: list[dict[str, str]] = Field(default_factory=list)
     involved_types: dict[str, list[str]] = Field(default_factory=dict)
     retrieval: dict[str, Any] = Field(default_factory=dict)
-
