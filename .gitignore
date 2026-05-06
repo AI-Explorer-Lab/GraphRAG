@@ -6,3 +6,5 @@ __pycache__/
 data/normalized/*.json
 
 plan-for-lineage-graphrag.md
+
+.DS_Store
