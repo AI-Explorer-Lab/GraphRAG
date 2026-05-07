@@ -8,3 +8,5 @@ data/normalized/*.json
 plan-for-lineage-graphrag.md
 
 .DS_Store
+
+lineage-graphrag-项目解读/
