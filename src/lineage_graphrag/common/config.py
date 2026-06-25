@@ -55,7 +55,7 @@ def _normalize_provider_base_url(active_provider: str, base_url: str | None) -> 
     return normalized
 
 
-@dataclass(slots=True)
+@dataclass
 class AppConfig:
     use_falkordb: bool = False
     falkordb_url: str = "redis://localhost:6379/0"

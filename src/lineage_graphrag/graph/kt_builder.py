@@ -103,7 +103,7 @@ class LineageKTBuilder:
             graph.add_edge(
                 transition.source,
                 transition.target,
-                relation="transitions",
+                relation=transition.relation,
                 relation_properties=rel_props,
                 source_id=transition.source,
                 target_id=transition.target,

@@ -7,6 +7,7 @@ from typing import Any
 import networkx as nx
 
 from lineage_graphrag.common.logging import get_logger
+from lineage_graphrag.domain.lineage_models import ALLOWED_ENTITY_RELATIONS
 
 logger = get_logger(__name__)
 
@@ -563,7 +564,7 @@ def _repre_graph_name(graph_id: str) -> str:
 
 def _partition_graph_for_falkordb(graph: nx.MultiDiGraph) -> dict[str, dict[str, Any]]:
     raw_labels = {"entity", "attribute"}
-    raw_relations = {"has_attribute", "has", "transitions"}
+    raw_relations = {"has_attribute", "has", *ALLOWED_ENTITY_RELATIONS}
     comm_relations = {"member_of", "has_keyword"}
     repre_relations = {"represents_community", "represented_by", "represents_entity"}
     comm_primary_labels = {"community", "keyword"}

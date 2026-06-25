@@ -5,6 +5,8 @@ from collections import Counter
 
 import networkx as nx
 
+from lineage_graphrag.domain.lineage_models import ALLOWED_ENTITY_RELATIONS
+
 
 class CommunityBuilder:
     """
@@ -71,7 +73,7 @@ class CommunityBuilder:
             if u not in entity_set or v not in entity_set:
                 continue
             relation = str(edge_data.get("relation", ""))
-            if relation not in {"transitions", "has"}:
+            if relation not in ALLOWED_ENTITY_RELATIONS and relation != "has":
                 continue
             if projected.has_edge(u, v):
                 projected[u][v]["weight"] += 1.0

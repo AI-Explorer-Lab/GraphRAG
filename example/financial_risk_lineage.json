@@ -1,0 +1,3283 @@
+{
+  "entities": {
+    "fr_root": {
+      "id": "fr_root",
+      "name": "financial_risk_control_root",
+      "properties": {
+        "type": "domain_root",
+        "domain": "risk_control",
+        "owner": "risk_arch",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "domain_root",
+        "tags": [
+          "financial_risk",
+          "graph_rag",
+          "demo"
+        ]
+      },
+      "description": "Root node for a cross-platform payment, merchant, and credit risk-control graph.",
+      "children": [
+        "dom_identity",
+        "dom_accounts",
+        "dom_devices",
+        "dom_merchants",
+        "dom_transactions",
+        "dom_data_sources",
+        "dom_features",
+        "dom_models",
+        "dom_decisions"
+      ]
+    },
+    "dom_identity": {
+      "id": "dom_identity",
+      "name": "Identity and KYC domain",
+      "properties": {
+        "type": "domain",
+        "domain": "identity",
+        "owner": "identity_team",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "domain",
+        "tags": [
+          "domain"
+        ]
+      },
+      "description": "KYC profiles, real-name checks, identity documents, and subject-level risk labels.",
+      "children": [
+        "usr_alice_001",
+        "usr_bob_002",
+        "usr_carla_003",
+        "usr_david_004",
+        "usr_ella_005",
+        "usr_felix_006",
+        "usr_grace_007",
+        "usr_hank_008",
+        "biz_orion_trade",
+        "biz_lotus_market"
+      ]
+    },
+    "dom_accounts": {
+      "id": "dom_accounts",
+      "name": "Account and wallet domain",
+      "properties": {
+        "type": "domain",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "domain",
+        "tags": [
+          "domain"
+        ]
+      },
+      "description": "Payment accounts, wallets, cards, settlement accounts, and credit accounts.",
+      "children": [
+        "acct_alice_main",
+        "acct_bob_main",
+        "acct_carla_main",
+        "acct_david_cross",
+        "acct_ella_prime",
+        "acct_felix_shadow",
+        "acct_grace_operator",
+        "acct_hank_receiver",
+        "acct_orion_settle",
+        "acct_lotus_settle",
+        "wallet_alice_bnpl",
+        "wallet_felix_fastloan",
+        "card_carla_debit",
+        "card_orion_corporate"
+      ]
+    },
+    "dom_devices": {
+      "id": "dom_devices",
+      "name": "Device and network domain",
+      "properties": {
+        "type": "domain",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "domain",
+        "tags": [
+          "domain"
+        ]
+      },
+      "description": "Device fingerprints, IP clusters, phone numbers, emails, and login channels.",
+      "children": [
+        "dev_iphone_alice",
+        "dev_android_bob",
+        "dev_emulator_01",
+        "dev_emulator_02",
+        "ip_proxy_pool_a",
+        "ip_oversea_node_17",
+        "phone_shared_138001",
+        "email_batch_kyc_01",
+        "addr_warehouse_east",
+        "cookie_cluster_mule",
+        "dev_pos_lotus",
+        "dev_gateway_orion"
+      ]
+    },
+    "dom_merchants": {
+      "id": "dom_merchants",
+      "name": "Merchant risk domain",
+      "properties": {
+        "type": "domain",
+        "domain": "merchants",
+        "owner": "merchant_risk",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "domain",
+        "tags": [
+          "domain"
+        ]
+      },
+      "description": "Merchants, stores, acquiring channels, and settlement relationships.",
+      "children": [
+        "mch_lotus_shop",
+        "mch_orion_imports",
+        "mch_blue_game_cards",
+        "mch_green_grocery",
+        "mch_silver_travel",
+        "mch_nova_crypto_otc",
+        "mch_fast_refund_store",
+        "mch_micro_lending_partner"
+      ]
+    },
+    "dom_transactions": {
+      "id": "dom_transactions",
+      "name": "Fund flow domain",
+      "properties": {
+        "type": "domain",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "domain",
+        "tags": [
+          "domain"
+        ]
+      },
+      "description": "Recharge, transfer, withdrawal, refund, purchase, loan, and repayment events.",
+      "children": [
+        "txn_recharge_alice_001",
+        "txn_purchase_lotus_002",
+        "txn_refund_carla_003",
+        "txn_transfer_felix_hank_004",
+        "txn_split_orion_005",
+        "txn_cross_border_david_006",
+        "txn_game_card_carla_007",
+        "txn_crypto_otc_orion_008",
+        "txn_loan_felix_009",
+        "txn_repay_felix_010",
+        "txn_chargeback_carla_011",
+        "txn_micro_transfer_ring_012",
+        "txn_merchant_payout_lotus_013",
+        "txn_audit_sync_014"
+      ]
+    },
+    "dom_data_sources": {
+      "id": "dom_data_sources",
+      "name": "External and internal data source domain",
+      "properties": {
+        "type": "domain",
+        "domain": "data_sources",
+        "owner": "data_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "domain",
+        "tags": [
+          "domain"
+        ]
+      },
+      "description": "KYC, blacklists, bank, credit bureau, and investigation data sources.",
+      "children": [
+        "src_kyc_registry",
+        "src_bank_card_bin",
+        "src_credit_bureau",
+        "src_device_fingerprint",
+        "src_blacklist_exchange",
+        "src_transaction_stream",
+        "src_merchant_acquiring",
+        "src_case_investigation"
+      ]
+    },
+    "dom_features": {
+      "id": "dom_features",
+      "name": "Feature engineering domain",
+      "properties": {
+        "type": "domain",
+        "domain": "features",
+        "owner": "feature_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "domain",
+        "tags": [
+          "domain"
+        ]
+      },
+      "description": "User, merchant, device, transaction, and network features.",
+      "children": [
+        "feat_identity_consistency",
+        "feat_device_reuse_degree",
+        "feat_ip_geo_velocity",
+        "feat_card_binding_entropy",
+        "feat_fund_flow_cycle",
+        "feat_merchant_refund_ratio",
+        "feat_credit_overdue_signal",
+        "feat_blacklist_overlap",
+        "feat_mule_cluster_score",
+        "feat_sar_narrative_signal"
+      ]
+    },
+    "dom_models": {
+      "id": "dom_models",
+      "name": "Risk model and rule domain",
+      "properties": {
+        "type": "domain",
+        "domain": "models",
+        "owner": "risk_modeling",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "domain",
+        "tags": [
+          "domain"
+        ]
+      },
+      "description": "Fraud, AML, credit, merchant, device, and graph risk models.",
+      "children": [
+        "mdl_realtime_fraud",
+        "mdl_aml_graph_ring",
+        "mdl_credit_limit",
+        "mdl_merchant_abuse",
+        "mdl_device_farm",
+        "rule_chargeback_spike",
+        "rule_velocity_10min",
+        "rule_shared_phone_kyc"
+      ]
+    },
+    "dom_decisions": {
+      "id": "dom_decisions",
+      "name": "Decision and case management domain",
+      "properties": {
+        "type": "domain",
+        "domain": "decisions",
+        "owner": "risk_ops",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "domain",
+        "tags": [
+          "domain"
+        ]
+      },
+      "description": "Real-time decisions, manual review, account freeze, SAR, and audit cases.",
+      "children": [
+        "dec_realtime_block",
+        "dec_manual_review",
+        "act_account_freeze",
+        "act_limit_reduce",
+        "case_sar_report",
+        "case_merchant_audit"
+      ]
+    },
+    "usr_alice_001": {
+      "id": "usr_alice_001",
+      "name": "Alice Chen",
+      "properties": {
+        "type": "person",
+        "domain": "identity",
+        "owner": "identity_team",
+        "risk_level": "low",
+        "region": "CN",
+        "entity_class": "salary_user",
+        "tags": [
+          "subject",
+          "salary_user"
+        ]
+      },
+      "description": "Verified salaried user with stable repayment history.",
+      "children": []
+    },
+    "usr_bob_002": {
+      "id": "usr_bob_002",
+      "name": "Bob Li",
+      "properties": {
+        "type": "person",
+        "domain": "identity",
+        "owner": "identity_team",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "new_user",
+        "tags": [
+          "subject",
+          "new_user"
+        ]
+      },
+      "description": "Recently onboarded user with fast wallet activation.",
+      "children": []
+    },
+    "usr_carla_003": {
+      "id": "usr_carla_003",
+      "name": "Carla Wang",
+      "properties": {
+        "type": "person",
+        "domain": "identity",
+        "owner": "identity_team",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "chargeback_user",
+        "tags": [
+          "subject",
+          "chargeback_user"
+        ]
+      },
+      "description": "User linked to multiple refund and chargeback events.",
+      "children": []
+    },
+    "usr_david_004": {
+      "id": "usr_david_004",
+      "name": "David Zhao",
+      "properties": {
+        "type": "person",
+        "domain": "identity",
+        "owner": "identity_team",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "cross_border_user",
+        "tags": [
+          "subject",
+          "cross_border_user"
+        ]
+      },
+      "description": "Frequent cross-border transaction initiator.",
+      "children": []
+    },
+    "usr_ella_005": {
+      "id": "usr_ella_005",
+      "name": "Ella Sun",
+      "properties": {
+        "type": "person",
+        "domain": "identity",
+        "owner": "identity_team",
+        "risk_level": "low",
+        "region": "CN",
+        "entity_class": "prime_user",
+        "tags": [
+          "subject",
+          "prime_user"
+        ]
+      },
+      "description": "Long-tenure user with clean device and payment history.",
+      "children": []
+    },
+    "usr_felix_006": {
+      "id": "usr_felix_006",
+      "name": "Felix Gao",
+      "properties": {
+        "type": "person",
+        "domain": "identity",
+        "owner": "identity_team",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "synthetic_identity",
+        "tags": [
+          "subject",
+          "synthetic_identity"
+        ]
+      },
+      "description": "User with identity attributes overlapping with several suspicious accounts.",
+      "children": []
+    },
+    "usr_grace_007": {
+      "id": "usr_grace_007",
+      "name": "Grace Zhou",
+      "properties": {
+        "type": "person",
+        "domain": "identity",
+        "owner": "identity_team",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "merchant_operator",
+        "tags": [
+          "subject",
+          "merchant_operator"
+        ]
+      },
+      "description": "Individual operator associated with several small merchants.",
+      "children": []
+    },
+    "usr_hank_008": {
+      "id": "usr_hank_008",
+      "name": "Hank Xu",
+      "properties": {
+        "type": "person",
+        "domain": "identity",
+        "owner": "identity_team",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "mule_suspect",
+        "tags": [
+          "subject",
+          "mule_suspect"
+        ]
+      },
+      "description": "Potential money mule receiving fragmented incoming transfers.",
+      "children": []
+    },
+    "biz_orion_trade": {
+      "id": "biz_orion_trade",
+      "name": "Orion Trading Ltd",
+      "properties": {
+        "type": "business_subject",
+        "domain": "identity",
+        "owner": "identity_team",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "shell_company",
+        "tags": [
+          "subject",
+          "shell_company"
+        ]
+      },
+      "description": "Business subject suspected of circular trade and rapid settlement.",
+      "children": []
+    },
+    "biz_lotus_market": {
+      "id": "biz_lotus_market",
+      "name": "Lotus Digital Market",
+      "properties": {
+        "type": "business_subject",
+        "domain": "identity",
+        "owner": "identity_team",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "marketplace_seller",
+        "tags": [
+          "subject",
+          "marketplace_seller"
+        ]
+      },
+      "description": "Small marketplace operator with rising dispute rate.",
+      "children": []
+    },
+    "acct_alice_main": {
+      "id": "acct_alice_main",
+      "name": "Alice main payment account",
+      "properties": {
+        "type": "payment_account",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "low",
+        "region": "CN",
+        "entity_class": "payment_account",
+        "tags": [
+          "account",
+          "payment_account"
+        ]
+      },
+      "description": "Alice main payment account used in payment and risk-control flows.",
+      "children": []
+    },
+    "acct_bob_main": {
+      "id": "acct_bob_main",
+      "name": "Bob main payment account",
+      "properties": {
+        "type": "payment_account",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "payment_account",
+        "tags": [
+          "account",
+          "payment_account"
+        ]
+      },
+      "description": "Bob main payment account used in payment and risk-control flows.",
+      "children": []
+    },
+    "acct_carla_main": {
+      "id": "acct_carla_main",
+      "name": "Carla main payment account",
+      "properties": {
+        "type": "payment_account",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "payment_account",
+        "tags": [
+          "account",
+          "payment_account"
+        ]
+      },
+      "description": "Carla main payment account used in payment and risk-control flows.",
+      "children": []
+    },
+    "acct_david_cross": {
+      "id": "acct_david_cross",
+      "name": "David cross-border account",
+      "properties": {
+        "type": "payment_account",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "payment_account",
+        "tags": [
+          "account",
+          "payment_account"
+        ]
+      },
+      "description": "David cross-border account used in payment and risk-control flows.",
+      "children": []
+    },
+    "acct_ella_prime": {
+      "id": "acct_ella_prime",
+      "name": "Ella prime payment account",
+      "properties": {
+        "type": "payment_account",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "low",
+        "region": "CN",
+        "entity_class": "payment_account",
+        "tags": [
+          "account",
+          "payment_account"
+        ]
+      },
+      "description": "Ella prime payment account used in payment and risk-control flows.",
+      "children": []
+    },
+    "acct_felix_shadow": {
+      "id": "acct_felix_shadow",
+      "name": "Felix shadow account",
+      "properties": {
+        "type": "payment_account",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "payment_account",
+        "tags": [
+          "account",
+          "payment_account"
+        ]
+      },
+      "description": "Felix shadow account used in payment and risk-control flows.",
+      "children": []
+    },
+    "acct_grace_operator": {
+      "id": "acct_grace_operator",
+      "name": "Grace operator account",
+      "properties": {
+        "type": "payment_account",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "payment_account",
+        "tags": [
+          "account",
+          "payment_account"
+        ]
+      },
+      "description": "Grace operator account used in payment and risk-control flows.",
+      "children": []
+    },
+    "acct_hank_receiver": {
+      "id": "acct_hank_receiver",
+      "name": "Hank receiver account",
+      "properties": {
+        "type": "payment_account",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "payment_account",
+        "tags": [
+          "account",
+          "payment_account"
+        ]
+      },
+      "description": "Hank receiver account used in payment and risk-control flows.",
+      "children": []
+    },
+    "acct_orion_settle": {
+      "id": "acct_orion_settle",
+      "name": "Orion settlement account",
+      "properties": {
+        "type": "settlement_account",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "settlement_account",
+        "tags": [
+          "account",
+          "settlement_account"
+        ]
+      },
+      "description": "Orion settlement account used in payment and risk-control flows.",
+      "children": []
+    },
+    "acct_lotus_settle": {
+      "id": "acct_lotus_settle",
+      "name": "Lotus settlement account",
+      "properties": {
+        "type": "settlement_account",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "settlement_account",
+        "tags": [
+          "account",
+          "settlement_account"
+        ]
+      },
+      "description": "Lotus settlement account used in payment and risk-control flows.",
+      "children": []
+    },
+    "wallet_alice_bnpl": {
+      "id": "wallet_alice_bnpl",
+      "name": "Alice BNPL wallet",
+      "properties": {
+        "type": "credit_wallet",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "low",
+        "region": "CN",
+        "entity_class": "credit_wallet",
+        "tags": [
+          "account",
+          "credit_wallet"
+        ]
+      },
+      "description": "Alice BNPL wallet used in payment and risk-control flows.",
+      "children": []
+    },
+    "wallet_felix_fastloan": {
+      "id": "wallet_felix_fastloan",
+      "name": "Felix fast loan wallet",
+      "properties": {
+        "type": "credit_wallet",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "credit_wallet",
+        "tags": [
+          "account",
+          "credit_wallet"
+        ]
+      },
+      "description": "Felix fast loan wallet used in payment and risk-control flows.",
+      "children": []
+    },
+    "card_carla_debit": {
+      "id": "card_carla_debit",
+      "name": "Carla debit card",
+      "properties": {
+        "type": "bank_card",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "bank_card",
+        "tags": [
+          "account",
+          "bank_card"
+        ]
+      },
+      "description": "Carla debit card used in payment and risk-control flows.",
+      "children": []
+    },
+    "card_orion_corporate": {
+      "id": "card_orion_corporate",
+      "name": "Orion corporate card",
+      "properties": {
+        "type": "bank_card",
+        "domain": "accounts",
+        "owner": "account_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "bank_card",
+        "tags": [
+          "account",
+          "bank_card"
+        ]
+      },
+      "description": "Orion corporate card used in payment and risk-control flows.",
+      "children": []
+    },
+    "dev_iphone_alice": {
+      "id": "dev_iphone_alice",
+      "name": "Alice iPhone device",
+      "properties": {
+        "type": "device",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "low",
+        "region": "CN",
+        "entity_class": "device",
+        "tags": [
+          "device_network",
+          "device"
+        ]
+      },
+      "description": "Alice iPhone device observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "dev_android_bob": {
+      "id": "dev_android_bob",
+      "name": "Bob Android device",
+      "properties": {
+        "type": "device",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "device",
+        "tags": [
+          "device_network",
+          "device"
+        ]
+      },
+      "description": "Bob Android device observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "dev_emulator_01": {
+      "id": "dev_emulator_01",
+      "name": "Android emulator cluster 01",
+      "properties": {
+        "type": "device_cluster",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "device_cluster",
+        "tags": [
+          "device_network",
+          "device_cluster"
+        ]
+      },
+      "description": "Android emulator cluster 01 observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "dev_emulator_02": {
+      "id": "dev_emulator_02",
+      "name": "Android emulator cluster 02",
+      "properties": {
+        "type": "device_cluster",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "device_cluster",
+        "tags": [
+          "device_network",
+          "device_cluster"
+        ]
+      },
+      "description": "Android emulator cluster 02 observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "ip_proxy_pool_a": {
+      "id": "ip_proxy_pool_a",
+      "name": "Proxy IP pool A",
+      "properties": {
+        "type": "ip_cluster",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "ip_cluster",
+        "tags": [
+          "device_network",
+          "ip_cluster"
+        ]
+      },
+      "description": "Proxy IP pool A observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "ip_oversea_node_17": {
+      "id": "ip_oversea_node_17",
+      "name": "Overseas IP node 17",
+      "properties": {
+        "type": "ip_address",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "ip_address",
+        "tags": [
+          "device_network",
+          "ip_address"
+        ]
+      },
+      "description": "Overseas IP node 17 observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "phone_shared_138001": {
+      "id": "phone_shared_138001",
+      "name": "Shared phone number 138001",
+      "properties": {
+        "type": "phone",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "phone",
+        "tags": [
+          "device_network",
+          "phone"
+        ]
+      },
+      "description": "Shared phone number 138001 observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "email_batch_kyc_01": {
+      "id": "email_batch_kyc_01",
+      "name": "Batch KYC email group 01",
+      "properties": {
+        "type": "email_cluster",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "email_cluster",
+        "tags": [
+          "device_network",
+          "email_cluster"
+        ]
+      },
+      "description": "Batch KYC email group 01 observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "addr_warehouse_east": {
+      "id": "addr_warehouse_east",
+      "name": "East warehouse address",
+      "properties": {
+        "type": "address",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "address",
+        "tags": [
+          "device_network",
+          "address"
+        ]
+      },
+      "description": "East warehouse address observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "cookie_cluster_mule": {
+      "id": "cookie_cluster_mule",
+      "name": "Mule cookie cluster",
+      "properties": {
+        "type": "cookie_cluster",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "cookie_cluster",
+        "tags": [
+          "device_network",
+          "cookie_cluster"
+        ]
+      },
+      "description": "Mule cookie cluster observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "dev_pos_lotus": {
+      "id": "dev_pos_lotus",
+      "name": "Lotus POS terminal",
+      "properties": {
+        "type": "pos_terminal",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "pos_terminal",
+        "tags": [
+          "device_network",
+          "pos_terminal"
+        ]
+      },
+      "description": "Lotus POS terminal observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "dev_gateway_orion": {
+      "id": "dev_gateway_orion",
+      "name": "Orion payment gateway device",
+      "properties": {
+        "type": "gateway",
+        "domain": "devices",
+        "owner": "anti_fraud_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "gateway",
+        "tags": [
+          "device_network",
+          "gateway"
+        ]
+      },
+      "description": "Orion payment gateway device observed in login, transaction, or merchant-acquiring telemetry.",
+      "children": []
+    },
+    "mch_lotus_shop": {
+      "id": "mch_lotus_shop",
+      "name": "Lotus Shop",
+      "properties": {
+        "type": "online_merchant",
+        "domain": "merchants",
+        "owner": "merchant_risk",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "online_merchant",
+        "tags": [
+          "merchant",
+          "online_merchant"
+        ]
+      },
+      "description": "Lotus Shop participates in acquiring, settlement, and merchant risk monitoring.",
+      "children": []
+    },
+    "mch_orion_imports": {
+      "id": "mch_orion_imports",
+      "name": "Orion Imports",
+      "properties": {
+        "type": "cross_border_merchant",
+        "domain": "merchants",
+        "owner": "merchant_risk",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "cross_border_merchant",
+        "tags": [
+          "merchant",
+          "cross_border_merchant"
+        ]
+      },
+      "description": "Orion Imports participates in acquiring, settlement, and merchant risk monitoring.",
+      "children": []
+    },
+    "mch_blue_game_cards": {
+      "id": "mch_blue_game_cards",
+      "name": "Blue Game Cards",
+      "properties": {
+        "type": "digital_goods_merchant",
+        "domain": "merchants",
+        "owner": "merchant_risk",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "digital_goods_merchant",
+        "tags": [
+          "merchant",
+          "digital_goods_merchant"
+        ]
+      },
+      "description": "Blue Game Cards participates in acquiring, settlement, and merchant risk monitoring.",
+      "children": []
+    },
+    "mch_green_grocery": {
+      "id": "mch_green_grocery",
+      "name": "Green Grocery",
+      "properties": {
+        "type": "offline_merchant",
+        "domain": "merchants",
+        "owner": "merchant_risk",
+        "risk_level": "low",
+        "region": "CN",
+        "entity_class": "offline_merchant",
+        "tags": [
+          "merchant",
+          "offline_merchant"
+        ]
+      },
+      "description": "Green Grocery participates in acquiring, settlement, and merchant risk monitoring.",
+      "children": []
+    },
+    "mch_silver_travel": {
+      "id": "mch_silver_travel",
+      "name": "Silver Travel",
+      "properties": {
+        "type": "travel_merchant",
+        "domain": "merchants",
+        "owner": "merchant_risk",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "travel_merchant",
+        "tags": [
+          "merchant",
+          "travel_merchant"
+        ]
+      },
+      "description": "Silver Travel participates in acquiring, settlement, and merchant risk monitoring.",
+      "children": []
+    },
+    "mch_nova_crypto_otc": {
+      "id": "mch_nova_crypto_otc",
+      "name": "Nova Crypto OTC",
+      "properties": {
+        "type": "virtual_asset_merchant",
+        "domain": "merchants",
+        "owner": "merchant_risk",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "virtual_asset_merchant",
+        "tags": [
+          "merchant",
+          "virtual_asset_merchant"
+        ]
+      },
+      "description": "Nova Crypto OTC participates in acquiring, settlement, and merchant risk monitoring.",
+      "children": []
+    },
+    "mch_fast_refund_store": {
+      "id": "mch_fast_refund_store",
+      "name": "Fast Refund Store",
+      "properties": {
+        "type": "refund_risk_merchant",
+        "domain": "merchants",
+        "owner": "merchant_risk",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "refund_risk_merchant",
+        "tags": [
+          "merchant",
+          "refund_risk_merchant"
+        ]
+      },
+      "description": "Fast Refund Store participates in acquiring, settlement, and merchant risk monitoring.",
+      "children": []
+    },
+    "mch_micro_lending_partner": {
+      "id": "mch_micro_lending_partner",
+      "name": "Micro Lending Partner",
+      "properties": {
+        "type": "credit_partner",
+        "domain": "merchants",
+        "owner": "merchant_risk",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "credit_partner",
+        "tags": [
+          "merchant",
+          "credit_partner"
+        ]
+      },
+      "description": "Micro Lending Partner participates in acquiring, settlement, and merchant risk monitoring.",
+      "children": []
+    },
+    "txn_recharge_alice_001": {
+      "id": "txn_recharge_alice_001",
+      "name": "Alice bank recharge 001",
+      "properties": {
+        "type": "recharge",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "low",
+        "region": "CN",
+        "entity_class": "recharge",
+        "tags": [
+          "transaction",
+          "recharge"
+        ]
+      },
+      "description": "Alice bank recharge 001 is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_purchase_lotus_002": {
+      "id": "txn_purchase_lotus_002",
+      "name": "Alice purchase at Lotus",
+      "properties": {
+        "type": "purchase",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "low",
+        "region": "CN",
+        "entity_class": "purchase",
+        "tags": [
+          "transaction",
+          "purchase"
+        ]
+      },
+      "description": "Alice purchase at Lotus is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_refund_carla_003": {
+      "id": "txn_refund_carla_003",
+      "name": "Carla high-value refund",
+      "properties": {
+        "type": "refund",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "refund",
+        "tags": [
+          "transaction",
+          "refund"
+        ]
+      },
+      "description": "Carla high-value refund is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_transfer_felix_hank_004": {
+      "id": "txn_transfer_felix_hank_004",
+      "name": "Felix transfer to Hank",
+      "properties": {
+        "type": "p2p_transfer",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "p2p_transfer",
+        "tags": [
+          "transaction",
+          "p2p_transfer"
+        ]
+      },
+      "description": "Felix transfer to Hank is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_split_orion_005": {
+      "id": "txn_split_orion_005",
+      "name": "Orion split settlement batch",
+      "properties": {
+        "type": "settlement",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "settlement",
+        "tags": [
+          "transaction",
+          "settlement"
+        ]
+      },
+      "description": "Orion split settlement batch is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_cross_border_david_006": {
+      "id": "txn_cross_border_david_006",
+      "name": "David cross-border remittance",
+      "properties": {
+        "type": "cross_border_transfer",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "cross_border_transfer",
+        "tags": [
+          "transaction",
+          "cross_border_transfer"
+        ]
+      },
+      "description": "David cross-border remittance is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_game_card_carla_007": {
+      "id": "txn_game_card_carla_007",
+      "name": "Carla game card purchase",
+      "properties": {
+        "type": "digital_goods_purchase",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "digital_goods_purchase",
+        "tags": [
+          "transaction",
+          "digital_goods_purchase"
+        ]
+      },
+      "description": "Carla game card purchase is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_crypto_otc_orion_008": {
+      "id": "txn_crypto_otc_orion_008",
+      "name": "Orion crypto OTC payment",
+      "properties": {
+        "type": "virtual_asset_payment",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "virtual_asset_payment",
+        "tags": [
+          "transaction",
+          "virtual_asset_payment"
+        ]
+      },
+      "description": "Orion crypto OTC payment is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_loan_felix_009": {
+      "id": "txn_loan_felix_009",
+      "name": "Felix fast loan disbursement",
+      "properties": {
+        "type": "loan_disbursement",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "loan_disbursement",
+        "tags": [
+          "transaction",
+          "loan_disbursement"
+        ]
+      },
+      "description": "Felix fast loan disbursement is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_repay_felix_010": {
+      "id": "txn_repay_felix_010",
+      "name": "Felix suspicious repayment",
+      "properties": {
+        "type": "loan_repayment",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "loan_repayment",
+        "tags": [
+          "transaction",
+          "loan_repayment"
+        ]
+      },
+      "description": "Felix suspicious repayment is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_chargeback_carla_011": {
+      "id": "txn_chargeback_carla_011",
+      "name": "Carla chargeback claim",
+      "properties": {
+        "type": "chargeback",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "chargeback",
+        "tags": [
+          "transaction",
+          "chargeback"
+        ]
+      },
+      "description": "Carla chargeback claim is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_micro_transfer_ring_012": {
+      "id": "txn_micro_transfer_ring_012",
+      "name": "Micro transfer ring batch",
+      "properties": {
+        "type": "micro_transfer_batch",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "micro_transfer_batch",
+        "tags": [
+          "transaction",
+          "micro_transfer_batch"
+        ]
+      },
+      "description": "Micro transfer ring batch is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_merchant_payout_lotus_013": {
+      "id": "txn_merchant_payout_lotus_013",
+      "name": "Lotus merchant payout",
+      "properties": {
+        "type": "merchant_payout",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "merchant_payout",
+        "tags": [
+          "transaction",
+          "merchant_payout"
+        ]
+      },
+      "description": "Lotus merchant payout is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "txn_audit_sync_014": {
+      "id": "txn_audit_sync_014",
+      "name": "Audit event sync batch",
+      "properties": {
+        "type": "audit_sync",
+        "domain": "transactions",
+        "owner": "payment_core",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "audit_sync",
+        "tags": [
+          "transaction",
+          "audit_sync"
+        ]
+      },
+      "description": "Audit event sync batch is a fund-flow event used by anti-fraud, AML, and credit monitoring.",
+      "children": []
+    },
+    "src_kyc_registry": {
+      "id": "src_kyc_registry",
+      "name": "KYC registry source",
+      "properties": {
+        "type": "data_source",
+        "domain": "data_sources",
+        "owner": "identity_team",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "data_source",
+        "tags": [
+          "data_source"
+        ]
+      },
+      "description": "Official identity verification and OCR extraction records.",
+      "children": []
+    },
+    "src_bank_card_bin": {
+      "id": "src_bank_card_bin",
+      "name": "Bank card BIN source",
+      "properties": {
+        "type": "data_source",
+        "domain": "data_sources",
+        "owner": "bank_connect",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "data_source",
+        "tags": [
+          "data_source"
+        ]
+      },
+      "description": "Card issuer, region, and card product metadata.",
+      "children": []
+    },
+    "src_credit_bureau": {
+      "id": "src_credit_bureau",
+      "name": "Credit bureau source",
+      "properties": {
+        "type": "external_data",
+        "domain": "data_sources",
+        "owner": "credit_data",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "external_data",
+        "tags": [
+          "data_source"
+        ]
+      },
+      "description": "External credit score, overdue, and inquiry records.",
+      "children": []
+    },
+    "src_device_fingerprint": {
+      "id": "src_device_fingerprint",
+      "name": "Device fingerprint source",
+      "properties": {
+        "type": "telemetry",
+        "domain": "data_sources",
+        "owner": "anti_fraud_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "telemetry",
+        "tags": [
+          "data_source"
+        ]
+      },
+      "description": "Device graph, emulator signature, and cookie linkage signals.",
+      "children": []
+    },
+    "src_blacklist_exchange": {
+      "id": "src_blacklist_exchange",
+      "name": "Blacklist exchange source",
+      "properties": {
+        "type": "external_data",
+        "domain": "data_sources",
+        "owner": "risk_ops",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "external_data",
+        "tags": [
+          "data_source"
+        ]
+      },
+      "description": "Shared fraud, mule, and compromised-account lists.",
+      "children": []
+    },
+    "src_transaction_stream": {
+      "id": "src_transaction_stream",
+      "name": "Realtime transaction stream",
+      "properties": {
+        "type": "event_stream",
+        "domain": "data_sources",
+        "owner": "payment_core",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "event_stream",
+        "tags": [
+          "data_source"
+        ]
+      },
+      "description": "Payment event stream with amount, counterparty, channel, and geo features.",
+      "children": []
+    },
+    "src_merchant_acquiring": {
+      "id": "src_merchant_acquiring",
+      "name": "Merchant acquiring source",
+      "properties": {
+        "type": "data_source",
+        "domain": "data_sources",
+        "owner": "merchant_risk",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "data_source",
+        "tags": [
+          "data_source"
+        ]
+      },
+      "description": "MCC, terminal, settlement, dispute, and acquiring route records.",
+      "children": []
+    },
+    "src_case_investigation": {
+      "id": "src_case_investigation",
+      "name": "Case investigation source",
+      "properties": {
+        "type": "case_system",
+        "domain": "data_sources",
+        "owner": "risk_ops",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "case_system",
+        "tags": [
+          "data_source"
+        ]
+      },
+      "description": "Manual review outcomes, investigator notes, and SAR history.",
+      "children": []
+    },
+    "feat_identity_consistency": {
+      "id": "feat_identity_consistency",
+      "name": "Identity consistency feature",
+      "properties": {
+        "type": "identity_feature",
+        "domain": "features",
+        "owner": "feature_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "identity_feature",
+        "tags": [
+          "feature",
+          "identity_feature"
+        ]
+      },
+      "description": "Identity consistency feature used by risk models, rules, and investigator workflows.",
+      "children": []
+    },
+    "feat_device_reuse_degree": {
+      "id": "feat_device_reuse_degree",
+      "name": "Device reuse degree feature",
+      "properties": {
+        "type": "device_feature",
+        "domain": "features",
+        "owner": "feature_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "device_feature",
+        "tags": [
+          "feature",
+          "device_feature"
+        ]
+      },
+      "description": "Device reuse degree feature used by risk models, rules, and investigator workflows.",
+      "children": []
+    },
+    "feat_ip_geo_velocity": {
+      "id": "feat_ip_geo_velocity",
+      "name": "IP geo velocity feature",
+      "properties": {
+        "type": "network_feature",
+        "domain": "features",
+        "owner": "feature_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "network_feature",
+        "tags": [
+          "feature",
+          "network_feature"
+        ]
+      },
+      "description": "IP geo velocity feature used by risk models, rules, and investigator workflows.",
+      "children": []
+    },
+    "feat_card_binding_entropy": {
+      "id": "feat_card_binding_entropy",
+      "name": "Card binding entropy feature",
+      "properties": {
+        "type": "account_feature",
+        "domain": "features",
+        "owner": "feature_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "account_feature",
+        "tags": [
+          "feature",
+          "account_feature"
+        ]
+      },
+      "description": "Card binding entropy feature used by risk models, rules, and investigator workflows.",
+      "children": []
+    },
+    "feat_fund_flow_cycle": {
+      "id": "feat_fund_flow_cycle",
+      "name": "Fund-flow cycle feature",
+      "properties": {
+        "type": "graph_feature",
+        "domain": "features",
+        "owner": "feature_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "graph_feature",
+        "tags": [
+          "feature",
+          "graph_feature"
+        ]
+      },
+      "description": "Fund-flow cycle feature used by risk models, rules, and investigator workflows.",
+      "children": []
+    },
+    "feat_merchant_refund_ratio": {
+      "id": "feat_merchant_refund_ratio",
+      "name": "Merchant refund ratio feature",
+      "properties": {
+        "type": "merchant_feature",
+        "domain": "features",
+        "owner": "feature_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "merchant_feature",
+        "tags": [
+          "feature",
+          "merchant_feature"
+        ]
+      },
+      "description": "Merchant refund ratio feature used by risk models, rules, and investigator workflows.",
+      "children": []
+    },
+    "feat_credit_overdue_signal": {
+      "id": "feat_credit_overdue_signal",
+      "name": "Credit overdue signal feature",
+      "properties": {
+        "type": "credit_feature",
+        "domain": "features",
+        "owner": "feature_platform",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "credit_feature",
+        "tags": [
+          "feature",
+          "credit_feature"
+        ]
+      },
+      "description": "Credit overdue signal feature used by risk models, rules, and investigator workflows.",
+      "children": []
+    },
+    "feat_blacklist_overlap": {
+      "id": "feat_blacklist_overlap",
+      "name": "Blacklist overlap feature",
+      "properties": {
+        "type": "risk_feature",
+        "domain": "features",
+        "owner": "feature_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "risk_feature",
+        "tags": [
+          "feature",
+          "risk_feature"
+        ]
+      },
+      "description": "Blacklist overlap feature used by risk models, rules, and investigator workflows.",
+      "children": []
+    },
+    "feat_mule_cluster_score": {
+      "id": "feat_mule_cluster_score",
+      "name": "Mule cluster score feature",
+      "properties": {
+        "type": "graph_feature",
+        "domain": "features",
+        "owner": "feature_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "graph_feature",
+        "tags": [
+          "feature",
+          "graph_feature"
+        ]
+      },
+      "description": "Mule cluster score feature used by risk models, rules, and investigator workflows.",
+      "children": []
+    },
+    "feat_sar_narrative_signal": {
+      "id": "feat_sar_narrative_signal",
+      "name": "SAR narrative signal feature",
+      "properties": {
+        "type": "case_feature",
+        "domain": "features",
+        "owner": "feature_platform",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "case_feature",
+        "tags": [
+          "feature",
+          "case_feature"
+        ]
+      },
+      "description": "SAR narrative signal feature used by risk models, rules, and investigator workflows.",
+      "children": []
+    },
+    "mdl_realtime_fraud": {
+      "id": "mdl_realtime_fraud",
+      "name": "Realtime payment fraud model",
+      "properties": {
+        "type": "model",
+        "domain": "models",
+        "owner": "risk_modeling",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "model",
+        "tags": [
+          "model_rule",
+          "model"
+        ]
+      },
+      "description": "Realtime payment fraud model evaluates entities or events and emits scores, alerts, or decisions.",
+      "children": []
+    },
+    "mdl_aml_graph_ring": {
+      "id": "mdl_aml_graph_ring",
+      "name": "AML graph ring model",
+      "properties": {
+        "type": "model",
+        "domain": "models",
+        "owner": "risk_modeling",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "model",
+        "tags": [
+          "model_rule",
+          "model"
+        ]
+      },
+      "description": "AML graph ring model evaluates entities or events and emits scores, alerts, or decisions.",
+      "children": []
+    },
+    "mdl_credit_limit": {
+      "id": "mdl_credit_limit",
+      "name": "Credit limit model",
+      "properties": {
+        "type": "model",
+        "domain": "models",
+        "owner": "risk_modeling",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "model",
+        "tags": [
+          "model_rule",
+          "model"
+        ]
+      },
+      "description": "Credit limit model evaluates entities or events and emits scores, alerts, or decisions.",
+      "children": []
+    },
+    "mdl_merchant_abuse": {
+      "id": "mdl_merchant_abuse",
+      "name": "Merchant abuse model",
+      "properties": {
+        "type": "model",
+        "domain": "models",
+        "owner": "risk_modeling",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "model",
+        "tags": [
+          "model_rule",
+          "model"
+        ]
+      },
+      "description": "Merchant abuse model evaluates entities or events and emits scores, alerts, or decisions.",
+      "children": []
+    },
+    "mdl_device_farm": {
+      "id": "mdl_device_farm",
+      "name": "Device farm model",
+      "properties": {
+        "type": "model",
+        "domain": "models",
+        "owner": "risk_modeling",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "model",
+        "tags": [
+          "model_rule",
+          "model"
+        ]
+      },
+      "description": "Device farm model evaluates entities or events and emits scores, alerts, or decisions.",
+      "children": []
+    },
+    "rule_chargeback_spike": {
+      "id": "rule_chargeback_spike",
+      "name": "Chargeback spike rule",
+      "properties": {
+        "type": "rule",
+        "domain": "models",
+        "owner": "risk_modeling",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "rule",
+        "tags": [
+          "model_rule",
+          "rule"
+        ]
+      },
+      "description": "Chargeback spike rule evaluates entities or events and emits scores, alerts, or decisions.",
+      "children": []
+    },
+    "rule_velocity_10min": {
+      "id": "rule_velocity_10min",
+      "name": "10-minute velocity rule",
+      "properties": {
+        "type": "rule",
+        "domain": "models",
+        "owner": "risk_modeling",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "rule",
+        "tags": [
+          "model_rule",
+          "rule"
+        ]
+      },
+      "description": "10-minute velocity rule evaluates entities or events and emits scores, alerts, or decisions.",
+      "children": []
+    },
+    "rule_shared_phone_kyc": {
+      "id": "rule_shared_phone_kyc",
+      "name": "Shared phone KYC rule",
+      "properties": {
+        "type": "rule",
+        "domain": "models",
+        "owner": "risk_modeling",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "rule",
+        "tags": [
+          "model_rule",
+          "rule"
+        ]
+      },
+      "description": "Shared phone KYC rule evaluates entities or events and emits scores, alerts, or decisions.",
+      "children": []
+    },
+    "dec_realtime_block": {
+      "id": "dec_realtime_block",
+      "name": "Realtime payment block decision",
+      "properties": {
+        "type": "decision",
+        "domain": "decisions",
+        "owner": "risk_ops",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "decision",
+        "tags": [
+          "decision_action",
+          "decision"
+        ]
+      },
+      "description": "Realtime payment block decision is a downstream operational response in the risk-control workflow.",
+      "children": []
+    },
+    "dec_manual_review": {
+      "id": "dec_manual_review",
+      "name": "Manual review queue decision",
+      "properties": {
+        "type": "decision",
+        "domain": "decisions",
+        "owner": "risk_ops",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "decision",
+        "tags": [
+          "decision_action",
+          "decision"
+        ]
+      },
+      "description": "Manual review queue decision is a downstream operational response in the risk-control workflow.",
+      "children": []
+    },
+    "act_account_freeze": {
+      "id": "act_account_freeze",
+      "name": "Account freeze action",
+      "properties": {
+        "type": "action",
+        "domain": "decisions",
+        "owner": "risk_ops",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "action",
+        "tags": [
+          "decision_action",
+          "action"
+        ]
+      },
+      "description": "Account freeze action is a downstream operational response in the risk-control workflow.",
+      "children": []
+    },
+    "act_limit_reduce": {
+      "id": "act_limit_reduce",
+      "name": "Credit limit reduction action",
+      "properties": {
+        "type": "action",
+        "domain": "decisions",
+        "owner": "risk_ops",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "action",
+        "tags": [
+          "decision_action",
+          "action"
+        ]
+      },
+      "description": "Credit limit reduction action is a downstream operational response in the risk-control workflow.",
+      "children": []
+    },
+    "case_sar_report": {
+      "id": "case_sar_report",
+      "name": "Suspicious activity report case",
+      "properties": {
+        "type": "report",
+        "domain": "decisions",
+        "owner": "risk_ops",
+        "risk_level": "high",
+        "region": "CN",
+        "entity_class": "report",
+        "tags": [
+          "decision_action",
+          "report"
+        ]
+      },
+      "description": "Suspicious activity report case is a downstream operational response in the risk-control workflow.",
+      "children": []
+    },
+    "case_merchant_audit": {
+      "id": "case_merchant_audit",
+      "name": "Merchant audit case",
+      "properties": {
+        "type": "case",
+        "domain": "decisions",
+        "owner": "risk_ops",
+        "risk_level": "medium",
+        "region": "CN",
+        "entity_class": "case",
+        "tags": [
+          "decision_action",
+          "case"
+        ]
+      },
+      "description": "Merchant audit case is a downstream operational response in the risk-control workflow.",
+      "children": []
+    }
+  },
+  "transitions": [
+    {
+      "id": "own_001",
+      "source": "usr_alice_001",
+      "target": "acct_alice_main",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_002",
+      "source": "usr_alice_001",
+      "target": "wallet_alice_bnpl",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_003",
+      "source": "usr_bob_002",
+      "target": "acct_bob_main",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_004",
+      "source": "usr_carla_003",
+      "target": "acct_carla_main",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_005",
+      "source": "usr_carla_003",
+      "target": "card_carla_debit",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_006",
+      "source": "usr_david_004",
+      "target": "acct_david_cross",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_007",
+      "source": "usr_ella_005",
+      "target": "acct_ella_prime",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_008",
+      "source": "usr_felix_006",
+      "target": "acct_felix_shadow",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_009",
+      "source": "usr_felix_006",
+      "target": "wallet_felix_fastloan",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_010",
+      "source": "usr_grace_007",
+      "target": "acct_grace_operator",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_011",
+      "source": "usr_hank_008",
+      "target": "acct_hank_receiver",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_012",
+      "source": "biz_orion_trade",
+      "target": "acct_orion_settle",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_013",
+      "source": "biz_orion_trade",
+      "target": "card_orion_corporate",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_014",
+      "source": "biz_lotus_market",
+      "target": "acct_lotus_settle",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_015",
+      "source": "biz_lotus_market",
+      "target": "mch_lotus_shop",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_016",
+      "source": "biz_orion_trade",
+      "target": "mch_orion_imports",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_017",
+      "source": "usr_grace_007",
+      "target": "mch_fast_refund_store",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "own_018",
+      "source": "biz_orion_trade",
+      "target": "mch_nova_crypto_otc",
+      "relation": "owns",
+      "properties": {
+        "confidence": 0.92,
+        "evidence": "registration_or_binding",
+        "effective_date": "2026-05-01"
+      }
+    },
+    {
+      "id": "use_001",
+      "source": "usr_alice_001",
+      "target": "dev_iphone_alice",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_002",
+      "source": "usr_bob_002",
+      "target": "dev_android_bob",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_003",
+      "source": "usr_carla_003",
+      "target": "dev_emulator_01",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_004",
+      "source": "usr_felix_006",
+      "target": "dev_emulator_01",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_005",
+      "source": "usr_hank_008",
+      "target": "dev_emulator_02",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_006",
+      "source": "usr_felix_006",
+      "target": "phone_shared_138001",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_007",
+      "source": "usr_hank_008",
+      "target": "phone_shared_138001",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_008",
+      "source": "usr_carla_003",
+      "target": "email_batch_kyc_01",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_009",
+      "source": "usr_felix_006",
+      "target": "email_batch_kyc_01",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_010",
+      "source": "usr_david_004",
+      "target": "ip_oversea_node_17",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_011",
+      "source": "usr_hank_008",
+      "target": "ip_proxy_pool_a",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_012",
+      "source": "usr_felix_006",
+      "target": "ip_proxy_pool_a",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_013",
+      "source": "mch_lotus_shop",
+      "target": "dev_pos_lotus",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_014",
+      "source": "mch_orion_imports",
+      "target": "dev_gateway_orion",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_015",
+      "source": "mch_nova_crypto_otc",
+      "target": "dev_gateway_orion",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_016",
+      "source": "usr_hank_008",
+      "target": "cookie_cluster_mule",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_017",
+      "source": "usr_felix_006",
+      "target": "cookie_cluster_mule",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "use_018",
+      "source": "biz_orion_trade",
+      "target": "addr_warehouse_east",
+      "relation": "uses",
+      "properties": {
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-06-24",
+        "evidence": "login_or_transaction_telemetry"
+      }
+    },
+    {
+      "id": "flow_001",
+      "source": "acct_alice_main",
+      "target": "txn_recharge_alice_001",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "high",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_002",
+      "source": "txn_recharge_alice_001",
+      "target": "wallet_alice_bnpl",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "medium",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_003",
+      "source": "wallet_alice_bnpl",
+      "target": "txn_purchase_lotus_002",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "low",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_004",
+      "source": "txn_purchase_lotus_002",
+      "target": "mch_lotus_shop",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "high",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_005",
+      "source": "acct_carla_main",
+      "target": "txn_refund_carla_003",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "medium",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_006",
+      "source": "txn_refund_carla_003",
+      "target": "card_carla_debit",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "low",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_007",
+      "source": "card_carla_debit",
+      "target": "txn_game_card_carla_007",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "high",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_008",
+      "source": "txn_game_card_carla_007",
+      "target": "mch_blue_game_cards",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "medium",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_009",
+      "source": "wallet_felix_fastloan",
+      "target": "txn_transfer_felix_hank_004",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "low",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_010",
+      "source": "txn_transfer_felix_hank_004",
+      "target": "acct_hank_receiver",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "high",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_011",
+      "source": "acct_hank_receiver",
+      "target": "txn_micro_transfer_ring_012",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "medium",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_012",
+      "source": "txn_micro_transfer_ring_012",
+      "target": "acct_orion_settle",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "low",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_013",
+      "source": "acct_orion_settle",
+      "target": "txn_split_orion_005",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "high",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_014",
+      "source": "txn_split_orion_005",
+      "target": "card_orion_corporate",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "medium",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_015",
+      "source": "card_orion_corporate",
+      "target": "txn_crypto_otc_orion_008",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "low",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_016",
+      "source": "txn_crypto_otc_orion_008",
+      "target": "mch_nova_crypto_otc",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "high",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_017",
+      "source": "acct_david_cross",
+      "target": "txn_cross_border_david_006",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "medium",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_018",
+      "source": "txn_cross_border_david_006",
+      "target": "mch_silver_travel",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "low",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_019",
+      "source": "mch_lotus_shop",
+      "target": "txn_merchant_payout_lotus_013",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "high",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_020",
+      "source": "txn_merchant_payout_lotus_013",
+      "target": "acct_lotus_settle",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "medium",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_021",
+      "source": "mch_fast_refund_store",
+      "target": "txn_chargeback_carla_011",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "low",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_022",
+      "source": "txn_chargeback_carla_011",
+      "target": "acct_carla_main",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "high",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_023",
+      "source": "mch_micro_lending_partner",
+      "target": "txn_loan_felix_009",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "medium",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_024",
+      "source": "txn_loan_felix_009",
+      "target": "wallet_felix_fastloan",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "low",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_025",
+      "source": "wallet_felix_fastloan",
+      "target": "txn_repay_felix_010",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "high",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_026",
+      "source": "txn_repay_felix_010",
+      "target": "mch_micro_lending_partner",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "medium",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "flow_027",
+      "source": "case_sar_report",
+      "target": "txn_audit_sync_014",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "low",
+        "currency": "CNY",
+        "channel": "online"
+      }
+    },
+    {
+      "id": "flow_028",
+      "source": "txn_audit_sync_014",
+      "target": "case_merchant_audit",
+      "relation": "transfers_to",
+      "properties": {
+        "amount_band": "high",
+        "currency": "CNY",
+        "channel": "clearing"
+      }
+    },
+    {
+      "id": "provide_src_feat_001",
+      "source": "src_kyc_registry",
+      "target": "feat_identity_consistency",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "realtime",
+        "sla": "p95_2s"
+      }
+    },
+    {
+      "id": "provide_src_feat_002",
+      "source": "src_kyc_registry",
+      "target": "feat_blacklist_overlap",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "daily",
+        "sla": "t_plus_1"
+      }
+    },
+    {
+      "id": "provide_src_feat_003",
+      "source": "src_bank_card_bin",
+      "target": "feat_card_binding_entropy",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "realtime",
+        "sla": "p95_2s"
+      }
+    },
+    {
+      "id": "provide_src_feat_004",
+      "source": "src_credit_bureau",
+      "target": "feat_credit_overdue_signal",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "daily",
+        "sla": "t_plus_1"
+      }
+    },
+    {
+      "id": "provide_src_feat_005",
+      "source": "src_device_fingerprint",
+      "target": "feat_device_reuse_degree",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "realtime",
+        "sla": "p95_2s"
+      }
+    },
+    {
+      "id": "provide_src_feat_006",
+      "source": "src_device_fingerprint",
+      "target": "feat_ip_geo_velocity",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "daily",
+        "sla": "t_plus_1"
+      }
+    },
+    {
+      "id": "provide_src_feat_007",
+      "source": "src_blacklist_exchange",
+      "target": "feat_blacklist_overlap",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "realtime",
+        "sla": "p95_2s"
+      }
+    },
+    {
+      "id": "provide_src_feat_008",
+      "source": "src_transaction_stream",
+      "target": "feat_fund_flow_cycle",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "daily",
+        "sla": "t_plus_1"
+      }
+    },
+    {
+      "id": "provide_src_feat_009",
+      "source": "src_transaction_stream",
+      "target": "feat_mule_cluster_score",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "realtime",
+        "sla": "p95_2s"
+      }
+    },
+    {
+      "id": "provide_src_feat_010",
+      "source": "src_merchant_acquiring",
+      "target": "feat_merchant_refund_ratio",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "daily",
+        "sla": "t_plus_1"
+      }
+    },
+    {
+      "id": "provide_src_feat_011",
+      "source": "src_case_investigation",
+      "target": "feat_sar_narrative_signal",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "realtime",
+        "sla": "p95_2s"
+      }
+    },
+    {
+      "id": "provide_src_feat_012",
+      "source": "src_case_investigation",
+      "target": "feat_mule_cluster_score",
+      "relation": "provides_to",
+      "properties": {
+        "freshness": "daily",
+        "sla": "t_plus_1"
+      }
+    },
+    {
+      "id": "provide_event_feat_001",
+      "source": "txn_refund_carla_003",
+      "target": "feat_merchant_refund_ratio",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "10m",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_event_feat_002",
+      "source": "txn_chargeback_carla_011",
+      "target": "feat_merchant_refund_ratio",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "1d",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_event_feat_003",
+      "source": "txn_transfer_felix_hank_004",
+      "target": "feat_fund_flow_cycle",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "30d",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_event_feat_004",
+      "source": "txn_micro_transfer_ring_012",
+      "target": "feat_mule_cluster_score",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "10m",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_event_feat_005",
+      "source": "txn_crypto_otc_orion_008",
+      "target": "feat_fund_flow_cycle",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "1d",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_event_feat_006",
+      "source": "dev_emulator_01",
+      "target": "feat_device_reuse_degree",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "30d",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_event_feat_007",
+      "source": "dev_emulator_02",
+      "target": "feat_device_reuse_degree",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "10m",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_event_feat_008",
+      "source": "ip_proxy_pool_a",
+      "target": "feat_ip_geo_velocity",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "1d",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_event_feat_009",
+      "source": "phone_shared_138001",
+      "target": "feat_identity_consistency",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "30d",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_event_feat_010",
+      "source": "email_batch_kyc_01",
+      "target": "feat_identity_consistency",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "10m",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_event_feat_011",
+      "source": "acct_hank_receiver",
+      "target": "feat_mule_cluster_score",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "1d",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_event_feat_012",
+      "source": "acct_orion_settle",
+      "target": "feat_fund_flow_cycle",
+      "relation": "provides_to",
+      "properties": {
+        "aggregation_window": "30d",
+        "feature_store": "risk_feature_store"
+      }
+    },
+    {
+      "id": "provide_feat_model_001",
+      "source": "feat_identity_consistency",
+      "target": "mdl_realtime_fraud",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v1",
+        "owner_review": true
+      }
+    },
+    {
+      "id": "provide_feat_model_002",
+      "source": "feat_device_reuse_degree",
+      "target": "mdl_device_farm",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v2",
+        "owner_review": false
+      }
+    },
+    {
+      "id": "provide_feat_model_003",
+      "source": "feat_ip_geo_velocity",
+      "target": "rule_velocity_10min",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v3",
+        "owner_review": true
+      }
+    },
+    {
+      "id": "provide_feat_model_004",
+      "source": "feat_card_binding_entropy",
+      "target": "mdl_realtime_fraud",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v4",
+        "owner_review": false
+      }
+    },
+    {
+      "id": "provide_feat_model_005",
+      "source": "feat_fund_flow_cycle",
+      "target": "mdl_aml_graph_ring",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v1",
+        "owner_review": true
+      }
+    },
+    {
+      "id": "provide_feat_model_006",
+      "source": "feat_merchant_refund_ratio",
+      "target": "mdl_merchant_abuse",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v2",
+        "owner_review": false
+      }
+    },
+    {
+      "id": "provide_feat_model_007",
+      "source": "feat_credit_overdue_signal",
+      "target": "mdl_credit_limit",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v3",
+        "owner_review": true
+      }
+    },
+    {
+      "id": "provide_feat_model_008",
+      "source": "feat_blacklist_overlap",
+      "target": "mdl_realtime_fraud",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v4",
+        "owner_review": false
+      }
+    },
+    {
+      "id": "provide_feat_model_009",
+      "source": "feat_blacklist_overlap",
+      "target": "rule_shared_phone_kyc",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v1",
+        "owner_review": true
+      }
+    },
+    {
+      "id": "provide_feat_model_010",
+      "source": "feat_mule_cluster_score",
+      "target": "mdl_aml_graph_ring",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v2",
+        "owner_review": false
+      }
+    },
+    {
+      "id": "provide_feat_model_011",
+      "source": "feat_sar_narrative_signal",
+      "target": "mdl_aml_graph_ring",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v3",
+        "owner_review": true
+      }
+    },
+    {
+      "id": "provide_feat_model_012",
+      "source": "feat_merchant_refund_ratio",
+      "target": "rule_chargeback_spike",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v4",
+        "owner_review": false
+      }
+    },
+    {
+      "id": "provide_feat_model_013",
+      "source": "feat_device_reuse_degree",
+      "target": "rule_shared_phone_kyc",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v1",
+        "owner_review": true
+      }
+    },
+    {
+      "id": "provide_feat_model_014",
+      "source": "feat_fund_flow_cycle",
+      "target": "mdl_realtime_fraud",
+      "relation": "provides_to",
+      "properties": {
+        "feature_version": "v2",
+        "owner_review": false
+      }
+    },
+    {
+      "id": "score_001",
+      "source": "mdl_realtime_fraud",
+      "target": "txn_refund_carla_003",
+      "relation": "scores",
+      "properties": {
+        "score_band": "critical",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_002",
+      "source": "mdl_realtime_fraud",
+      "target": "txn_transfer_felix_hank_004",
+      "relation": "scores",
+      "properties": {
+        "score_band": "high",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_003",
+      "source": "mdl_realtime_fraud",
+      "target": "usr_felix_006",
+      "relation": "scores",
+      "properties": {
+        "score_band": "medium",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_004",
+      "source": "mdl_aml_graph_ring",
+      "target": "acct_hank_receiver",
+      "relation": "scores",
+      "properties": {
+        "score_band": "watch",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_005",
+      "source": "mdl_aml_graph_ring",
+      "target": "acct_orion_settle",
+      "relation": "scores",
+      "properties": {
+        "score_band": "critical",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_006",
+      "source": "mdl_aml_graph_ring",
+      "target": "txn_micro_transfer_ring_012",
+      "relation": "scores",
+      "properties": {
+        "score_band": "high",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_007",
+      "source": "mdl_credit_limit",
+      "target": "wallet_felix_fastloan",
+      "relation": "scores",
+      "properties": {
+        "score_band": "medium",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_008",
+      "source": "mdl_credit_limit",
+      "target": "usr_felix_006",
+      "relation": "scores",
+      "properties": {
+        "score_band": "watch",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_009",
+      "source": "mdl_merchant_abuse",
+      "target": "mch_fast_refund_store",
+      "relation": "scores",
+      "properties": {
+        "score_band": "critical",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_010",
+      "source": "mdl_merchant_abuse",
+      "target": "mch_orion_imports",
+      "relation": "scores",
+      "properties": {
+        "score_band": "high",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_011",
+      "source": "mdl_device_farm",
+      "target": "dev_emulator_01",
+      "relation": "scores",
+      "properties": {
+        "score_band": "medium",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_012",
+      "source": "mdl_device_farm",
+      "target": "cookie_cluster_mule",
+      "relation": "scores",
+      "properties": {
+        "score_band": "watch",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_013",
+      "source": "rule_chargeback_spike",
+      "target": "mch_fast_refund_store",
+      "relation": "scores",
+      "properties": {
+        "score_band": "critical",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_014",
+      "source": "rule_velocity_10min",
+      "target": "acct_hank_receiver",
+      "relation": "scores",
+      "properties": {
+        "score_band": "high",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_015",
+      "source": "rule_shared_phone_kyc",
+      "target": "phone_shared_138001",
+      "relation": "scores",
+      "properties": {
+        "score_band": "medium",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "score_016",
+      "source": "rule_shared_phone_kyc",
+      "target": "usr_hank_008",
+      "relation": "scores",
+      "properties": {
+        "score_band": "watch",
+        "threshold_version": "2026.06"
+      }
+    },
+    {
+      "id": "trigger_001",
+      "source": "mdl_realtime_fraud",
+      "target": "dec_realtime_block",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "score_above_threshold",
+        "severity": "critical"
+      }
+    },
+    {
+      "id": "trigger_002",
+      "source": "mdl_aml_graph_ring",
+      "target": "case_sar_report",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "manual_or_rule_hit",
+        "severity": "high"
+      }
+    },
+    {
+      "id": "trigger_003",
+      "source": "mdl_credit_limit",
+      "target": "act_limit_reduce",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "score_above_threshold",
+        "severity": "high"
+      }
+    },
+    {
+      "id": "trigger_004",
+      "source": "mdl_merchant_abuse",
+      "target": "case_merchant_audit",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "manual_or_rule_hit",
+        "severity": "critical"
+      }
+    },
+    {
+      "id": "trigger_005",
+      "source": "mdl_device_farm",
+      "target": "dec_manual_review",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "score_above_threshold",
+        "severity": "high"
+      }
+    },
+    {
+      "id": "trigger_006",
+      "source": "rule_chargeback_spike",
+      "target": "case_merchant_audit",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "manual_or_rule_hit",
+        "severity": "high"
+      }
+    },
+    {
+      "id": "trigger_007",
+      "source": "rule_velocity_10min",
+      "target": "dec_realtime_block",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "score_above_threshold",
+        "severity": "critical"
+      }
+    },
+    {
+      "id": "trigger_008",
+      "source": "rule_shared_phone_kyc",
+      "target": "dec_manual_review",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "manual_or_rule_hit",
+        "severity": "high"
+      }
+    },
+    {
+      "id": "trigger_009",
+      "source": "dec_realtime_block",
+      "target": "act_account_freeze",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "score_above_threshold",
+        "severity": "high"
+      }
+    },
+    {
+      "id": "trigger_010",
+      "source": "dec_manual_review",
+      "target": "act_account_freeze",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "manual_or_rule_hit",
+        "severity": "critical"
+      }
+    },
+    {
+      "id": "trigger_011",
+      "source": "dec_manual_review",
+      "target": "case_sar_report",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "score_above_threshold",
+        "severity": "high"
+      }
+    },
+    {
+      "id": "trigger_012",
+      "source": "case_sar_report",
+      "target": "act_account_freeze",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "manual_or_rule_hit",
+        "severity": "high"
+      }
+    },
+    {
+      "id": "trigger_013",
+      "source": "case_merchant_audit",
+      "target": "act_limit_reduce",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "score_above_threshold",
+        "severity": "critical"
+      }
+    },
+    {
+      "id": "trigger_014",
+      "source": "case_merchant_audit",
+      "target": "case_sar_report",
+      "relation": "triggers",
+      "properties": {
+        "trigger_condition": "manual_or_rule_hit",
+        "severity": "high"
+      }
+    }
+  ]
+}

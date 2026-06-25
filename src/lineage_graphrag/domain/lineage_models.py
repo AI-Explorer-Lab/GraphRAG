@@ -5,6 +5,18 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
+ALLOWED_ENTITY_RELATIONS = {
+    "owns",
+    "uses",
+    "transfers_to",
+    "provides_to",
+    "scores",
+    "triggers",
+    # Backward-compatible lineage default.
+    "transitions",
+}
+
+
 class EntityInput(BaseModel):
     id: str
     name: str = ""
@@ -17,6 +29,7 @@ class TransitionInput(BaseModel):
     id: str
     source: str
     target: str
+    relation: str = "transitions"
     properties: dict[str, Any] = Field(default_factory=dict)
 
 

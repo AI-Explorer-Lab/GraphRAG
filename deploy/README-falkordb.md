@@ -1,23 +1,63 @@
 # FalkorDB Runtime
 
+FalkorDB is optional. The API keeps graphs in memory and persists snapshots locally; FalkorDB is used as an external graph mirror when enabled.
+
+## Start FalkorDB
+
+Recommended local startup:
+
 ```bash
-docker pull falkordb/falkordb:latest
 docker compose -f deploy/docker-compose.falkordb.yml up -d
-docker run -d --name falkordb -p 3000:3000 -p 6379:6379 falkordb/falkordb:latest
 ```
 
-`6379:6379` is exposed by default for local visualization and client connectivity.
+Exposed ports:
 
-## API Import/Build Sequence
+| Port | Purpose |
+| --- | --- |
+| `6379` | FalkorDB Redis-compatible endpoint |
+| `3000` | FalkorDB browser/UI |
 
-`/v1/graphs/import` now does import + build + FalkorDB mirror in one request.
+Open the browser UI at:
 
-To write graph data into FalkorDB:
+```text
+http://localhost:3000
+```
 
-1. Start API with FalkorDB enabled:
+## Start API With FalkorDB Enabled
+
+Linux/macOS:
+
+```bash
+LINEAGE_USE_FALKORDB=true python scripts/run_api.py --config configs/base.yaml
+```
+
+Windows PowerShell:
+
 ```powershell
 $env:LINEAGE_USE_FALKORDB="true"
-python scripts/run_api.py
+python scripts/run_api.py --config configs/base.yaml
 ```
-2. Call `POST /v1/graphs/import`
-3. Check import response field `falkordb.written` is `true`
+
+## Import And Verify
+
+`POST /v1/graphs/import` performs import, normalization, graph construction, snapshot persistence, and FalkorDB mirroring in one request.
+
+```bash
+curl -X POST "http://localhost:8001/v1/graphs/import" \
+  -H "Content-Type: application/json" \
+  --data @data/api_requests/01_graphs_import.json
+```
+
+Check the response:
+
+```json
+{
+  "falkordb": {
+    "enabled": true,
+    "available": true,
+    "written": true
+  }
+}
+```
+
+If `written` is false, the API still keeps the graph in memory and saves local snapshots, but the external mirror write did not succeed.

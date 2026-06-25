@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -23,7 +23,7 @@ class AskRequest(BaseModel):
 class ImpactRequest(BaseModel):
     graph_id: str
     change_spec: ChangeSpecModel
-    target_node_id: str | None = None
+    target_node_id: Optional[str] = None
 
 
 class AskResponse(BaseModel):

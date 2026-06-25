@@ -7,7 +7,7 @@ name = "lineage-graphrag"
 version = "0.1.0"
 description = "Lineage GraphRAG engine with deterministic lineage graph construction."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 authors = [
   { name = "lineage-graphrag team" }
 ]
@@ -26,7 +26,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0.0,<9.0.0",
-  "httpx>=0.27.0,<1.0.0"
+  "httpx>=0.27.0,<0.28.0"
 ]
 
 [tool.setuptools]

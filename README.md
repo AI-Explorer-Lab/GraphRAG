@@ -1,19 +1,153 @@
 # lineage-graphrag
 
-Lineage GraphRAG implementation for deterministic lineage JSON ingestion, four-level graph construction, retrieval, and what-if impact analysis.
+Lineage GraphRAG is a deterministic GraphRAG engine for data lineage JSON. It turns structured lineage payloads into a four-level graph, retrieves evidence through graph-aware dual-path retrieval, and answers lineage or what-if impact questions with traceable evidence.
+
+This project is not a generic "upload documents and extract a graph with an LLM" system. The graph is built deterministically from lineage JSON; LLMs are optional and are used for question decomposition, answer generation, and iterative retrieval in agent mode.
+
+## What It Does
+
+- Imports lineage JSON with entities, children, and transitions.
+- Normalizes `children` into explicit `has` relationships.
+- Keeps business entity relations constrained to a small fixed vocabulary.
+- Builds a four-level graph: `attribute`, `entity`, `keyword`, and `community`.
+- Stores evidence chunks for entities, transitions, and subgraphs.
+- Retrieves through two graph-aware paths:
+  - Path 1: entity node + relation retrieval.
+  - Path 2: triple + community retrieval.
+- Supports `agent` and `noagent` query modes.
+- Supports what-if downstream impact analysis.
+- Persists graphs to snapshots and can optionally mirror them to FalkorDB.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  A["Lineage JSON"] --> B["Parse and validate"]
+  B --> C["Normalize children into has relations"]
+  C --> D["Build evidence chunks"]
+  D --> E["Build NetworkX four-level graph"]
+  E --> F["Snapshot storage"]
+  E --> G["Optional FalkorDB mirror"]
+  E --> H["Question decomposition"]
+  H --> I["Dual-path retrieval"]
+  I --> J["Evidence reranking"]
+  J --> K["Answer generation"]
+  E --> L["What-if BFS impact analysis"]
+```
+
+More detail:
+
+- [Architecture](docs/architecture.md)
+- [API examples](docs/api.md)
+- [Configuration](docs/configuration.md)
+- [Demo walkthrough](docs/demo.md)
+- [Operations](docs/operations.md)
+- [Evaluation status](docs/evaluation.md)
+
+## Requirements
+
+- Python `>=3.9`
+- Optional: Docker, if you want to run FalkorDB
+- Optional: local `sentence-transformers` model cache for `all-MiniLM-L6-v2`
+
+Check your Python version first:
+
+```bash
+python --version
+```
 
 ## Quick Start
 
 ```bash
-python -m pip install -e .[dev]
-python scripts/run_api.py
+python -m pip install -e ".[dev]"
+python scripts/run_api.py --config configs/base.yaml
 ```
 
-`scripts/run_api.py` will load `configs/local.yaml` first (if present), otherwise `configs/base.yaml`.
+The API starts on port `8001` by default:
 
-Example:
+```text
+http://localhost:8001
+```
+
+Run tests:
+
 ```bash
-python scripts/run_api.py --config configs/local.yaml
+python -m pytest -q
+```
+
+If tests fail during collection, first confirm the interpreter and dependencies match this project environment.
+
+## Run A Demo
+
+The small demo under `data/api_requests/` is useful for a quick API smoke test.
+
+Import the demo graph:
+
+```bash
+curl -X POST "http://localhost:8001/v1/graphs/import" \
+  -H "Content-Type: application/json" \
+  --data @data/api_requests/01_graphs_import.json
+```
+
+Ask a lineage question:
+
+```bash
+curl -X POST "http://localhost:8001/v1/queries/ask" \
+  -H "Content-Type: application/json" \
+  --data @data/api_requests/03_queries_ask.json
+```
+
+Run what-if impact analysis:
+
+```bash
+curl -X POST "http://localhost:8001/v1/impact/what-if" \
+  -H "Content-Type: application/json" \
+  --data @data/api_requests/04_impact_what_if.json
+```
+
+## Financial Risk Example
+
+The `example/` directory contains a larger financial risk-control scenario designed for GraphRAG demonstrations and downstream impact testing.
+
+Files:
+
+- `example/financial_risk_lineage.json`: structured lineage JSON with 100 business entities and 132 controlled business relations.
+- `example/financial_risk_input.txt`: rich natural-language scenario text describing the same risk-control domain. This represents the kind of text input a future text-to-lineage pipeline could consume.
+
+The example uses six fixed business relation types between entities:
+
+```text
+owns, uses, transfers_to, provides_to, scores, triggers
+```
+
+Import the financial risk graph:
+
+```bash
+curl -X POST "http://localhost:8001/v1/graphs/import" \
+  -H "Content-Type: application/json" \
+  --data "{\"graph_id\":\"financial_risk_demo\",\"lineage_json\":$(cat example/financial_risk_lineage.json)}"
+```
+
+On Windows PowerShell:
+
+```powershell
+$body = @{
+  graph_id = "financial_risk_demo"
+  lineage_json = Get-Content example/financial_risk_lineage.json -Raw | ConvertFrom-Json
+} | ConvertTo-Json -Depth 100
+Invoke-RestMethod -Method Post -Uri "http://localhost:8001/v1/graphs/import" -ContentType "application/json" -Body $body
+```
+
+Ask a question using the text scenario as the natural-language query:
+
+```bash
+python -c "import json, urllib.request; q=open('example/financial_risk_input.txt', encoding='utf-8').read(); payload=json.dumps({'graph_id':'financial_risk_demo','question':q,'top_k':8,'mode':'noagent','max_steps':2}).encode('utf-8'); req=urllib.request.Request('http://localhost:8001/v1/queries/ask', data=payload, headers={'Content-Type':'application/json'}); print(urllib.request.urlopen(req).read().decode('utf-8')[:2000])"
+```
+
+You can also validate the example locally without starting the API:
+
+```bash
+python -c "import json, sys; sys.path.insert(0, 'src'); from lineage_graphrag.ingest.parser import LineageParser; from lineage_graphrag.ingest.normalizer import LineageNormalizer; from lineage_graphrag.graph.kt_builder import LineageKTBuilder; data=json.load(open('example/financial_risk_lineage.json', encoding='utf-8')); normalized=LineageNormalizer().normalize(LineageParser().parse(data)); built=LineageKTBuilder().build(normalized); print({'entities': len(normalized.entities), 'transitions': len(normalized.transitions), 'graph_nodes': built.graph.number_of_nodes(), 'graph_edges': built.graph.number_of_edges()})"
 ```
 
 ## API
@@ -23,25 +157,53 @@ python scripts/run_api.py --config configs/local.yaml
 - `POST /v1/impact/what-if`
 - `GET /v1/graphs/{graph_id}/subgraph`
 
-## Notes
+The import endpoint performs import, normalization, graph construction, snapshot persistence, and optional FalkorDB mirroring in one request.
 
-- `POST /v1/graphs/import` now does import + normalize + build + snapshot + FalkorDB mirror in one step.
-- `/v1/graphs/import` response includes `metadata/chunks/falkordb` and `auto_built=true`.
-- New lineage import format:
-  - `entities` is an object map keyed by entity id.
-  - each entity includes `name/id/properties/description/children`, and `children` must be existing entity ids (or `[]`).
-  - each transition includes `id/source/target/properties`, where `source/target` are entity ids.
-- On service startup, graphs are auto-hydrated into memory:
-  - First from snapshot files in `snapshot_dir` (`*_graph.json` + `*_chunks.json`).
-  - Then from FalkorDB for graph IDs not already loaded (when FalkorDB is enabled/available).
-- `POST /v1/queries/ask` supports `mode`:
-  - `agent`: LLM decomposition + IRCoT iterative retrieval chain.
-  - `noagent`: one-pass retrieval and answer generation.
-- Retrieval is now dual-path FAISS-style:
-  - Path 1: node + relation retrieval.
-  - Path 2: triple + community retrieval.
-- LLM provider selection supports multi-provider config in `app.llm`:
-  - `active_provider` picks one provider in `providers`.
-  - Provider item supports `provider/model/api_key/base_url/timeout_seconds`.
-  - Environment override priority: `LINEAGE_LLM_ACTIVE_PROVIDER`, `LINEAGE_LLM_PROVIDER`, `LINEAGE_LLM_MODEL`, `OPENAI_API_KEY`, `OPENAI_BASE_URL`.
-  - For `active_provider: anyrouter`, `ANTHROPIC_BASE_URL` is also accepted as `base_url` override.
+## Query Modes
+
+`POST /v1/queries/ask` supports:
+
+- `agent`: LLM-first decomposition plus optional IRCoT iterative retrieval when an LLM provider is available.
+- `noagent`: decomposition, one-pass retrieval, and answer generation without iterative follow-up retrieval.
+
+When the configured LLM provider is unavailable, the system still returns deterministic retrieval summaries from the available evidence.
+
+## Storage Model
+
+At runtime, `GraphRepository` keeps graphs and chunks in memory. Snapshot files under `snapshot_dir` are used for restart hydration. FalkorDB can be enabled as an external graph mirror.
+
+Startup hydration order:
+
+1. Snapshot files: `*_graph.json` and `*_chunks.json`.
+2. FalkorDB graphs not already loaded from snapshots, when FalkorDB is enabled and reachable.
+
+## Project Layout
+
+```text
+src/lineage_graphrag/
+  api/          FastAPI application and routes
+  ingest/       parser, normalizer, evidence chunk builder
+  graph/        four-level graph construction and serialization
+  retrieval/    decomposer, dual-path retrieval, IRCoT orchestration
+  indexing/     embeddings and FAISS/NumPy index wrapper
+  impact/       downstream impact analysis helpers
+  llm/          provider client, prompts, answer generator
+  storage/      in-memory repository, snapshot store, FalkorDB client
+  evaluation/   current smoke-check utilities
+```
+
+## Current Status
+
+Production-shaped pieces:
+
+- Deterministic lineage import and validation.
+- Four-level graph construction.
+- Dual-path retrieval.
+- API integration flow.
+- Snapshot restart hydration.
+
+Demo or evolving pieces:
+
+- LLM-backed answer quality depends on configured provider and credentials.
+- Evaluation modules are smoke checks, not a full benchmark harness.
+- FalkorDB is an optional mirror, not the primary source of truth.

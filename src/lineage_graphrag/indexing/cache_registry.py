@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Any
 
 
-@dataclass(slots=True)
+@dataclass
 class CacheEntry:
     key: str
     value: Any
@@ -22,4 +22,3 @@ class CacheRegistry:
 
     def clear(self) -> None:
         self._store.clear()
-

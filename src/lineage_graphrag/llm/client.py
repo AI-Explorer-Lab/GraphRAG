@@ -13,7 +13,7 @@ except ImportError:  # pragma: no cover - optional dependency in some environmen
     OpenAI = None  # type: ignore[assignment]
 
 
-@dataclass(slots=True)
+@dataclass
 class LLMSettings:
     provider: str = "stub"
     model: str = "gpt-4o-mini"

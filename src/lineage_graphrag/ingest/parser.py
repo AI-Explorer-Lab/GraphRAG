@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from lineage_graphrag.domain.lineage_models import LineageInput
+from lineage_graphrag.domain.lineage_models import ALLOWED_ENTITY_RELATIONS, LineageInput
 
 
 class LineageParser:
@@ -62,6 +62,7 @@ class LineageParser:
                     raise ValueError(f"Transition at index {idx} must contain source/target entity ids.")
                 # Keep backward compatibility: auto-generate transition id for old payloads.
                 merged.setdefault("id", f"tr::{source}->{target}::{idx}")
+                merged["relation"] = self._canonical_relation(merged)
                 transitions.append(merged)
             return transitions
         if isinstance(raw_transitions, dict):
@@ -70,9 +71,20 @@ class LineageParser:
                     raise ValueError(f"Transition '{transition_id}' payload must be an object.")
                 merged = dict(payload)
                 merged.setdefault("id", str(transition_id))
+                merged["relation"] = self._canonical_relation(merged)
                 transitions.append(merged)
             return transitions
         raise ValueError("Field 'transitions' must be a list.")
+
+    def _canonical_relation(self, payload: dict[str, Any]) -> str:
+        raw_relation = payload.get("relation", "transitions")
+        relation = str(raw_relation).strip().lower()
+        if not relation:
+            relation = "transitions"
+        if relation not in ALLOWED_ENTITY_RELATIONS:
+            allowed = ", ".join(sorted(ALLOWED_ENTITY_RELATIONS))
+            raise ValueError(f"Transition relation '{relation}' is not supported. Allowed relations: {allowed}.")
+        return relation
 
     def _validate_cross_refs(self, lineage: LineageInput) -> None:
         entity_ids = set(lineage.entities.keys())

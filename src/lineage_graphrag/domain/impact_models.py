@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -11,7 +11,7 @@ class ChangeSpecModel(BaseModel):
     relation: str = "transitions"
     relation_property_patch: dict[str, Any] = Field(default_factory=dict)
     max_depth: int = 3
-    scope: str | None = None
+    scope: Optional[str] = None
 
 
 class ImpactPath(BaseModel):
@@ -26,4 +26,3 @@ class ImpactReport(BaseModel):
     target_impact: list[str] = Field(default_factory=list)
     scoped_impact: list[str] = Field(default_factory=list)
     evidence_paths: list[ImpactPath] = Field(default_factory=list)
-

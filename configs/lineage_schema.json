@@ -1,6 +1,43 @@
 {
-  "Nodes": ["table", "task", "feature_view", "search_index", "control_service", "attribute", "community", "keyword"],
-  "Relations": ["transitions", "has", "has_attribute", "member_of", "represented_by", "keyword_of"],
-  "Attributes": ["type", "system", "owner", "domain", "description", "schedule"]
+  "NodeLabels": ["attribute", "entity", "keyword", "community"],
+  "EntityTypes": [
+    "domain_root",
+    "domain",
+    "table",
+    "task",
+    "feature_view",
+    "search_index",
+    "service",
+    "topic"
+  ],
+  "EntityRelations": [
+    "owns",
+    "uses",
+    "transfers_to",
+    "provides_to",
+    "scores",
+    "triggers"
+  ],
+  "InternalGraphRelations": [
+    "transitions",
+    "has",
+    "has_attribute",
+    "member_of",
+    "represents_community",
+    "represented_by",
+    "has_keyword",
+    "represents_entity"
+  ],
+  "Attributes": [
+    "type",
+    "system",
+    "owner",
+    "domain",
+    "description",
+    "schedule",
+    "layer",
+    "engine",
+    "runtime",
+    "sla"
+  ]
 }
-

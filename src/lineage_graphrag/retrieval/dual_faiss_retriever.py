@@ -10,7 +10,7 @@ from lineage_graphrag.indexing.embedding_index import EmbeddingIndex
 from lineage_graphrag.indexing.faiss_index import FaissIndex
 
 
-@dataclass(slots=True)
+@dataclass
 class EdgeRecord:
     source: str
     relation: str
@@ -260,4 +260,3 @@ def _node_name(graph: nx.MultiDiGraph, node_id: str) -> str:
     if isinstance(name, str) and name.strip():
         return name
     return str(node_id)
-
