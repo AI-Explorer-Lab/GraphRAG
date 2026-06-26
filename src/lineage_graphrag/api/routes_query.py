@@ -11,6 +11,21 @@ from lineage_graphrag.storage.graph_repository import GraphRepository
 router = APIRouter(tags=["query"])
 
 
+@router.get("/v1/graphs")
+def list_graphs(repo: GraphRepository = Depends(get_repo)):
+    return {"graphs": repo.list_graph_ids()}
+
+
+@router.post("/v1/graphs/sync")
+def sync_graphs(repo: GraphRepository = Depends(get_repo)):
+    status = repo.sync_from_falkordb(clear_existing=True)
+    if status.get("enabled") is False:
+        raise HTTPException(status_code=400, detail="FalkorDB is disabled for this API runtime.")
+    if status.get("available") is False:
+        raise HTTPException(status_code=503, detail="FalkorDB is unavailable; start the database and retry sync.")
+    return status
+
+
 @router.post("/v1/queries/ask", response_model=AskResponse)
 def ask_question(
     payload: AskRequest,

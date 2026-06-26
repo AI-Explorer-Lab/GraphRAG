@@ -1,6 +1,6 @@
 # FalkorDB Runtime
 
-FalkorDB is optional. The API keeps graphs in memory and persists snapshots locally; FalkorDB is used as an external graph mirror when enabled.
+FalkorDB is the durable graph store when enabled. The API keeps an in-memory cache for requests, and startup/manual sync load that cache from FalkorDB.
 
 ## Start FalkorDB
 
@@ -28,19 +28,19 @@ http://localhost:3000
 Linux/macOS:
 
 ```bash
-LINEAGE_USE_FALKORDB=true python scripts/run_api.py --config configs/base.yaml
+LINEAGE_USE_FALKORDB=true python scripts/run_api.py --config configs/local.yaml --reload
 ```
 
 Windows PowerShell:
 
 ```powershell
 $env:LINEAGE_USE_FALKORDB="true"
-python scripts/run_api.py --config configs/base.yaml
+python scripts/run_api.py --config configs/local.yaml --reload
 ```
 
 ## Import And Verify
 
-`POST /v1/graphs/import` performs import, normalization, graph construction, snapshot persistence, and FalkorDB mirroring in one request.
+`POST /v1/graphs/import` performs import, normalization, graph construction, and FalkorDB persistence in one request.
 
 ```bash
 curl -X POST "http://localhost:8001/v1/graphs/import" \
@@ -60,4 +60,14 @@ Check the response:
 }
 ```
 
-If `written` is false, the API still keeps the graph in memory and saves local snapshots, but the external mirror write did not succeed.
+If `written` is false, the API returns an error when FalkorDB is enabled. The graph is not treated as successfully imported.
+
+## Sync Runtime Cache
+
+Startup automatically syncs from FalkorDB when it is enabled. You can also trigger a manual sync:
+
+```bash
+curl -X POST "http://localhost:8001/v1/graphs/sync"
+```
+
+The frontend `Sync FalkorDB` button calls the same endpoint, then refreshes the graph id dropdown.

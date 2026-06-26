@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import argparse
+import os
+import sys
 from pathlib import Path
 
 import uvicorn
 
-from lineage_graphrag.api.app import create_app
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
 
 def main() -> None:
@@ -17,8 +22,14 @@ def main() -> None:
     parser.add_argument("--reload", action="store_true")
     args = parser.parse_args()
 
+    if args.reload:
+        os.environ["LINEAGE_CONFIG"] = args.config
+        uvicorn.run("lineage_graphrag.api.app:app", host=args.host, port=args.port, reload=True)
+        return
+
+    from lineage_graphrag.api.app import create_app
     app = create_app(args.config)
-    uvicorn.run(app, host=args.host, port=args.port, reload=args.reload)
+    uvicorn.run(app, host=args.host, port=args.port)
 
 
 if __name__ == "__main__":

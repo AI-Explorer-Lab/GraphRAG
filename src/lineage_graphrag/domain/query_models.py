@@ -12,6 +12,14 @@ class ImportRequest(BaseModel):
     lineage_json: dict[str, Any]
 
 
+class TextImportRequest(BaseModel):
+    graph_id: str
+    text: str = Field(min_length=1)
+    schema_hint: Optional[str] = None
+    fallback_lineage_json: Optional[dict[str, Any]] = None
+    prefer_fallback_lineage_json: bool = False
+
+
 class AskRequest(BaseModel):
     graph_id: str
     question: str

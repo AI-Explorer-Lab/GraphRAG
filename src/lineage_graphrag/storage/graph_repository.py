@@ -12,7 +12,12 @@ logger = get_logger(__name__)
 
 
 class GraphRepository:
-    """In-memory source of truth with optional FalkorDB mirror."""
+    """Graph storage facade.
+
+    When FalkorDB is enabled, FalkorDB is the durable source of truth and the
+    in-memory maps are a request-time cache populated by startup/manual sync.
+    Without FalkorDB, graphs live only in memory for the current API process.
+    """
 
     def __init__(self, use_falkordb: bool = False, falkordb_url: str = "redis://localhost:6379/0") -> None:
         self._normalized_lineage: dict[str, NormalizedLineage] = {}
@@ -34,11 +39,7 @@ class GraphRepository:
         chunks: dict[str, str],
         metadata: dict[str, Any],
     ) -> dict[str, Any]:
-        self._graphs[graph_id] = graph
-        self._chunks[graph_id] = chunks
-        self._metadata[graph_id] = metadata
-
-        mirror_status: dict[str, Any] = {
+        falkor_status: dict[str, Any] = {
             "enabled": self.falkor is not None,
             "available": False,
             "graph_name": graph_id,
@@ -49,11 +50,17 @@ class GraphRepository:
         }
         if self.falkor is not None:
             try:
-                mirror_status = self.falkor.write_graph(graph, graph_name=graph_id, chunks=chunks)
+                falkor_status = self.falkor.write_graph(graph, graph_name=graph_id, chunks=chunks)
             except Exception as exc:  # pragma: no cover - external system path
-                logger.warning("Failed to mirror graph to FalkorDB: %s", exc)
-                mirror_status["error"] = str(exc)
-        return mirror_status
+                logger.warning("Failed to write graph to FalkorDB: %s", exc)
+                falkor_status["error"] = str(exc)
+            if not falkor_status.get("written"):
+                return falkor_status
+
+        self._graphs[graph_id] = graph
+        self._chunks[graph_id] = chunks
+        self._metadata[graph_id] = metadata
+        return falkor_status
 
     def restore_graph(
         self,
@@ -66,52 +73,67 @@ class GraphRepository:
         self._chunks[graph_id] = chunks or {}
         self._metadata[graph_id] = metadata or {}
 
-    def hydrate_startup(self, snapshot_store: Any | None = None) -> dict[str, Any]:
+    def hydrate_startup(self) -> dict[str, Any]:
         status: dict[str, Any] = {
-            "snapshots_loaded": 0,
+            "falkordb_enabled": self.falkor is not None,
             "falkordb_loaded": 0,
             "errors": [],
         }
 
-        if snapshot_store is not None:
+        if self.falkor is not None:
             try:
-                graph_ids = snapshot_store.list_graph_ids()
+                sync_status = self.sync_from_falkordb(clear_existing=True)
+                status["falkordb_loaded"] = sync_status["loaded"]
+                status["errors"].extend(sync_status["errors"])
             except Exception as exc:
-                status["errors"].append(f"snapshot_list_failed: {exc}")
-                graph_ids = []
-
-            for graph_id in graph_ids:
-                try:
-                    loaded = snapshot_store.load(graph_id)
-                    if loaded is None:
-                        continue
-                    graph, chunks = loaded
-                    self.restore_graph(graph_id, graph, chunks=chunks, metadata={"source": "snapshot"})
-                    status["snapshots_loaded"] += 1
-                except Exception as exc:
-                    status["errors"].append(f"snapshot_load_failed:{graph_id}:{exc}")
-
-        if self.falkor is not None and self.falkor.is_available():
-            try:
-                remote_graphs = self.falkor.list_graphs()
-            except Exception as exc:
-                status["errors"].append(f"falkordb_list_failed: {exc}")
-                remote_graphs = []
-
-            for graph_id in remote_graphs:
-                if graph_id in self._graphs:
-                    continue
-                try:
-                    graph = self.falkor.read_graph(graph_id)
-                    if graph is None:
-                        continue
-                    chunks = self.falkor.read_chunks(graph_id)
-                    self.restore_graph(graph_id, graph, chunks=chunks, metadata={"source": "falkordb"})
-                    status["falkordb_loaded"] += 1
-                except Exception as exc:
-                    status["errors"].append(f"falkordb_load_failed:{graph_id}:{exc}")
+                status["errors"].append(f"falkordb_sync_failed: {exc}")
+            return status
 
         return status
+
+    def sync_from_falkordb(self, clear_existing: bool = True) -> dict[str, Any]:
+        if self.falkor is None:
+            return {"enabled": False, "available": False, "loaded": 0, "graphs": [], "errors": ["falkordb disabled"]}
+        if not self.falkor.is_available():
+            return {"enabled": True, "available": False, "loaded": 0, "graphs": [], "errors": ["falkordb unavailable"]}
+
+        errors: list[str] = []
+        try:
+            graph_ids = self.falkor.list_graphs()
+        except Exception as exc:
+            return {"enabled": True, "available": True, "loaded": 0, "graphs": [], "errors": [f"falkordb_list_failed: {exc}"]}
+
+        loaded_graphs: dict[str, nx.MultiDiGraph] = {}
+        loaded_chunks: dict[str, dict[str, str]] = {}
+        loaded_metadata: dict[str, dict[str, Any]] = {}
+        for graph_id in graph_ids:
+            try:
+                graph = self.falkor.read_graph(graph_id)
+                if graph is None:
+                    errors.append(f"falkordb_graph_empty:{graph_id}")
+                    continue
+                loaded_graphs[graph_id] = graph
+                loaded_chunks[graph_id] = self.falkor.read_chunks(graph_id)
+                loaded_metadata[graph_id] = {"source": "falkordb"}
+            except Exception as exc:
+                errors.append(f"falkordb_load_failed:{graph_id}:{exc}")
+
+        if clear_existing:
+            self._graphs = loaded_graphs
+            self._chunks = loaded_chunks
+            self._metadata = loaded_metadata
+        else:
+            self._graphs.update(loaded_graphs)
+            self._chunks.update(loaded_chunks)
+            self._metadata.update(loaded_metadata)
+
+        return {
+            "enabled": True,
+            "available": True,
+            "loaded": len(loaded_graphs),
+            "graphs": sorted(loaded_graphs.keys()),
+            "errors": errors,
+        }
 
     def get_graph(self, graph_id: str) -> nx.MultiDiGraph | None:
         return self._graphs.get(graph_id)

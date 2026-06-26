@@ -16,7 +16,7 @@ This project is not a generic "upload documents and extract a graph with an LLM"
   - Path 2: triple + community retrieval.
 - Supports `agent` and `noagent` query modes.
 - Supports what-if downstream impact analysis.
-- Persists graphs to snapshots and can optionally mirror them to FalkorDB.
+- Persists graphs to FalkorDB when enabled; the API keeps an in-memory runtime cache loaded from FalkorDB.
 
 ## Architecture
 
@@ -26,8 +26,8 @@ flowchart LR
   B --> C["Normalize children into has relations"]
   C --> D["Build evidence chunks"]
   D --> E["Build NetworkX four-level graph"]
-  E --> F["Snapshot storage"]
-  E --> G["Optional FalkorDB mirror"]
+  E --> F["FalkorDB durable graph store"]
+  F --> G["API in-memory runtime cache"]
   E --> H["Question decomposition"]
   H --> I["Dual-path retrieval"]
   I --> J["Evidence reranking"]
@@ -60,7 +60,7 @@ python --version
 
 ```bash
 python -m pip install -e ".[dev]"
-python scripts/run_api.py --config configs/base.yaml
+python scripts/run_api.py --config configs/local.yaml --reload
 ```
 
 The API starts on port `8001` by default:
@@ -107,18 +107,21 @@ curl -X POST "http://localhost:8001/v1/impact/what-if" \
 
 ## Financial Risk Example
 
-The `example/` directory contains a larger financial risk-control scenario designed for GraphRAG demonstrations and downstream impact testing.
+The `example/` directory contains a compact financial risk-control scenario designed for GraphRAG demonstrations and downstream impact testing.
 
 Files:
 
-- `example/financial_risk_lineage.json`: structured lineage JSON with 100 business entities and 132 controlled business relations.
-- `example/financial_risk_input.txt`: rich natural-language scenario text describing the same risk-control domain. This represents the kind of text input a future text-to-lineage pipeline could consume.
+- `example/financial_risk_lineage.json`: structured lineage JSON with 30 business entities and 30 controlled business relations.
+- `example/financial_risk_lineage.md`: field-by-field explanation of the JSON schema and the example graph.
+- `example/financial_risk_input.txt`: natural-language scenario text describing the same compact risk-control graph. This represents the kind of text input a future text-to-lineage pipeline could consume.
 
 The example uses six fixed business relation types between entities:
 
 ```text
 owns, uses, transfers_to, provides_to, scores, triggers
 ```
+
+In this schema, `transitions` is the top-level edge-list container. The concrete edge name is the per-edge `relation` value, such as `owns` or `scores`.
 
 Import the financial risk graph:
 
@@ -157,7 +160,7 @@ python -c "import json, sys; sys.path.insert(0, 'src'); from lineage_graphrag.in
 - `POST /v1/impact/what-if`
 - `GET /v1/graphs/{graph_id}/subgraph`
 
-The import endpoint performs import, normalization, graph construction, snapshot persistence, and optional FalkorDB mirroring in one request.
+The import endpoint performs import, normalization, graph construction, and FalkorDB persistence in one request. When FalkorDB is enabled, a failed database write returns `503` and the graph is not treated as successfully imported.
 
 ## Query Modes
 
@@ -170,12 +173,13 @@ When the configured LLM provider is unavailable, the system still returns determ
 
 ## Storage Model
 
-At runtime, `GraphRepository` keeps graphs and chunks in memory. Snapshot files under `snapshot_dir` are used for restart hydration. FalkorDB can be enabled as an external graph mirror.
+At runtime, `GraphRepository` keeps graphs and chunks in memory as a request-time cache. When FalkorDB is enabled, FalkorDB is the durable source of truth.
 
-Startup hydration order:
+Startup and manual sync behavior:
 
-1. Snapshot files: `*_graph.json` and `*_chunks.json`.
-2. FalkorDB graphs not already loaded from snapshots, when FalkorDB is enabled and reachable.
+1. With FalkorDB enabled, the API loads graph ids, graph topology, and chunks from FalkorDB into memory.
+2. With FalkorDB disabled, graphs live only in the current API process memory and are gone after restart.
+3. `POST /v1/graphs/sync` reloads the memory cache from FalkorDB.
 
 ## Project Layout
 
@@ -188,7 +192,7 @@ src/lineage_graphrag/
   indexing/     embeddings and FAISS/NumPy index wrapper
   impact/       downstream impact analysis helpers
   llm/          provider client, prompts, answer generator
-  storage/      in-memory repository, snapshot store, FalkorDB client
+  storage/      in-memory runtime repository and FalkorDB client
   evaluation/   current smoke-check utilities
 ```
 
@@ -200,10 +204,10 @@ Production-shaped pieces:
 - Four-level graph construction.
 - Dual-path retrieval.
 - API integration flow.
-- Snapshot restart hydration.
+- FalkorDB startup/manual sync into the runtime cache.
 
 Demo or evolving pieces:
 
 - LLM-backed answer quality depends on configured provider and credentials.
 - Evaluation modules are smoke checks, not a full benchmark harness.
-- FalkorDB is an optional mirror, not the primary source of truth.
+- The default local demo path is FalkorDB-backed; running without FalkorDB is an in-memory-only development mode.

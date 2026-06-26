@@ -46,7 +46,7 @@ class LineageKTBuilder:
                     label="attribute",
                     level=1,
                     properties={
-                        "name": f"{key}:{value}",
+                        "name": str(value),
                         "attr_key": key,
                         "attr_value": value,
                     },
@@ -68,7 +68,7 @@ class LineageKTBuilder:
                     label="attribute",
                     level=1,
                     properties={
-                        "name": f"description:{entity.description}",
+                        "name": entity.description,
                         "attr_key": "description",
                         "attr_value": entity.description,
                     },

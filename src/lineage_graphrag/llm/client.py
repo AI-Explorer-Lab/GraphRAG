@@ -28,6 +28,7 @@ class LLMClient:
         self.settings = settings or LLMSettings()
         self.provider = self.settings.provider.strip().lower()
         self.client: Any = None
+        self.last_error: str | None = None
         if self.provider == "openai":
             self._init_openai_client()
 
@@ -55,9 +56,65 @@ class LLMClient:
     def is_available(self) -> bool:
         return self.provider == "openai" and self.client is not None
 
-    def generate(self, prompt: str, system_prompt: str | None = None) -> str | None:
+    def generate(
+        self,
+        prompt: str,
+        system_prompt: str | None = None,
+        json_mode: bool = False,
+        max_output_tokens: int | None = None,
+    ) -> str | None:
+        self.last_error = None
         if not self.is_available():
             return None
+
+        if _prefer_responses_first(self.settings):
+            responses_text, responses_error = self._generate_responses(
+                prompt,
+                system_prompt,
+                json_mode=json_mode,
+                max_output_tokens=max_output_tokens,
+            )
+            if responses_text:
+                return responses_text
+            chat_text, chat_error = self._generate_chat(
+                prompt,
+                system_prompt,
+                json_mode=json_mode,
+                max_output_tokens=max_output_tokens,
+            )
+            if chat_text:
+                return chat_text
+            _log_generation_failure(chat_error=chat_error, responses_error=responses_error)
+            self.last_error = _merge_errors(chat_error=chat_error, responses_error=responses_error)
+            return None
+
+        chat_text, chat_error = self._generate_chat(
+            prompt,
+            system_prompt,
+            json_mode=json_mode,
+            max_output_tokens=max_output_tokens,
+        )
+        if chat_text:
+            return chat_text
+        responses_text, responses_error = self._generate_responses(
+            prompt,
+            system_prompt,
+            json_mode=json_mode,
+            max_output_tokens=max_output_tokens,
+        )
+        if responses_text:
+            return responses_text
+        _log_generation_failure(chat_error=chat_error, responses_error=responses_error)
+        self.last_error = _merge_errors(chat_error=chat_error, responses_error=responses_error)
+        return None
+
+    def _generate_chat(
+        self,
+        prompt: str,
+        system_prompt: str | None,
+        json_mode: bool = False,
+        max_output_tokens: int | None = None,
+    ) -> tuple[str | None, Exception | None]:
         chat_error: Exception | None = None
         messages: list[dict[str, Any]] = []
         if system_prompt:
@@ -65,39 +122,89 @@ class LLMClient:
         messages.append({"role": "user", "content": prompt})
 
         try:
+            kwargs: dict[str, Any] = {
+                "model": self.settings.model,
+                "messages": messages,
+                "temperature": self.settings.temperature,
+            }
+            if json_mode:
+                kwargs["response_format"] = {"type": "json_object"}
+            if max_output_tokens is not None:
+                kwargs["max_completion_tokens"] = max_output_tokens
             resp = self.client.chat.completions.create(
-                model=self.settings.model,
-                messages=messages,
-                temperature=self.settings.temperature,
+                **kwargs,
             )
             content = resp.choices[0].message.content if resp.choices else None
             normalized = _normalize_content(content)
             if normalized:
-                return normalized
+                return normalized, None
         except Exception as exc:  # pragma: no cover - external system path
             chat_error = exc
+        return None, chat_error
 
-        # Some gateways/models (for example GPT-5 series on router providers) expose
-        # only the Responses API route.
+    def _generate_responses(
+        self,
+        prompt: str,
+        system_prompt: str | None,
+        json_mode: bool = False,
+        max_output_tokens: int | None = None,
+    ) -> tuple[str | None, Exception | None]:
         try:
             response_input = _build_responses_input(prompt=prompt, system_prompt=system_prompt)
-            resp2 = self.client.responses.create(
-                model=self.settings.model,
-                input=response_input,
-            )
+            kwargs: dict[str, Any] = {
+                "model": self.settings.model,
+                "input": response_input,
+                "temperature": self.settings.temperature,
+            }
+            if json_mode:
+                kwargs["text"] = {"format": {"type": "json_object"}, "verbosity": "low"}
+            if max_output_tokens is not None:
+                kwargs["max_output_tokens"] = max_output_tokens
+            if _prefer_low_reasoning(self.settings):
+                kwargs["reasoning"] = {"effort": "minimal"}
+            try:
+                resp2 = self.client.responses.create(**kwargs)
+            except Exception:
+                if "reasoning" not in kwargs:
+                    raise
+                kwargs.pop("reasoning", None)
+                resp2 = self.client.responses.create(**kwargs)
             normalized2 = _normalize_responses_output(resp2)
             if normalized2:
-                return normalized2
+                return normalized2, None
         except Exception as exc2:  # pragma: no cover - external system path
-            if chat_error is not None:
-                logger.warning("OpenAI generation failed: chat=%s ; responses=%s", chat_error, exc2)
-            else:
-                logger.warning("OpenAI generation failed: responses=%s", exc2)
-            return None
+            return None, exc2
+        return None, None
 
-        if chat_error is not None:
-            logger.warning("OpenAI generation failed: %s", chat_error)
-        return None
+
+def _prefer_responses_first(settings: LLMSettings) -> bool:
+    base_url = (settings.base_url or "").lower()
+    model = settings.model.lower()
+    return "right.codes" in base_url or model.startswith("gpt-5")
+
+
+def _prefer_low_reasoning(settings: LLMSettings) -> bool:
+    model = settings.model.lower()
+    return model.startswith("gpt-5")
+
+
+def _merge_errors(chat_error: Exception | None, responses_error: Exception | None) -> str | None:
+    if chat_error is not None and responses_error is not None:
+        return f"chat={chat_error}; responses={responses_error}"
+    if responses_error is not None:
+        return str(responses_error)
+    if chat_error is not None:
+        return str(chat_error)
+    return None
+
+
+def _log_generation_failure(chat_error: Exception | None, responses_error: Exception | None) -> None:
+    if chat_error is not None and responses_error is not None:
+        logger.warning("OpenAI generation failed: chat=%s ; responses=%s", chat_error, responses_error)
+    elif responses_error is not None:
+        logger.warning("OpenAI generation failed: responses=%s", responses_error)
+    elif chat_error is not None:
+        logger.warning("OpenAI generation failed: chat=%s", chat_error)
 
 
 def _normalize_content(content: Any) -> str | None:

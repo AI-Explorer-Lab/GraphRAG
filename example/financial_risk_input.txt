@@ -1,15 +1,30 @@
-跨平台支付与信贷风控示例输入
+金融风控小型 GraphRAG 示例输入
 
-本示例描述一个支付、商户收单、信贷钱包和反洗钱联动的综合风控场景。平台同时服务个人用户、小微商户、跨境商户和信贷合作方。风险团队希望把身份、账户、设备、商户、资金流、外部数据源、特征、模型、规则、决策和处置动作统一到一张可追溯的图里，用于 GraphRAG 问答、下游影响分析和人工调查辅助。
+这个示例描述一个较小的支付与反洗钱风控场景，目标是把身份、账户、设备、资金流、数据源、特征、模型、规则、决策和处置动作放到同一张可追踪图谱中。配套的 JSON 文件是 financial_risk_lineage.json，包含 30 个实体节点和 30 条显式业务关系边，适合作为入门 demo。
 
-业务背景：Alice Chen 是低风险工资用户，使用主支付账户和 BNPL 钱包进行日常消费；Bob Li 是新用户，近期完成开户但交易规模较小；Carla Wang 与多起退款、拒付和数字商品购买事件相关；Felix Gao 被怀疑是合成身份用户，和 Hank Xu 共用手机号、代理 IP、Cookie 集群以及模拟器设备。Orion Trading Ltd 和 Nova Crypto OTC 形成高风险跨境及虚拟资产交易链路，Lotus Digital Market 与 Lotus Shop 则代表中风险正常商户，但近期退款比例上升。
+边的 schema 是固定的。顶层字段 transitions 只是“边列表”的容器，真正的边类型写在每条边的 relation 字段里，只允许使用 owns、uses、transfers_to、provides_to、scores、triggers 这 6 类业务关系。children 字段用于表达层级归属，系统导入时会自动转成 has 关系。
 
-资金流方面，Alice 从银行账户充值到钱包并在 Lotus Shop 消费；Carla 通过借记卡参与高价值退款、数字商品购买和拒付；Felix 的快贷钱包把资金转给 Hank 的收款账户，Hank 再通过小额拆分转入 Orion 的结算账户；Orion 进一步经过公司卡和虚拟资产商户形成疑似洗钱路径。David Zhao 发起跨境汇款，风险中等；Lotus Shop 产生商户清算出款；Micro Lending Partner 触发 Felix 的贷款发放和异常还款链路。
+业务背景：
+Felix Gao 是一个高风险用户，被怀疑存在合成身份行为。他拥有一个影子支付账户 acct_felix_shadow 和一个快贷钱包 wallet_felix_fastloan。Hank Xu 是高风险收款人，拥有 acct_hank_receiver，被怀疑是 mule account。Orion Trading Ltd 是一个高风险企业主体，拥有结算账户 acct_orion_settle，并与虚拟资产商户 Nova Crypto OTC 存在受益人重叠。
 
-数据源方面，KYC 注册库提供身份一致性与黑名单重叠信息，银行卡 BIN 源提供发卡行和卡产品特征，征信源提供逾期和查询记录，设备指纹源提供模拟器、Cookie、IP 和设备复用信号，黑名单交换源提供外部欺诈和钱骡名单，实时交易流提供金额、交易对手、渠道和地理位置，商户收单源提供 MCC、终端、清算和争议信息，案件调查源提供人工审核结果、调查员备注和 SAR 历史。
+设备和身份线索：
+Felix 和 Hank 都使用过同一个安卓模拟器集群 dev_emulator_01，也都绑定或使用过共享手机号 phone_shared_138001。Felix 还使用过代理 IP 池 ip_proxy_pool_a。这些设备、网络和手机号重叠，是规则 rule_shared_phone_kyc 和 mule cluster 分析的重要证据。
 
-特征层需要汇总身份一致性、设备复用度、IP 地理速度、绑卡熵、资金循环特征、商户退款率、信贷逾期信号、黑名单重叠、钱骡团伙分数和 SAR 叙事信号。这些特征分别进入实时支付欺诈模型、AML 图环模型、信贷额度模型、商户滥用模型、设备农场模型，以及拒付激增、十分钟速度、共享手机号 KYC 等规则。
+资金流线索：
+Felix 的快贷钱包 wallet_felix_fastloan 先把资金转入交易事件 txn_transfer_felix_hank_004，再进入 Hank 的收款账户 acct_hank_receiver。随后 Hank 的账户通过 txn_micro_transfer_ring_012 进行小额拆分转账，资金进入 Orion 的结算账户 acct_orion_settle，最后流向 Nova Crypto OTC。这个路径代表一个紧凑的可疑资金链：
 
-决策层包括实时支付拦截、人工审核队列、账户冻结、额度降低、可疑交易报告 SAR 和商户审计案件。风控团队希望能询问：如果设备指纹源延迟，会影响哪些特征、模型和处置？如果 Felix 的钱包被标记为高风险，会沿着哪些资金路径影响 Hank、Orion 和 SAR？如果商户退款率特征被下线，会影响哪些商户模型、规则和人工审核？如果共享手机号规则阈值变化，会影响哪些人、设备和账户冻结动作？
+wallet_felix_fastloan -> txn_transfer_felix_hank_004 -> acct_hank_receiver -> txn_micro_transfer_ring_012 -> acct_orion_settle -> mch_nova_crypto_otc
 
-该文本代表未来从非结构化描述生成结构化 lineage JSON 的输入。当前项目仍以 JSON 为正式导入格式，因此配套的 financial_risk_lineage.json 已经把上述场景整理成约 100 个实体节点和多种受控业务关系边：owns、uses、transfers_to、provides_to、scores、triggers。
+数据和特征线索：
+实时交易流 src_transaction_stream 提供交易金额、交易对手、渠道和设备上下文，生成两个核心特征：feat_fund_flow_cycle 和 feat_mule_cluster_score。交易事件 txn_transfer_felix_hank_004 也为 fund-flow cycle 特征提供输入，txn_micro_transfer_ring_012 为 mule cluster score 特征提供输入。共享手机号 phone_shared_138001 为 shared phone KYC 规则提供输入。
+
+模型、规则和处置：
+AML graph ring 模型 mdl_aml_graph_ring 使用 feat_fund_flow_cycle 和 feat_mule_cluster_score，对 txn_micro_transfer_ring_012、acct_hank_receiver 和 biz_orion_trade 打高分。shared phone KYC 规则 rule_shared_phone_kyc 对 Felix 和 Hank 打高分。模型和规则都会触发人工审核 dec_manual_review；如果分析师确认 mule cluster，人工审核会触发账户冻结动作 act_account_freeze。
+
+可以用这个小图测试的问题：
+1. Felix 为什么是高风险用户？
+2. Felix 和 Hank 之间有哪些共享设备或共享手机号？
+3. 从 Felix 的快贷钱包到 Nova Crypto OTC 的资金路径是什么？
+4. 哪些特征进入了 AML graph ring model？
+5. 如果 phone_shared_138001 被证明误报，会影响哪些规则、评分和决策？
+6. 如果 txn_micro_transfer_ring_012 被标记为高风险，会影响哪些模型和处置动作？

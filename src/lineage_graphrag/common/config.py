@@ -33,6 +33,12 @@ def _env_first(names: list[str]) -> str | None:
     return None
 
 
+def _llm_env_names(active_provider: str, generic_name: str, provider_name: str) -> list[str]:
+    if active_provider.lower() in {"openai", "default"}:
+        return [generic_name, provider_name]
+    return [provider_name]
+
+
 def _as_dict(raw: Any) -> dict[str, Any]:
     return raw if isinstance(raw, dict) else {}
 
@@ -59,7 +65,6 @@ def _normalize_provider_base_url(active_provider: str, base_url: str | None) -> 
 class AppConfig:
     use_falkordb: bool = False
     falkordb_url: str = "redis://localhost:6379/0"
-    snapshot_dir: str = "data/normalized"
     default_top_k: int = 8
     default_ask_mode: str = "agent"
     agent_max_steps: int = 4
@@ -82,7 +87,6 @@ class AppConfig:
 
         use_falkordb_default = bool(app_cfg.get("use_falkordb", False))
         falkordb_url_default = _as_str(app_cfg.get("falkordb_url"), "redis://localhost:6379/0")
-        snapshot_dir_default = _as_str(app_cfg.get("snapshot_dir"), "data/normalized")
         default_top_k_default = int(app_cfg.get("default_top_k", 8))
         default_ask_mode_default = _as_str(app_cfg.get("default_ask_mode"), "agent")
         agent_max_steps_default = int(app_cfg.get("agent_max_steps", 4))
@@ -115,26 +119,32 @@ class AppConfig:
         provider_upper = active_provider.upper().replace("-", "_")
         provider_api_env = f"{provider_upper}_API_KEY"
         provider_base_env = f"{provider_upper}_BASE_URL"
+        provider_model_env = f"{provider_upper}_MODEL"
         provider_timeout_env = f"{provider_upper}_TIMEOUT_SECONDS"
 
         api_key = (
-            _env_first(["OPENAI_API_KEY", provider_api_env])
+            _env_first(_llm_env_names(active_provider, "OPENAI_API_KEY", provider_api_env))
             or (str(api_key_default).strip() if api_key_default else None)
         )
 
-        base_url_env_candidates = ["OPENAI_BASE_URL", provider_base_env]
+        base_url_env_candidates = _llm_env_names(active_provider, "OPENAI_BASE_URL", provider_base_env)
         if active_provider.lower() == "anyrouter":
             base_url_env_candidates = ["ANTHROPIC_BASE_URL", *base_url_env_candidates]
         base_url = _env_first(base_url_env_candidates) or (str(base_url_default).strip() if base_url_default else None)
         base_url = _normalize_provider_base_url(active_provider, base_url)
 
-        timeout_raw = _env_first(["OPENAI_TIMEOUT_SECONDS", provider_timeout_env])
+        timeout_raw = _env_first(
+            _llm_env_names(active_provider, "OPENAI_TIMEOUT_SECONDS", provider_timeout_env)
+        )
         timeout_seconds = float(timeout_raw) if timeout_raw is not None else timeout_default
+        model = (
+            _env_first(_llm_env_names(active_provider, "LINEAGE_LLM_MODEL", provider_model_env))
+            or model_default
+        )
 
         return cls(
             use_falkordb=_env_bool("LINEAGE_USE_FALKORDB", use_falkordb_default),
             falkordb_url=os.getenv("LINEAGE_FALKORDB_URL", falkordb_url_default),
-            snapshot_dir=os.getenv("LINEAGE_SNAPSHOT_DIR", snapshot_dir_default),
             default_top_k=int(os.getenv("LINEAGE_DEFAULT_TOP_K", str(default_top_k_default))),
             default_ask_mode=os.getenv("LINEAGE_DEFAULT_ASK_MODE", default_ask_mode_default),
             agent_max_steps=int(os.getenv("LINEAGE_AGENT_MAX_STEPS", str(agent_max_steps_default))),
@@ -151,7 +161,7 @@ class AppConfig:
             enable_faiss=_env_bool("LINEAGE_ENABLE_FAISS", enable_faiss_default),
             llm_active_provider=active_provider,
             llm_provider=os.getenv("LINEAGE_LLM_PROVIDER", provider_default),
-            llm_model=os.getenv("LINEAGE_LLM_MODEL", model_default),
+            llm_model=model,
             openai_api_key=api_key,
             openai_base_url=base_url,
             openai_timeout_seconds=timeout_seconds,

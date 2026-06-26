@@ -6,3 +6,8 @@ __pycache__/
 data/normalized/*.json
 
 plan-for-lineage-graphrag.md
+
+/docs/
+/tests/
+
+tests/
