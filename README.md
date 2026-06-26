@@ -1,4 +1,4 @@
-# lineage-graphrag
+﻿# lineage-graphrag
 
 Lineage GraphRAG is a deterministic GraphRAG engine for data lineage JSON. It turns structured lineage payloads into a four-level graph, retrieves evidence through graph-aware dual-path retrieval, and answers lineage or what-if impact questions with traceable evidence.
 
@@ -60,7 +60,7 @@ python --version
 
 ```bash
 python -m pip install -e ".[dev]"
-python scripts/run_api.py --config configs/local.yaml --reload
+python main.py --reload
 ```
 
 The API starts on port `8001` by default:
@@ -211,3 +211,4 @@ Demo or evolving pieces:
 - LLM-backed answer quality depends on configured provider and credentials.
 - Evaluation modules are smoke checks, not a full benchmark harness.
 - The default local demo path is FalkorDB-backed; running without FalkorDB is an in-memory-only development mode.
+

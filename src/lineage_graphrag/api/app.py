@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import os
 from pathlib import Path
@@ -9,14 +9,14 @@ from fastapi.responses import JSONResponse
 from lineage_graphrag.api.routes_impact import router as impact_router
 from lineage_graphrag.api.routes_ingest import router as ingest_router
 from lineage_graphrag.api.routes_query import router as query_router
-from lineage_graphrag.common.config import AppConfig
+from lineage_graphrag.common.config import AppConfig, default_config_path
 from lineage_graphrag.common.logging import get_logger
 from lineage_graphrag.storage.graph_repository import GraphRepository
 
 logger = get_logger(__name__)
 
 
-def create_app(config_path: str | Path = "configs/base.yaml") -> FastAPI:
+def create_app(config_path: str | Path | None = None) -> FastAPI:
     cfg = AppConfig.from_yaml(config_path)
     app = FastAPI(title="lineage-graphrag", version="0.1.0")
 
@@ -57,8 +57,10 @@ class LazyApp:
 
     async def __call__(self, scope, receive, send) -> None:
         if self._app is None:
-            self._app = create_app(os.getenv("LINEAGE_CONFIG", "configs/base.yaml"))
+            self._app = create_app(os.getenv("LINEAGE_CONFIG") or default_config_path())
         await self._app(scope, receive, send)
 
 
 app = LazyApp()
+
+

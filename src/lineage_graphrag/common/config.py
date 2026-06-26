@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass
 import os
@@ -6,6 +6,22 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
+DEFAULT_CONFIG_CANDIDATES = (
+    "configs/local.yaml",
+    "configs/base.yaml",
+)
+
+
+def default_config_path() -> str:
+    for candidate in DEFAULT_CONFIG_CANDIDATES:
+        if Path(candidate).exists():
+            return candidate
+    return DEFAULT_CONFIG_CANDIDATES[-1]
+
+
+def resolve_config_path(path: str | Path | None = None) -> Path:
+    return Path(path) if path else Path(default_config_path())
 
 
 def _env_bool(name: str, default: bool) -> bool:
@@ -80,8 +96,9 @@ class AppConfig:
     openai_timeout_seconds: float = 30.0
 
     @classmethod
-    def from_yaml(cls, path: str | Path) -> "AppConfig":
-        with open(path, "r", encoding="utf-8") as f:
+    def from_yaml(cls, path: str | Path | None = None) -> "AppConfig":
+        config_path = resolve_config_path(path)
+        with open(config_path, "r", encoding="utf-8") as f:
             payload: dict[str, Any] = yaml.safe_load(f) or {}
         app_cfg = _as_dict(payload.get("app"))
 
@@ -166,3 +183,5 @@ class AppConfig:
             openai_base_url=base_url,
             openai_timeout_seconds=timeout_seconds,
         )
+
+

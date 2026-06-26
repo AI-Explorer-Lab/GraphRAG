@@ -16,6 +16,7 @@ def extract_subgraph(graph: nx.MultiDiGraph, node_id: str, hops: int = 1) -> dic
     node_payload = [
         {
             "id": n,
+            "display_id": _display_id(n, d),
             "label": d.get("label", "entity"),
             "level": d.get("level", 2),
             "properties": d.get("properties", {}),
@@ -34,3 +35,10 @@ def extract_subgraph(graph: nx.MultiDiGraph, node_id: str, hops: int = 1) -> dic
     ]
     return {"nodes": node_payload, "edges": edge_payload}
 
+
+def _display_id(node_id: str, node_data: dict[str, Any]) -> str:
+    if str(node_data.get("label", "")).lower() == "attribute" and node_id.startswith("attr::"):
+        parts = node_id.split("::", 2)
+        if len(parts) == 3 and parts[2]:
+            return parts[2]
+    return node_id

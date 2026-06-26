@@ -1,4 +1,4 @@
-# FalkorDB Runtime
+﻿# FalkorDB Runtime
 
 FalkorDB is the durable graph store when enabled. The API keeps an in-memory cache for requests, and startup/manual sync load that cache from FalkorDB.
 
@@ -28,14 +28,14 @@ http://localhost:3000
 Linux/macOS:
 
 ```bash
-LINEAGE_USE_FALKORDB=true python scripts/run_api.py --config configs/local.yaml --reload
+LINEAGE_USE_FALKORDB=true python main.py --reload
 ```
 
 Windows PowerShell:
 
 ```powershell
 $env:LINEAGE_USE_FALKORDB="true"
-python scripts/run_api.py --config configs/local.yaml --reload
+python main.py --reload
 ```
 
 ## Import And Verify
@@ -71,3 +71,5 @@ curl -X POST "http://localhost:8001/v1/graphs/sync"
 ```
 
 The frontend `Sync FalkorDB` button calls the same endpoint, then refreshes the graph id dropdown.
+
+
