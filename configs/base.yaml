@@ -1,7 +1,6 @@
 app:
   use_falkordb: false
   falkordb_url: redis://localhost:6379/0
-  snapshot_dir: data/normalized
   default_top_k: 8
   default_ask_mode: agent
   agent_max_steps: 4

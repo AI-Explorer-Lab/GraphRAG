@@ -1,7 +1,6 @@
 app:
   use_falkordb: true
   falkordb_url: redis://127.0.0.1:6379/0
-  snapshot_dir: data/normalized
   default_top_k: 8
   default_ask_mode: agent
   agent_max_steps: 4
@@ -10,12 +9,18 @@ app:
   enable_faiss: true
 
   llm:
-    active_provider: anyrouter
+    active_provider: rightcode
     providers:
+      rightcode:
+        provider: openai
+        model: gpt-5.4-mini
+        api_key: "sk-022b79251eae4908a48b7933943227ad"
+        base_url: "https://www.right.codes/codex/v1"
+        timeout_seconds: 300
       anyrouter:
         provider: openai
-        model: gpt-5.3-codex
-        api_key: ""
+        model: gpt-5.4-mini
+        api_key: "sk-qCQxhqNWFFiZCLq8p0kdxpaVltjstHueAk2KOOTyMa32DOJm"
         base_url: "https://anyrouter.top/v1"
         timeout_seconds: 60
       openai:

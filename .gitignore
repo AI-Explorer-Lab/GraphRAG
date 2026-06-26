@@ -11,3 +11,6 @@ plan-for-lineage-graphrag.md
 /tests/
 
 tests/
+.DS_Store
+
+lineage-graph-项目解读/
