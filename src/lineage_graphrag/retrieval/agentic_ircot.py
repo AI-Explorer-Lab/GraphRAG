@@ -51,6 +51,7 @@ class AgenticIRCoT:
         merged_chunk_ids: list[str] = []
         merged_chunk_contents: list[str] = []
         merged_paths: list[Any] = []
+        subquery_results: list[dict[str, Any]] = []
         step_logs: list[dict[str, Any]] = []
 
         for sub_q in sub_questions:
@@ -66,6 +67,7 @@ class AgenticIRCoT:
             merged_chunk_ids.extend(result.get("chunk_ids", []))
             merged_chunk_contents.extend(result.get("chunk_contents", []))
             merged_paths.extend(result.get("paths", []))
+            subquery_results.append(result)
             step_logs.append(
                 {
                     "step": 0,
@@ -76,13 +78,16 @@ class AgenticIRCoT:
                 }
             )
 
-        retrieval_result = _build_retrieval_result(
-            merged_triples,
-            merged_chunk_ids,
-            merged_chunk_contents,
-            merged_paths,
-            top_k=top_k,
-        )
+        if subquery_results:
+            retrieval_result = _build_retrieval_result_from_results(subquery_results, top_k=top_k)
+        else:
+            retrieval_result = _build_retrieval_result(
+                merged_triples,
+                merged_chunk_ids,
+                merged_chunk_contents,
+                merged_paths,
+                top_k=top_k,
+            )
 
         normalized_mode = mode.lower().strip() if isinstance(mode, str) else "agent"
         if normalized_mode not in {"agent", "noagent"}:
@@ -133,7 +138,6 @@ class AgenticIRCoT:
                 }
             )
             if final:
-                final_answer = final
                 break
             if not new_query or new_query == current_query:
                 break
@@ -147,8 +151,8 @@ class AgenticIRCoT:
                 involved_types=involved_types,  # type: ignore[arg-type]
             )
             retrieval_result = _merge_retrieval_results(retrieval_result, iter_result, top_k=top_k)
-            final_answer = self.answer_gen.generate(question, retrieval_result)
 
+        final_answer = self.answer_gen.generate(question, retrieval_result)
         retrieval_result["reasoning_steps"] = step_logs
         retrieval_result["mode"] = normalized_mode
         return {
@@ -175,14 +179,35 @@ def _build_retrieval_result(
     }
 
 
+def _build_retrieval_result_from_results(results: list[dict[str, Any]], top_k: int) -> dict[str, Any]:
+    limit = _evidence_limit(top_k, result_count=len(results))
+    chunk_pairs_by_result = [
+        list(zip(result.get("chunk_ids", []), result.get("chunk_contents", []))) for result in results
+    ]
+    paths: list[Any] = []
+    for result in results:
+        paths.extend(result.get("paths", []))
+    chunk_pairs = _round_robin_unique_pairs(chunk_pairs_by_result, limit=limit)
+
+    return {
+        "triples": _round_robin_unique([result.get("triples", []) for result in results], limit=limit),
+        "chunk_ids": [cid for cid, _ in chunk_pairs],
+        "chunk_contents": [content for _, content in chunk_pairs],
+        "paths": paths[:limit],
+    }
+
+
 def _merge_retrieval_results(base: dict[str, Any], inc: dict[str, Any], top_k: int) -> dict[str, Any]:
-    limit = max(top_k * 2, top_k)
+    limit = _evidence_limit(top_k, result_count=2)
+    chunk_pairs = [
+        list(zip(base.get("chunk_ids", []), base.get("chunk_contents", []))),
+        list(zip(inc.get("chunk_ids", []), inc.get("chunk_contents", []))),
+    ]
+    merged_chunk_pairs = _round_robin_unique_pairs(chunk_pairs, limit=limit)
     merged = {
-        "triples": list(dict.fromkeys(list(base.get("triples", [])) + list(inc.get("triples", []))))[:limit],
-        "chunk_ids": list(dict.fromkeys(list(base.get("chunk_ids", [])) + list(inc.get("chunk_ids", []))))[:limit],
-        "chunk_contents": list(
-            dict.fromkeys(list(base.get("chunk_contents", [])) + list(inc.get("chunk_contents", [])))
-        )[:limit],
+        "triples": _round_robin_unique([base.get("triples", []), inc.get("triples", [])], limit=limit),
+        "chunk_ids": [cid for cid, _ in merged_chunk_pairs],
+        "chunk_contents": [content for _, content in merged_chunk_pairs],
         "paths": list(base.get("paths", []))[:limit] + list(inc.get("paths", []))[:limit],
     }
     merged["paths"] = merged["paths"][:limit]
@@ -192,8 +217,57 @@ def _merge_retrieval_results(base: dict[str, Any], inc: dict[str, Any], top_k: i
 def _build_context(retrieval_result: dict[str, Any]) -> str:
     triples = retrieval_result.get("triples", [])
     chunks = retrieval_result.get("chunk_contents", [])
-    lines = ["=== Triples ===", *[str(x) for x in triples[:12]], "=== Chunks ===", *[str(x) for x in chunks[:8]]]
+    chunk_ids = retrieval_result.get("chunk_ids", [])
+    formatted_chunks = []
+    for index, chunk in enumerate(chunks[:12]):
+        if index < len(chunk_ids):
+            formatted_chunks.append(f"[{chunk_ids[index]}] {chunk}")
+        else:
+            formatted_chunks.append(str(chunk))
+    lines = ["=== Triples ===", *[str(x) for x in triples[:16]], "=== Chunks ===", *formatted_chunks]
     return "\n".join(lines)
+
+
+def _evidence_limit(top_k: int, result_count: int = 1) -> int:
+    return min(max(top_k * max(2, result_count), top_k), 50)
+
+
+def _round_robin_unique(groups: list[list[Any]], limit: int) -> list[Any]:
+    selected: list[Any] = []
+    seen: set[str] = set()
+    max_len = max((len(group) for group in groups), default=0)
+    for index in range(max_len):
+        for group in groups:
+            if index >= len(group):
+                continue
+            item = group[index]
+            key = str(item)
+            if key in seen:
+                continue
+            seen.add(key)
+            selected.append(item)
+            if len(selected) >= limit:
+                return selected
+    return selected
+
+
+def _round_robin_unique_pairs(groups: list[list[tuple[Any, Any]]], limit: int) -> list[tuple[Any, Any]]:
+    selected: list[tuple[Any, Any]] = []
+    seen: set[str] = set()
+    max_len = max((len(group) for group in groups), default=0)
+    for index in range(max_len):
+        for group in groups:
+            if index >= len(group):
+                continue
+            key_item, value_item = group[index]
+            key = str(key_item)
+            if key in seen:
+                continue
+            seen.add(key)
+            selected.append((key_item, value_item))
+            if len(selected) >= limit:
+                return selected
+    return selected
 
 
 def _extract_final_answer(reasoning: str) -> str | None:
@@ -210,4 +284,3 @@ def _extract_new_query(reasoning: str) -> str | None:
         return None
     query = match.group(1).strip().splitlines()[0].strip()
     return query or None
-

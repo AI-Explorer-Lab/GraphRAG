@@ -4,14 +4,23 @@ from __future__ import annotations
 def build_answer_prompt(question: str, triples: list[str], chunks: list[str], impact_summary: str | None = None) -> str:
     prompt = [
         "You are a lineage analysis assistant. Answer only from the provided evidence.",
+        "Use the same language as the question.",
+        "Grounding rules:",
+        "- Use only the triples and evidence chunks below; do not invent facts or node ids.",
+        "- Cover all direct evidence categories that support the answer.",
+        "- For why/risk questions, check ownership/path evidence, shared behavior or signal evidence, and rule/model/decision evidence before answering.",
+        "- Mention important node ids and transition ids with backticks.",
+        "- If the question is Chinese and named nodes are important, end with `关键证据节点：` followed by a short bullet list.",
+        "- If the provided evidence is incomplete, say exactly what is missing instead of guessing.",
         f"Question: {question}",
         "Triples:",
-        *triples[:8],
-        "Chunks:",
-        *chunks[:4],
+        *(triples[:16] or ["None"]),
+        "Evidence chunks:",
+        *(chunks[:12] or ["None"]),
     ]
     if impact_summary:
         prompt.append(f"Impact: {impact_summary}")
+    prompt.append("Write a concise, evidence-complete answer.")
     return "\n".join(prompt)
 
 

@@ -23,7 +23,8 @@ class AnswerGenerator:
 
     def generate(self, question: str, retrieval_result: dict, impact_report: ImpactReport | None = None) -> str:
         triples = retrieval_result.get("triples", [])
-        chunks = retrieval_result.get("chunk_contents", [])
+        chunk_ids = retrieval_result.get("chunk_ids", [])
+        chunks = _format_evidence_chunks(chunk_ids, retrieval_result.get("chunk_contents", []))
         impact_summary = None
         if impact_report:
             impact_summary = (
@@ -55,3 +56,13 @@ class AnswerGenerator:
         if not triples and not chunks:
             lines.append("No evidence was retrieved. Please refine the query.")
         return "\n".join(lines)
+
+
+def _format_evidence_chunks(chunk_ids: list[str], chunk_contents: list[str]) -> list[str]:
+    formatted: list[str] = []
+    for index, content in enumerate(chunk_contents):
+        if index < len(chunk_ids) and chunk_ids[index]:
+            formatted.append(f"[{chunk_ids[index]}] {content}")
+        else:
+            formatted.append(str(content))
+    return formatted

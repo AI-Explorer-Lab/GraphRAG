@@ -183,7 +183,7 @@ class DualPathFAISSRetriever:
         return {
             "top_nodes": top_nodes[:top_k],
             "one_hop_triples": one_hop_triples,
-            "chunk_ids": list(chunk_ids),
+            "chunk_ids": sorted(chunk_ids),
         }
 
     def _path2_triple_community(self, graph: nx.MultiDiGraph, query_vec: np.ndarray, top_k: int) -> dict[str, Any]:
@@ -234,7 +234,7 @@ class DualPathFAISSRetriever:
         )[: max(top_k * 2, top_k)]
         return {
             "scored_triples": scored_triples,
-            "chunk_ids": list(chunk_ids),
+            "chunk_ids": sorted(chunk_ids),
         }
 
     def _search_chunk_ids(self, query_vec: np.ndarray, top_k: int) -> list[str]:
