@@ -20,20 +20,22 @@ Return a compact JSON object with this exact shape:
     {
       "source_id": "<stable_ascii_snake_case_id>",
       "source_name": "<short human readable name>",
-      "source_type": "person|account|wallet|device|merchant|transaction|data_source|feature|model|rule|decision|action|domain|entity",
+      "source_type": "user|person|business|account|settlement_account|wallet|device|phone|merchant|transaction|data_source|feature|model|rule|decision|action|report|domain|entity",
       "relation": "owns|uses|transfers_to|provides_to|scores|triggers",
       "target_id": "<stable_ascii_snake_case_id>",
       "target_name": "<short human readable name>",
-      "target_type": "person|account|wallet|device|merchant|transaction|data_source|feature|model|rule|decision|action|domain|entity",
+      "target_type": "user|person|business|account|settlement_account|wallet|device|phone|merchant|transaction|data_source|feature|model|rule|decision|action|report|domain|entity",
       "reason": "<very short reason>"
     }
   ]
 }
 Use stable snake_case ids. Only use entities and relations supported by the schema.
 Keep all user-facing content in Chinese when the input text is Chinese: source_name, target_name, and reason must preserve the input language.
+Do not translate Chinese entity names into English. Use short Chinese phrases copied or summarized from the input for source_name and target_name.
 Only technical ids should use ASCII snake_case.
 Keep output compact for interactive demos: at most 16 relations and at most 12 unique entities.
-Prefer the most important people, accounts, devices, merchants, fund-flow events, features, models, rules, decisions, and actions.
+For payment-risk lineage, preserve the business flow across users, businesses, accounts, wallets, devices, phones, merchants, transactions, data sources, features, models, rules, decisions, actions, and reports.
+Prefer the most important subjects, accounts, devices, merchants, fund-flow events, features, models, rules, decisions, actions, and reports.
 Omit low-signal details instead of trying to cover every noun in the input.
 Keep source_name and target_name under 18 Chinese characters. Keep reason under 24 Chinese characters.
 Return compact minified JSON without pretty-print indentation.
@@ -66,6 +68,7 @@ class TextLineageExtractor:
         system_prompt = (
             "You convert business lineage descriptions into strict JSON for a GraphRAG system. "
             "Preserve the input language for all user-facing names, descriptions, and evidence. "
+            "For Chinese input, do not translate visible names into English; only ids use ASCII snake_case. "
             "Return valid JSON only, with no markdown or commentary."
         )
         started = perf_counter()

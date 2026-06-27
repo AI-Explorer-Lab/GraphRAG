@@ -12,6 +12,10 @@ class ImportRequest(BaseModel):
     lineage_json: dict[str, Any]
 
 
+class LineagePreviewRequest(BaseModel):
+    lineage_json: dict[str, Any]
+
+
 class TextImportRequest(BaseModel):
     graph_id: str
     text: str = Field(min_length=1)

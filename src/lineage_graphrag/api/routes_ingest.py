@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 
 from lineage_graphrag.api.dependencies import get_repo
 from lineage_graphrag.common.logging import get_logger
-from lineage_graphrag.domain.query_models import ImportRequest, TextImportRequest
+from lineage_graphrag.domain.query_models import ImportRequest, LineagePreviewRequest, TextImportRequest
 from lineage_graphrag.graph.kt_builder import LineageKTBuilder
 from lineage_graphrag.ingest.normalizer import LineageNormalizer
 from lineage_graphrag.ingest.parser import LineageParser
@@ -26,6 +26,39 @@ def _focus_node_id(normalized) -> str | None:
         if entity_type in high_signal:
             return entity.id
     return normalized.entities[0].id
+
+
+def _preview_lineage(lineage_json: dict) -> dict:
+    parser = LineageParser()
+    normalizer = LineageNormalizer()
+    lineage = parser.parse(lineage_json)
+    normalized = normalizer.normalize(lineage)
+    result = LineageKTBuilder().build(normalized)
+    relation_counts: dict[str, int] = {}
+    for transition in normalized.transitions:
+        relation_counts[transition.relation] = relation_counts.get(transition.relation, 0) + 1
+    checklist = [
+        {"label": "lineage JSON 可解析", "ok": True},
+        {"label": "entities", "ok": len(normalized.entities) > 0, "value": len(normalized.entities)},
+        {"label": "transitions", "ok": len(normalized.transitions) > 0, "value": len(normalized.transitions)},
+        {"label": "has_relations", "ok": len(normalized.has_relations) > 0, "value": len(normalized.has_relations)},
+        {
+            "label": "relations",
+            "ok": bool(relation_counts),
+            "value": " / ".join(sorted(relation_counts)) if relation_counts else "none",
+        },
+    ]
+    return {
+        "entities": len(normalized.entities),
+        "transitions": len(normalized.transitions),
+        "has_relations": len(normalized.has_relations),
+        "metadata": result.metadata,
+        "chunks": len(result.evidence_chunks),
+        "focus_node_id": _focus_node_id(normalized),
+        "relation_counts": relation_counts,
+        "relation_types": sorted(relation_counts),
+        "checklist": checklist,
+    }
 
 
 def _materialize_graph(
@@ -62,6 +95,14 @@ def _materialize_graph(
         "chunks": len(result.evidence_chunks),
         "falkordb": falkor_status,
     }
+
+
+@router.post("/preview")
+def preview_lineage(payload: LineagePreviewRequest):
+    try:
+        return _preview_lineage(payload.lineage_json)
+    except Exception as exc:
+        raise HTTPException(status_code=422, detail=f"invalid lineage_json: {exc}") from exc
 
 
 @router.post("/import")

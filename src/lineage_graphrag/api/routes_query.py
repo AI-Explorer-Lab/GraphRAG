@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from lineage_graphrag.api.dependencies import get_repo
 from lineage_graphrag.domain.query_models import AskRequest, AskResponse
-from lineage_graphrag.graph.graph_views import extract_subgraph
+from lineage_graphrag.graph.graph_views import extract_graph, extract_subgraph
 from lineage_graphrag.retrieval.agentic_ircot import AgenticIRCoT
 from lineage_graphrag.storage.graph_repository import GraphRepository
 
@@ -59,11 +61,13 @@ def ask_question(
 @router.get("/v1/graphs/{graph_id}/subgraph")
 def get_subgraph(
     graph_id: str,
-    node_id: str = Query(..., description="center node id"),
+    node_id: Optional[str] = Query(None, description="optional center node id"),
     hops: int = Query(1, ge=1, le=3),
     repo: GraphRepository = Depends(get_repo),
 ):
     graph = repo.get_graph(graph_id)
     if graph is None:
         raise HTTPException(status_code=404, detail=f"graph_id '{graph_id}' not built")
+    if not node_id:
+        return extract_graph(graph)
     return extract_subgraph(graph, node_id=node_id, hops=hops)

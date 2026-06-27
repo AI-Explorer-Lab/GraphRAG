@@ -1,30 +1,7 @@
-金融风控小型 GraphRAG 示例输入
+风控调查从 Felix Gao 的一笔钱包转账开始。Felix 使用“Felix 快贷钱包”向 Hank Xu 控制的“Hank 收款账户”转入资金，随后 Hank 的账户又发起一笔转账，把资金打到 Orion Trading Ltd 使用的“Orion 结算账户”。资金进入 Orion 后继续流向 Nova Crypto OTC，这让整条路径呈现出从个人钱包、疑似中转账户、企业结算账户到虚拟资产商户的连续转移特征。
 
-这个示例描述一个较小的支付与反洗钱风控场景，目标是把身份、账户、设备、资金流、数据源、特征、模型、规则、决策和处置动作放到同一张可追踪图谱中。配套的 JSON 文件是 financial_risk_lineage.json，包含 30 个实体节点和 30 条显式业务关系边，适合作为入门 demo。
+调查过程中，Felix 和 Hank 暴露出相同的风险信号。两人都使用过同一台 Android 模拟器设备，也都绑定或使用过共享手机号 138001。风控团队因此把这台设备和该手机号作为关联线索，用来判断是否存在共享 KYC、批量注册或 mule account 控制关系。
 
-边的 schema 是固定的。顶层字段 transitions 只是“边列表”的容器，真正的边类型写在每条边的 relation 字段里，只允许使用 owns、uses、transfers_to、provides_to、scores、triggers 这 6 类业务关系。children 字段用于表达层级归属，系统导入时会自动转成 has 关系。
+系统侧的实时交易流会持续提供交易金额、交易对手方、渠道和设备上下文。这些数据被送入“资金循环特征”和“Mule 集群特征”：其中，Felix 转 Hank 的交易会加强资金循环特征，Android 模拟器设备会加强 Mule 集群特征，共享手机号 138001 则会被“共享手机号 KYC 规则”使用。
 
-业务背景：
-Felix Gao 是一个高风险用户，被怀疑存在合成身份行为。他拥有一个影子支付账户 acct_felix_shadow 和一个快贷钱包 wallet_felix_fastloan。Hank Xu 是高风险收款人，拥有 acct_hank_receiver，被怀疑是 mule account。Orion Trading Ltd 是一个高风险企业主体，拥有结算账户 acct_orion_settle，并与虚拟资产商户 Nova Crypto OTC 存在受益人重叠。
-
-设备和身份线索：
-Felix 和 Hank 都使用过同一个安卓模拟器集群 dev_emulator_01，也都绑定或使用过共享手机号 phone_shared_138001。Felix 还使用过代理 IP 池 ip_proxy_pool_a。这些设备、网络和手机号重叠，是规则 rule_shared_phone_kyc 和 mule cluster 分析的重要证据。
-
-资金流线索：
-Felix 的快贷钱包 wallet_felix_fastloan 先把资金转入交易事件 txn_transfer_felix_hank_004，再进入 Hank 的收款账户 acct_hank_receiver。随后 Hank 的账户通过 txn_micro_transfer_ring_012 进行小额拆分转账，资金进入 Orion 的结算账户 acct_orion_settle，最后流向 Nova Crypto OTC。这个路径代表一个紧凑的可疑资金链：
-
-wallet_felix_fastloan -> txn_transfer_felix_hank_004 -> acct_hank_receiver -> txn_micro_transfer_ring_012 -> acct_orion_settle -> mch_nova_crypto_otc
-
-数据和特征线索：
-实时交易流 src_transaction_stream 提供交易金额、交易对手、渠道和设备上下文，生成两个核心特征：feat_fund_flow_cycle 和 feat_mule_cluster_score。交易事件 txn_transfer_felix_hank_004 也为 fund-flow cycle 特征提供输入，txn_micro_transfer_ring_012 为 mule cluster score 特征提供输入。共享手机号 phone_shared_138001 为 shared phone KYC 规则提供输入。
-
-模型、规则和处置：
-AML graph ring 模型 mdl_aml_graph_ring 使用 feat_fund_flow_cycle 和 feat_mule_cluster_score，对 txn_micro_transfer_ring_012、acct_hank_receiver 和 biz_orion_trade 打高分。shared phone KYC 规则 rule_shared_phone_kyc 对 Felix 和 Hank 打高分。模型和规则都会触发人工审核 dec_manual_review；如果分析师确认 mule cluster，人工审核会触发账户冻结动作 act_account_freeze。
-
-可以用这个小图测试的问题：
-1. Felix 为什么是高风险用户？
-2. Felix 和 Hank 之间有哪些共享设备或共享手机号？
-3. 从 Felix 的快贷钱包到 Nova Crypto OTC 的资金路径是什么？
-4. 哪些特征进入了 AML graph ring model？
-5. 如果 phone_shared_138001 被证明误报，会影响哪些规则、评分和决策？
-6. 如果 txn_micro_transfer_ring_012 被标记为高风险，会影响哪些模型和处置动作？
+AML 资金环模型会同时使用资金循环特征和 Mule 集群特征，并对 Hank 收款账户和 Orion Trading Ltd 给出更高风险分。共享手机号 KYC 规则会对 Felix Gao 和 Hank Xu 的身份风险进行评分。模型和规则命中后都会触发人工审核队列；审核确认风险后，系统会触发账户冻结动作，并生成 SAR 可疑交易报告。

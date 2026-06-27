@@ -111,9 +111,9 @@ The `example/` directory contains a compact financial risk-control scenario desi
 
 Files:
 
-- `example/financial_risk_lineage.json`: structured lineage JSON with 30 business entities and 30 controlled business relations.
-- `example/financial_risk_lineage.md`: field-by-field explanation of the JSON schema and the example graph.
-- `example/financial_risk_input.txt`: natural-language scenario text describing the same compact risk-control graph. This represents the kind of text input a future text-to-lineage pipeline could consume.
+- `example/financial_risk_lineage.json`: structured lineage JSON with 24 business entities and 27 controlled business relations.
+- `example/financial_risk_input.txt`: natural-language scenario text describing the same compact risk-control graph.
+- `example/financial_risk_expected_qa.md`: sample lineage questions, impact-analysis scenarios, and expected answers.
 
 The example uses six fixed business relation types between entities:
 
