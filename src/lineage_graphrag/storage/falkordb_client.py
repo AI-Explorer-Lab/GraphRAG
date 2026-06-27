@@ -20,6 +20,17 @@ except ImportError:  # pragma: no cover - dependency may be optional in some env
 RAW_SUFFIX = "__graph_raw"
 COMM_SUFFIX = "__graph_comm"
 REPRE_SUFFIX = "__graph_repre"
+LEGACY_RAW_SUFFIX = "__raw"
+LEGACY_COMM_SUFFIX = "__comm"
+LEGACY_REPRE_SUFFIX = "__repre"
+PARTITION_SUFFIXES = (
+    RAW_SUFFIX,
+    COMM_SUFFIX,
+    REPRE_SUFFIX,
+    LEGACY_RAW_SUFFIX,
+    LEGACY_COMM_SUFFIX,
+    LEGACY_REPRE_SUFFIX,
+)
 
 
 class FalkorDBClient:
@@ -52,20 +63,15 @@ class FalkorDBClient:
         physical = self._list_physical_graphs()
         logical: set[str] = set()
         for name in physical:
-            if name.endswith(RAW_SUFFIX):
-                base = name[: -len(RAW_SUFFIX)]
-                if base:
-                    logical.add(base)
-                continue
-            if name.endswith(COMM_SUFFIX):
-                base = name[: -len(COMM_SUFFIX)]
-                if base:
-                    logical.add(base)
-                continue
-            if name.endswith(REPRE_SUFFIX):
-                base = name[: -len(REPRE_SUFFIX)]
-                if base:
-                    logical.add(base)
+            matched_partition = False
+            for suffix in PARTITION_SUFFIXES:
+                if name.endswith(suffix):
+                    base = name[: -len(suffix)]
+                    if base:
+                        logical.add(base)
+                    matched_partition = True
+                    break
+            if matched_partition:
                 continue
             logical.add(name)
         return sorted(logical)
@@ -281,28 +287,26 @@ class FalkorDBClient:
             logger.warning("FalkorDB physical graph list failed: %s", exc)
             return None
 
-        raw_name = _raw_graph_name(graph_name)
-        comm_name = _comm_graph_name(graph_name)
-        repre_name = _repre_graph_name(graph_name)
-        has_raw = raw_name in physical
-        has_comm = comm_name in physical
-        has_repre = repre_name in physical
+        for raw_name, comm_name, repre_name in _partition_name_candidates(graph_name):
+            has_raw = raw_name in physical
+            has_comm = comm_name in physical
+            has_repre = repre_name in physical
 
-        if has_raw or has_comm or has_repre:
-            merged = nx.MultiDiGraph()
-            if has_raw:
-                raw_graph = self._read_single_graph(raw_name)
-                if raw_graph is not None:
-                    _merge_into(merged, raw_graph)
-            if has_comm:
-                comm_graph = self._read_single_graph(comm_name)
-                if comm_graph is not None:
-                    _merge_into(merged, comm_graph)
-            if has_repre:
-                repre_graph = self._read_single_graph(repre_name)
-                if repre_graph is not None:
-                    _merge_into(merged, repre_graph)
-            return merged
+            if has_raw or has_comm or has_repre:
+                merged = nx.MultiDiGraph()
+                if has_raw:
+                    raw_graph = self._read_single_graph(raw_name)
+                    if raw_graph is not None:
+                        _merge_into(merged, raw_graph)
+                if has_comm:
+                    comm_graph = self._read_single_graph(comm_name)
+                    if comm_graph is not None:
+                        _merge_into(merged, comm_graph)
+                if has_repre:
+                    repre_graph = self._read_single_graph(repre_name)
+                    if repre_graph is not None:
+                        _merge_into(merged, repre_graph)
+                return merged
 
         if graph_name in physical:
             return self._read_single_graph(graph_name)
@@ -317,9 +321,8 @@ class FalkorDBClient:
                 if len(values) < 3:
                     continue
                 node_id = str(values[0])
-                labels = _ensure_list(values[1])
                 raw_props = _to_dict(values[2])
-                label = str(labels[0]).lower() if labels else str(raw_props.get("label", "entity")).lower()
+                label = _resolve_node_label(_ensure_list(values[1]), raw_props)
                 props = _parse_node_properties(raw_props, node_id=node_id, label=label)
                 graph.add_node(
                     node_id,
@@ -420,6 +423,13 @@ def _ensure_list(value: Any) -> list[Any]:
     raw = _to_python(value)
     if isinstance(raw, list):
         return raw
+    if isinstance(raw, str):
+        text = raw.strip()
+        if text.startswith("[") and text.endswith("]"):
+            inner = text[1:-1].strip()
+            if not inner:
+                return []
+            return [_strip_outer_quotes(item.strip()) for item in _split_top_level(inner)]
     return []
 
 
@@ -435,6 +445,19 @@ def _to_dict(value: Any) -> dict[str, Any]:
             for i in range(0, len(raw), 2):
                 out[str(raw[i])] = raw[i + 1]
             return out
+    if isinstance(raw, str):
+        text = raw.strip()
+        if text.startswith("{") and text.endswith("}"):
+            inner = text[1:-1].strip()
+            if not inner:
+                return {}
+            out: dict[str, Any] = {}
+            for item in _split_top_level(inner):
+                if ":" not in item:
+                    continue
+                key, raw_value = item.split(":", 1)
+                out[str(_strip_outer_quotes(key.strip()))] = raw_value.strip()
+            return out
     return {}
 
 
@@ -447,9 +470,65 @@ def _parse_json_field(raw: Any, default: Any) -> Any:
     if not text:
         return default
     try:
-        return json.loads(text)
+        parsed = json.loads(text)
+        if isinstance(parsed, str):
+            nested = parsed.strip()
+            if nested and nested[0] in "[{":
+                try:
+                    return json.loads(nested)
+                except Exception:
+                    return parsed
+        return parsed
     except Exception:
         return default
+
+
+def _split_top_level(text: str) -> list[str]:
+    parts: list[str] = []
+    start = 0
+    quote: str | None = None
+    escaped = False
+    depth = 0
+    for index, char in enumerate(text):
+        if quote:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in {"'", '"'}:
+            quote = char
+            continue
+        if char in "[{(":
+            depth += 1
+            continue
+        if char in "]})" and depth > 0:
+            depth -= 1
+            continue
+        if char == "," and depth == 0:
+            parts.append(text[start:index].strip())
+            start = index + 1
+    parts.append(text[start:].strip())
+    return [part for part in parts if part]
+
+
+def _strip_outer_quotes(text: str) -> str:
+    if len(text) >= 2 and text[0] == text[-1] and text[0] in {"'", '"'}:
+        return text[1:-1]
+    return text
+
+
+def _resolve_node_label(raw_labels: list[Any], raw_props: dict[str, Any]) -> str:
+    persisted = _strip_outer_quotes(str(raw_props.get("label", "")).strip()).lower()
+    if persisted:
+        return persisted
+    for label in raw_labels:
+        text = _strip_outer_quotes(str(label).strip()).lower()
+        if text:
+            return text
+    return "entity"
 
 
 def _build_persist_props(node_id: str, node_data: dict[str, Any]) -> dict[str, str]:
@@ -562,6 +641,17 @@ def _repre_graph_name(graph_id: str) -> str:
     return f"{graph_id}{REPRE_SUFFIX}"
 
 
+def _partition_name_candidates(graph_id: str) -> list[tuple[str, str, str]]:
+    return [
+        (_raw_graph_name(graph_id), _comm_graph_name(graph_id), _repre_graph_name(graph_id)),
+        (
+            f"{graph_id}{LEGACY_RAW_SUFFIX}",
+            f"{graph_id}{LEGACY_COMM_SUFFIX}",
+            f"{graph_id}{LEGACY_REPRE_SUFFIX}",
+        ),
+    ]
+
+
 def _partition_graph_for_falkordb(graph: nx.MultiDiGraph) -> dict[str, dict[str, Any]]:
     raw_labels = {"entity", "attribute"}
     raw_relations = {"has_attribute", "has", *ALLOWED_ENTITY_RELATIONS}
@@ -654,6 +744,8 @@ def _merge_into(target: nx.MultiDiGraph, source: nx.MultiDiGraph) -> None:
             existing["properties"] = merged_props
         for key, value in node_data.items():
             if key == "properties":
+                continue
+            if key == "label" and existing.get("label") != "entity" and value == "entity":
                 continue
             existing[key] = value
 
