@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import argparse
 import os
@@ -8,15 +8,14 @@ from pathlib import Path
 import uvicorn
 
 ROOT = Path(__file__).resolve().parent
-SRC = ROOT / "src"
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-from lineage_graphrag.common.config import default_config_path
+from config import default_config_path
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the Lineage GraphRAG API")
+    parser = argparse.ArgumentParser(description="Run the GraphRAG API")
     parser.add_argument("--config", default=default_config_path(), help="Path to YAML config file")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8001)
@@ -24,11 +23,11 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.reload:
-        os.environ["LINEAGE_CONFIG"] = args.config
-        uvicorn.run("lineage_graphrag.api.app:app", host=args.host, port=args.port, reload=True)
+        os.environ["GRAPH_CONFIG"] = args.config
+        uvicorn.run("controller.app:app", host=args.host, port=args.port, reload=True)
         return
 
-    from lineage_graphrag.api.app import create_app
+    from controller.app import create_app
 
     app = create_app(args.config)
     uvicorn.run(app, host=args.host, port=args.port)

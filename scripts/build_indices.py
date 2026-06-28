@@ -4,9 +4,9 @@ import argparse
 import json
 from pathlib import Path
 
-from lineage_graphrag.common.config import AppConfig
-from lineage_graphrag.graph.serializer import load_graph_from_json
-from lineage_graphrag.retrieval.orchestrator import LineageRetriever
+from config import AppConfig
+from graph.serializer import load_graph_from_json
+from retrieval.orchestrator import GraphRetriever
 
 
 def main() -> None:
@@ -15,7 +15,7 @@ def main() -> None:
     parser.add_argument("--config", default="configs/base.yaml")
     parser.add_argument("--graph-path", default=None)
     parser.add_argument("--chunk-path", default=None)
-    parser.add_argument("--probe-query", default="lineage impact analysis")
+    parser.add_argument("--probe-query", default="graph impact analysis")
     args = parser.parse_args()
 
     graph_path = Path(args.graph_path or f"data/normalized/{args.graph_id}_graph.json")
@@ -26,7 +26,7 @@ def main() -> None:
         chunks = json.load(f)
 
     cfg = AppConfig.from_yaml(args.config)
-    retriever = LineageRetriever.from_config(cfg)
+    retriever = GraphRetriever.from_config(cfg)
     result = retriever.retrieve(graph=graph, chunks=chunks, question=args.probe_query, top_k=8)
     print(
         json.dumps(

@@ -1,5 +1,5 @@
 {
-  "graph_id": "enterprise_video_lineage_complex",
+  "graph_id": "enterprise_video_graph_complex",
   "change_spec": {
     "source": "feature_generate_job",
     "target": "rec_feature_store",
