@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from config import AppConfig
 from domain.res import ImpactReport
 from llm.client import LLMClient, LLMSettings
@@ -38,7 +40,7 @@ class AnswerGenerator:
             system_prompt="You are a strict graph analysis assistant. Answer only from provided evidence.",
         )
         if llm_answer:
-            return llm_answer
+            return _normalize_answer_markdown(llm_answer)
 
         lines = []
         lines.append(f"Question: {question}")
@@ -66,3 +68,55 @@ def _format_evidence_chunks(chunk_ids: list[str], chunk_contents: list[str]) -> 
         else:
             formatted.append(str(content))
     return formatted
+
+
+_ORDERED_MARKER_RE = re.compile(r"^(\d+)([.)])(\s+.*)$")
+_UNORDERED_MARKER_RE = re.compile(r"^[-+*]\s+")
+
+
+def _normalize_answer_markdown(text: str) -> str:
+    return _convert_top_level_ordered_markers_to_bullets(_normalize_top_level_ordered_markers(text))
+
+
+def _convert_top_level_ordered_markers_to_bullets(text: str) -> str:
+    lines = text.splitlines()
+    normalized: list[str] = []
+    for line in lines:
+        ordered_match = _ORDERED_MARKER_RE.match(line)
+        if ordered_match:
+            normalized.append(f"-{ordered_match.group(3)}")
+        else:
+            normalized.append(line)
+    trailing_newline = "\n" if text.endswith("\n") else ""
+    return "\n".join(normalized) + trailing_newline
+
+
+def _normalize_top_level_ordered_markers(text: str) -> str:
+    lines = text.splitlines()
+    normalized: list[str] = []
+    active_sequence = False
+    next_number = 1
+
+    for line in lines:
+        ordered_match = _ORDERED_MARKER_RE.match(line)
+        if ordered_match:
+            marker_number = int(ordered_match.group(1))
+            punctuation = ordered_match.group(2)
+            tail = ordered_match.group(3)
+            if active_sequence:
+                line = f"{next_number}{punctuation}{tail}"
+                next_number += 1
+            else:
+                active_sequence = True
+                next_number = marker_number + 1
+            normalized.append(line)
+            continue
+
+        normalized.append(line)
+        if not line.strip() or line.startswith((" ", "\t")) or _UNORDERED_MARKER_RE.match(line):
+            continue
+        active_sequence = False
+        next_number = 1
+
+    trailing_newline = "\n" if text.endswith("\n") else ""
+    return "\n".join(normalized) + trailing_newline

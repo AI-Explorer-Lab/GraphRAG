@@ -6,7 +6,7 @@ import re
 def rank_chunk_ids(question: str, chunks: dict[str, str], chunk_ids: list[str], top_k: int) -> list[str]:
     q_tokens = _tokens(question)
     scored: list[tuple[str, int, str]] = []
-    for chunk_id in chunk_ids:
+    for chunk_id in dict.fromkeys(chunk_ids):
         text = f"{chunk_id} {chunks.get(chunk_id, '')}"
         tokens = _tokens(text)
         score = len(tokens & q_tokens)

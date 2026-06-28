@@ -130,4 +130,7 @@ def _relation_priority(triple: str) -> int:
     parts = [part.strip() for part in triple.strip("()").split(",")]
     if len(parts) < 3:
         return 99
-    return _RELATION_PRIORITY.get(parts[1], 6)
+    relation = parts[1]
+    if relation == "transfers_to" and any("wallet" in endpoint.lower() for endpoint in (parts[0], parts[2])):
+        return 3
+    return _RELATION_PRIORITY.get(relation, 6)
