@@ -1,12 +1,12 @@
-﻿# lineage-graphrag
+﻿# graphrag
 
-Lineage GraphRAG is a deterministic GraphRAG engine for data lineage JSON. It turns structured lineage payloads into a four-level graph, retrieves evidence through graph-aware dual-path retrieval, and answers lineage or what-if impact questions with traceable evidence.
+GraphRAG is a deterministic GraphRAG engine for data JSON. It turns structured  payloads into a four-level graph, retrieves evidence through graph-aware dual-path retrieval, and answers or what-if impact questions with traceable evidence.
 
-This project is not a generic "upload documents and extract a graph with an LLM" system. The graph is built deterministically from lineage JSON; LLMs are optional and are used for question decomposition, answer generation, and iterative retrieval in agent mode.
+This project is not a generic "upload documents and extract a graph with an LLM" system. The graph is built deterministically from JSON; LLMs are optional and are used for question decomposition, answer generation, and iterative retrieval in agent mode.
 
 ## What It Does
 
-- Imports lineage JSON with entities, children, and transitions.
+- Imports JSON with entities, children, and transitions.
 - Normalizes `children` into explicit `has` relationships.
 - Keeps business entity relations constrained to a small fixed vocabulary.
 - Builds a four-level graph: `attribute`, `entity`, `keyword`, and `community`.
@@ -22,7 +22,7 @@ This project is not a generic "upload documents and extract a graph with an LLM"
 
 ```mermaid
 flowchart LR
-  A["Lineage JSON"] --> B["Parse and validate"]
+  A["JSON"] --> B["Parse and validate"]
   B --> C["Normalize children into has relations"]
   C --> D["Build evidence chunks"]
   D --> E["Build NetworkX four-level graph"]
@@ -89,7 +89,7 @@ curl -X POST "http://localhost:8001/v1/graphs/import" \
   --data @data/api_requests/01_graphs_import.json
 ```
 
-Ask a lineage question:
+Ask a question:
 
 ```bash
 curl -X POST "http://localhost:8001/v1/queries/ask" \
@@ -111,9 +111,9 @@ The `example/` directory contains a compact financial risk-control scenario desi
 
 Files:
 
-- `example/financial_risk_lineage.json`: structured lineage JSON with 24 business entities and 27 controlled business relations.
+- `example/financial_risk.json`: structured JSON with 24 business entities and 27 controlled business relations.
 - `example/financial_risk_input.txt`: natural-language scenario text describing the same compact risk-control graph.
-- `example/financial_risk_expected_qa.md`: sample lineage questions, impact-analysis scenarios, and expected answers.
+- `example/financial_risk_expected_qa.md`: sample questions, impact-analysis scenarios, and expected answers.
 
 The example uses six fixed business relation types between entities:
 
