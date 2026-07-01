@@ -1,0 +1,3 @@
+from .graph import ALLOWED_ENTITY_RELATIONS
+
+__all__ = ["ALLOWED_ENTITY_RELATIONS"]

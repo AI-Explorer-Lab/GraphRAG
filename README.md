@@ -1,12 +1,12 @@
-﻿# graphrag
+# graphrag
 
-GraphRAG is a deterministic GraphRAG engine for data JSON. It turns structured  payloads into a four-level graph, retrieves evidence through graph-aware dual-path retrieval, and answers or what-if impact questions with traceable evidence.
+GraphRAG is a deterministic engine for data graph JSON. It turns structured graph payloads into a four-level graph, retrieves evidence through graph-aware dual-path retrieval, and answers graph or what-if impact questions with traceable evidence.
 
-This project is not a generic "upload documents and extract a graph with an LLM" system. The graph is built deterministically from JSON; LLMs are optional and are used for question decomposition, answer generation, and iterative retrieval in agent mode.
+This project is not a generic "upload documents and extract a graph with an LLM" system. The graph is built deterministically from graph JSON; LLMs are optional and are used for question decomposition, answer generation, and iterative retrieval in agent mode.
 
 ## What It Does
 
-- Imports JSON with entities, children, and transitions.
+- Imports graph JSON with entities, children, and transitions.
 - Normalizes `children` into explicit `has` relationships.
 - Keeps business entity relations constrained to a small fixed vocabulary.
 - Builds a four-level graph: `attribute`, `entity`, `keyword`, and `community`.
@@ -22,7 +22,7 @@ This project is not a generic "upload documents and extract a graph with an LLM"
 
 ```mermaid
 flowchart LR
-  A["JSON"] --> B["Parse and validate"]
+  A["Graph JSON"] --> B["Parse and validate"]
   B --> C["Normalize children into has relations"]
   C --> D["Build evidence chunks"]
   D --> E["Build NetworkX four-level graph"]
@@ -89,7 +89,7 @@ curl -X POST "http://localhost:8001/v1/graphs/import" \
   --data @data/api_requests/01_graphs_import.json
 ```
 
-Ask a question:
+Ask a graph question:
 
 ```bash
 curl -X POST "http://localhost:8001/v1/queries/ask" \
@@ -111,9 +111,9 @@ The `example/` directory contains a compact financial risk-control scenario desi
 
 Files:
 
-- `example/financial_risk.json`: structured JSON with 24 business entities and 27 controlled business relations.
+- `example/financial_risk_graph.json`: structured graph JSON with 24 business entities and 27 controlled business relations.
 - `example/financial_risk_input.txt`: natural-language scenario text describing the same compact risk-control graph.
-- `example/financial_risk_expected_qa.md`: sample questions, impact-analysis scenarios, and expected answers.
+- `example/financial_risk_expected_qa.md`: sample graph questions, impact-analysis scenarios, and expected answers.
 
 The example uses six fixed business relation types between entities:
 
@@ -128,7 +128,7 @@ Import the financial risk graph:
 ```bash
 curl -X POST "http://localhost:8001/v1/graphs/import" \
   -H "Content-Type: application/json" \
-  --data "{\"graph_id\":\"financial_risk_demo\",\"lineage_json\":$(cat example/financial_risk_lineage.json)}"
+  --data "{\"graph_id\":\"financial_risk_demo\",\"graph_json\":$(cat example/financial_risk_graph.json)}"
 ```
 
 On Windows PowerShell:
@@ -136,7 +136,7 @@ On Windows PowerShell:
 ```powershell
 $body = @{
   graph_id = "financial_risk_demo"
-  lineage_json = Get-Content example/financial_risk_lineage.json -Raw | ConvertFrom-Json
+  graph_json = Get-Content example/financial_risk_graph.json -Raw | ConvertFrom-Json
 } | ConvertTo-Json -Depth 100
 Invoke-RestMethod -Method Post -Uri "http://localhost:8001/v1/graphs/import" -ContentType "application/json" -Body $body
 ```
@@ -150,7 +150,7 @@ python -c "import json, urllib.request; q=open('example/financial_risk_input.txt
 You can also validate the example locally without starting the API:
 
 ```bash
-python -c "import json, sys; sys.path.insert(0, 'src'); from lineage_graphrag.ingest.parser import LineageParser; from lineage_graphrag.ingest.normalizer import LineageNormalizer; from lineage_graphrag.graph.kt_builder import LineageKTBuilder; data=json.load(open('example/financial_risk_lineage.json', encoding='utf-8')); normalized=LineageNormalizer().normalize(LineageParser().parse(data)); built=LineageKTBuilder().build(normalized); print({'entities': len(normalized.entities), 'transitions': len(normalized.transitions), 'graph_nodes': built.graph.number_of_nodes(), 'graph_edges': built.graph.number_of_edges()})"
+python -c "import json, sys; from ingest.parser import GraphParser; from ingest.normalizer import GraphNormalizer; from graph.kt_builder import GraphKTBuilder; data=json.load(open('example/financial_risk_graph.json', encoding='utf-8')); normalized=GraphNormalizer().normalize(GraphParser().parse(data)); built=GraphKTBuilder().build(normalized); print({'entities': len(normalized.entities), 'transitions': len(normalized.transitions), 'graph_nodes': built.graph.number_of_nodes(), 'graph_edges': built.graph.number_of_edges()})"
 ```
 
 ## API
@@ -184,15 +184,21 @@ Startup and manual sync behavior:
 ## Project Layout
 
 ```text
-src/lineage_graphrag/
-  api/          FastAPI application and routes
+config/        environment and provider configuration
+controller/    FastAPI application and routes
+domain/        request, response, and domain models
+service/       business orchestration
+mapper/        repository and FalkorDB access
+database/      runtime startup and persistence wiring
+exceptions/    business exceptions and handlers
+middlewares/   request middleware
+utils/         shared helpers
   ingest/       parser, normalizer, evidence chunk builder
   graph/        four-level graph construction and serialization
   retrieval/    decomposer, dual-path retrieval, IRCoT orchestration
   indexing/     embeddings and FAISS/NumPy index wrapper
   impact/       downstream impact analysis helpers
   llm/          provider client, prompts, answer generator
-  storage/      in-memory runtime repository and FalkorDB client
   evaluation/   current smoke-check utilities
 ```
 
@@ -200,7 +206,7 @@ src/lineage_graphrag/
 
 Production-shaped pieces:
 
-- Deterministic lineage import and validation.
+- Deterministic graph import and validation.
 - Four-level graph construction.
 - Dual-path retrieval.
 - API integration flow.

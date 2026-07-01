@@ -5,7 +5,7 @@
     "python.analysis.extraPaths":  [
                                        "./src"
                                    ],
-    "python.defaultInterpreterPath":  "C:\\Users\\dell\\.conda\\envs\\lineage-graph\\python.exe",
+    "python.defaultInterpreterPath":  "C:\\Users\\dell\\.conda\\envs\\graphrag\\python.exe",
     "python.terminal.activateEnvironment":  true,
     "python.testing.pytestEnabled":  true,
     "python.testing.pytestArgs":  [

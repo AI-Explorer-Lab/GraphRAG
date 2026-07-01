@@ -1,15 +1,15 @@
 {
-  "graph_id": "enterprise_video_lineage_complex",
-  "lineage_json": {
+  "graph_id": "enterprise_video_graph_complex",
+  "graph_json": {
     "entities": {
-      "platform_lineage_root": {
-        "id": "platform_lineage_root",
-        "name": "platform_lineage_root",
+      "platform_graph_root": {
+        "id": "platform_graph_root",
+        "name": "platform_graph_root",
         "properties": {
           "type": "domain_root",
           "owner": "data_arch"
         },
-        "description": "Top-level domain root for enterprise lineage graph",
+        "description": "Top-level domain root for enterprise graph",
         "children": [
           "domain_content_pipeline",
           "domain_recommendation",

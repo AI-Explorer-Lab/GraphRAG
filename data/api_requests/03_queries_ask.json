@@ -1,6 +1,6 @@
 {
-  "graph_id": "enterprise_video_lineage_complex",
-  "question": "Explain the main lineage paths around dwd_video_profile, including community representatives and downstream impact.",
+  "graph_id": "enterprise_video_graph_complex",
+  "question": "Explain the main graph paths around dwd_video_profile, including community representatives and downstream impact.",
   "top_k": 10,
   "mode": "agent",
   "max_steps": 5

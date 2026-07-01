@@ -1,0 +1,47 @@
+﻿environment:
+  name: local
+
+db:
+  use_falkordb: true
+  falkordb_url: redis://127.0.0.1:6379/0
+
+agent:
+  default_top_k: 8
+  default_ask_mode: agent
+  max_steps: 4
+  decomposer_max_sub_questions: 3
+  retrieval_embedding_model: all-MiniLM-L6-v2
+  enable_faiss: true
+  llm:
+    active_provider: deepseek
+    providers:
+      deepseek:
+        provider: deepseek
+        model: deepseek-v4-flash
+        api_key: "sk-4c19eba2248e470f8615dab0d14f1b66"
+        base_url: "https://api.deepseek.com/v1"
+        timeout_seconds: 90
+      rightcode:
+        provider: openai
+        model: gpt-5.4-mini
+        api_key: null
+        base_url: "https://www.right.codes/codex/v1"
+        timeout_seconds: 300
+      anyrouter:
+        provider: openai
+        model: gpt-5.4-mini
+        api_key: null
+        base_url: "https://anyrouter.top/v1"
+        timeout_seconds: 60
+      openai:
+        provider: openai
+        model: gpt-4o-mini
+        api_key: null
+        base_url: null
+        timeout_seconds: 30
+      stub:
+        provider: stub
+        model: gpt-4o-mini
+        api_key: null
+        base_url: null
+        timeout_seconds: 30

@@ -1,0 +1,546 @@
+{
+  "entities": {
+    "fr_root": {
+      "id": "fr_root",
+      "name": "支付风控演示图谱",
+      "properties": {
+        "type": "domain_root",
+        "domain": "risk_control",
+        "owner": "risk_arch",
+        "risk_level": "medium"
+      },
+      "description": "一个小型支付风控 graph 示例，用于演示主体、资金流、风险信号、模型规则和处置动作之间的可追溯关系。",
+      "children": [
+        "dom_subjects",
+        "dom_flow",
+        "dom_signals",
+        "dom_controls"
+      ]
+    },
+    "dom_subjects": {
+      "id": "dom_subjects",
+      "name": "主体与账户",
+      "properties": {
+        "type": "domain",
+        "domain": "subjects",
+        "owner": "identity_team",
+        "risk_level": "medium"
+      },
+      "description": "用户、企业、钱包、账户和商户等被风控系统评估的对象。",
+      "children": [
+        "usr_felix",
+        "wallet_felix",
+        "usr_hank",
+        "acct_hank",
+        "biz_orion",
+        "acct_orion",
+        "mch_nova"
+      ]
+    },
+    "dom_flow": {
+      "id": "dom_flow",
+      "name": "资金流",
+      "properties": {
+        "type": "domain",
+        "domain": "fund_flow",
+        "owner": "payment_risk",
+        "risk_level": "high"
+      },
+      "description": "Felix 到 Hank、Orion 和 Nova Crypto OTC 的可疑资金路径。",
+      "children": [
+        "txn_felix_hank",
+        "txn_hank_orion"
+      ]
+    },
+    "dom_signals": {
+      "id": "dom_signals",
+      "name": "风险信号",
+      "properties": {
+        "type": "domain",
+        "domain": "signals",
+        "owner": "feature_platform",
+        "risk_level": "medium"
+      },
+      "description": "设备、手机号、交易流和由它们派生出的风控特征。",
+      "children": [
+        "dev_emulator",
+        "phone_shared",
+        "src_transaction_stream",
+        "feat_fund_flow_cycle",
+        "feat_mule_cluster_score"
+      ]
+    },
+    "dom_controls": {
+      "id": "dom_controls",
+      "name": "模型规则与处置",
+      "properties": {
+        "type": "domain",
+        "domain": "controls",
+        "owner": "risk_ops",
+        "risk_level": "high"
+      },
+      "description": "模型、规则、人工审核、账户冻结和 SAR 报告等风控处置链路。",
+      "children": [
+        "rule_shared_phone_kyc",
+        "mdl_aml_ring",
+        "dec_manual_review",
+        "act_account_freeze",
+        "report_sar"
+      ]
+    },
+    "usr_felix": {
+      "id": "usr_felix",
+      "name": "Felix Gao",
+      "properties": {
+        "type": "user",
+        "domain": "subjects",
+        "owner": "identity_team",
+        "risk_level": "high"
+      },
+      "description": "被怀疑存在合成身份和异常资金活动的用户。"
+    },
+    "wallet_felix": {
+      "id": "wallet_felix",
+      "name": "Felix 快贷钱包",
+      "properties": {
+        "type": "wallet",
+        "domain": "subjects",
+        "owner": "wallet_team",
+        "risk_level": "high"
+      },
+      "description": "Felix 持有的钱包，是可疑资金路径的起点。"
+    },
+    "usr_hank": {
+      "id": "usr_hank",
+      "name": "Hank Xu",
+      "properties": {
+        "type": "user",
+        "domain": "subjects",
+        "owner": "identity_team",
+        "risk_level": "high"
+      },
+      "description": "与 Felix 共享设备和手机号的收款人，被怀疑是 mule account 控制人。"
+    },
+    "acct_hank": {
+      "id": "acct_hank",
+      "name": "Hank 收款账户",
+      "properties": {
+        "type": "account",
+        "domain": "subjects",
+        "owner": "account_platform",
+        "risk_level": "high"
+      },
+      "description": "接收 Felix 钱包转入资金，并继续向 Orion 相关账户转出。"
+    },
+    "biz_orion": {
+      "id": "biz_orion",
+      "name": "Orion Trading Ltd",
+      "properties": {
+        "type": "business",
+        "domain": "subjects",
+        "owner": "merchant_risk",
+        "risk_level": "high"
+      },
+      "description": "与可疑资金路径有关的企业主体。"
+    },
+    "acct_orion": {
+      "id": "acct_orion",
+      "name": "Orion 结算账户",
+      "properties": {
+        "type": "settlement_account",
+        "domain": "subjects",
+        "owner": "settlement_team",
+        "risk_level": "high"
+      },
+      "description": "Orion 使用的结算账户，接收 Hank 账户拆分后的资金。"
+    },
+    "mch_nova": {
+      "id": "mch_nova",
+      "name": "Nova Crypto OTC",
+      "properties": {
+        "type": "merchant",
+        "domain": "subjects",
+        "owner": "merchant_risk",
+        "risk_level": "high"
+      },
+      "description": "资金路径末端的虚拟资产商户。"
+    },
+    "dev_emulator": {
+      "id": "dev_emulator",
+      "name": "Android 模拟器设备",
+      "properties": {
+        "type": "device",
+        "domain": "signals",
+        "owner": "device_intel",
+        "risk_level": "high"
+      },
+      "description": "Felix 和 Hank 都使用过的模拟器设备。"
+    },
+    "phone_shared": {
+      "id": "phone_shared",
+      "name": "共享手机号 138001",
+      "properties": {
+        "type": "phone",
+        "domain": "signals",
+        "owner": "identity_team",
+        "risk_level": "high"
+      },
+      "description": "Felix 和 Hank 都绑定或使用过的手机号。"
+    },
+    "txn_felix_hank": {
+      "id": "txn_felix_hank",
+      "name": "Felix 转 Hank 交易",
+      "properties": {
+        "type": "transaction",
+        "domain": "fund_flow",
+        "owner": "payment_risk",
+        "risk_level": "high"
+      },
+      "description": "Felix 钱包向 Hank 收款账户转账的交易事件。"
+    },
+    "txn_hank_orion": {
+      "id": "txn_hank_orion",
+      "name": "Hank 转 Orion 交易",
+      "properties": {
+        "type": "transaction",
+        "domain": "fund_flow",
+        "owner": "payment_risk",
+        "risk_level": "high"
+      },
+      "description": "Hank 收款账户向 Orion 结算账户转账的交易事件。"
+    },
+    "src_transaction_stream": {
+      "id": "src_transaction_stream",
+      "name": "实时交易流",
+      "properties": {
+        "type": "data_source",
+        "domain": "signals",
+        "owner": "data_platform",
+        "risk_level": "medium"
+      },
+      "description": "提供交易金额、对手方、渠道和设备上下文的数据源。"
+    },
+    "feat_fund_flow_cycle": {
+      "id": "feat_fund_flow_cycle",
+      "name": "资金循环特征",
+      "properties": {
+        "type": "feature",
+        "domain": "signals",
+        "owner": "feature_platform",
+        "risk_level": "high"
+      },
+      "description": "识别多跳转账、拆分转账和回流行为的特征。"
+    },
+    "feat_mule_cluster_score": {
+      "id": "feat_mule_cluster_score",
+      "name": "Mule 集群特征",
+      "properties": {
+        "type": "feature",
+        "domain": "signals",
+        "owner": "feature_platform",
+        "risk_level": "high"
+      },
+      "description": "基于共享设备、共享手机号和资金路径计算 mule cluster 风险。"
+    },
+    "rule_shared_phone_kyc": {
+      "id": "rule_shared_phone_kyc",
+      "name": "共享手机号 KYC 规则",
+      "properties": {
+        "type": "rule",
+        "domain": "controls",
+        "owner": "risk_rules",
+        "risk_level": "high"
+      },
+      "description": "当多个高风险主体共享手机号时提高身份风险评分。"
+    },
+    "mdl_aml_ring": {
+      "id": "mdl_aml_ring",
+      "name": "AML 资金环模型",
+      "properties": {
+        "type": "model",
+        "domain": "controls",
+        "owner": "aml_model_team",
+        "risk_level": "high"
+      },
+      "description": "使用资金循环特征和 mule 集群特征识别可疑资金网络。"
+    },
+    "dec_manual_review": {
+      "id": "dec_manual_review",
+      "name": "人工审核队列",
+      "properties": {
+        "type": "decision",
+        "domain": "controls",
+        "owner": "risk_ops",
+        "risk_level": "medium"
+      },
+      "description": "承接模型和规则触发的人工复核任务。"
+    },
+    "act_account_freeze": {
+      "id": "act_account_freeze",
+      "name": "账户冻结动作",
+      "properties": {
+        "type": "action",
+        "domain": "controls",
+        "owner": "risk_ops",
+        "risk_level": "high"
+      },
+      "description": "在审核确认后冻结高风险账户或钱包。"
+    },
+    "report_sar": {
+      "id": "report_sar",
+      "name": "SAR 可疑交易报告",
+      "properties": {
+        "type": "report",
+        "domain": "controls",
+        "owner": "aml_ops",
+        "risk_level": "high"
+      },
+      "description": "当可疑资金路径被确认后生成的 AML 报告。"
+    }
+  },
+  "transitions": [
+    {
+      "id": "owns_felix_wallet",
+      "source": "usr_felix",
+      "target": "wallet_felix",
+      "relation": "owns",
+      "properties": {
+        "reason": "Felix 持有该钱包"
+      }
+    },
+    {
+      "id": "owns_hank_account",
+      "source": "usr_hank",
+      "target": "acct_hank",
+      "relation": "owns",
+      "properties": {
+        "reason": "Hank 持有该收款账户"
+      }
+    },
+    {
+      "id": "owns_orion_account",
+      "source": "biz_orion",
+      "target": "acct_orion",
+      "relation": "owns",
+      "properties": {
+        "reason": "Orion 使用该结算账户"
+      }
+    },
+    {
+      "id": "uses_felix_device",
+      "source": "usr_felix",
+      "target": "dev_emulator",
+      "relation": "uses",
+      "properties": {
+        "reason": "Felix 使用过模拟器设备"
+      }
+    },
+    {
+      "id": "uses_hank_device",
+      "source": "usr_hank",
+      "target": "dev_emulator",
+      "relation": "uses",
+      "properties": {
+        "reason": "Hank 使用过同一模拟器设备"
+      }
+    },
+    {
+      "id": "uses_felix_phone",
+      "source": "usr_felix",
+      "target": "phone_shared",
+      "relation": "uses",
+      "properties": {
+        "reason": "Felix 绑定过共享手机号"
+      }
+    },
+    {
+      "id": "uses_hank_phone",
+      "source": "usr_hank",
+      "target": "phone_shared",
+      "relation": "uses",
+      "properties": {
+        "reason": "Hank 绑定过共享手机号"
+      }
+    },
+    {
+      "id": "flow_wallet_to_txn",
+      "source": "wallet_felix",
+      "target": "txn_felix_hank",
+      "relation": "transfers_to",
+      "properties": {
+        "reason": "钱包发起转账"
+      }
+    },
+    {
+      "id": "flow_txn_to_hank",
+      "source": "txn_felix_hank",
+      "target": "acct_hank",
+      "relation": "transfers_to",
+      "properties": {
+        "reason": "交易入账到 Hank 账户"
+      }
+    },
+    {
+      "id": "flow_hank_to_txn",
+      "source": "acct_hank",
+      "target": "txn_hank_orion",
+      "relation": "transfers_to",
+      "properties": {
+        "reason": "Hank 账户继续转出"
+      }
+    },
+    {
+      "id": "flow_txn_to_orion",
+      "source": "txn_hank_orion",
+      "target": "acct_orion",
+      "relation": "transfers_to",
+      "properties": {
+        "reason": "交易入账到 Orion 结算账户"
+      }
+    },
+    {
+      "id": "flow_orion_to_nova",
+      "source": "acct_orion",
+      "target": "mch_nova",
+      "relation": "transfers_to",
+      "properties": {
+        "reason": "Orion 资金流向虚拟资产商户"
+      }
+    },
+    {
+      "id": "stream_to_fund_feature",
+      "source": "src_transaction_stream",
+      "target": "feat_fund_flow_cycle",
+      "relation": "provides_to",
+      "properties": {
+        "reason": "交易流提供资金路径特征输入"
+      }
+    },
+    {
+      "id": "stream_to_mule_feature",
+      "source": "src_transaction_stream",
+      "target": "feat_mule_cluster_score",
+      "relation": "provides_to",
+      "properties": {
+        "reason": "交易流提供集群特征输入"
+      }
+    },
+    {
+      "id": "txn_to_fund_feature",
+      "source": "txn_felix_hank",
+      "target": "feat_fund_flow_cycle",
+      "relation": "provides_to",
+      "properties": {
+        "reason": "Felix 到 Hank 的转账进入资金循环特征"
+      }
+    },
+    {
+      "id": "device_to_mule_feature",
+      "source": "dev_emulator",
+      "target": "feat_mule_cluster_score",
+      "relation": "provides_to",
+      "properties": {
+        "reason": "共享设备进入 mule 集群特征"
+      }
+    },
+    {
+      "id": "phone_to_rule",
+      "source": "phone_shared",
+      "target": "rule_shared_phone_kyc",
+      "relation": "provides_to",
+      "properties": {
+        "reason": "共享手机号进入 KYC 规则"
+      }
+    },
+    {
+      "id": "fund_feature_to_model",
+      "source": "feat_fund_flow_cycle",
+      "target": "mdl_aml_ring",
+      "relation": "provides_to",
+      "properties": {
+        "reason": "资金循环特征为 AML 模型提供输入"
+      }
+    },
+    {
+      "id": "mule_feature_to_model",
+      "source": "feat_mule_cluster_score",
+      "target": "mdl_aml_ring",
+      "relation": "provides_to",
+      "properties": {
+        "reason": "Mule 集群特征为 AML 模型提供输入"
+      }
+    },
+    {
+      "id": "model_scores_hank",
+      "source": "mdl_aml_ring",
+      "target": "acct_hank",
+      "relation": "scores",
+      "properties": {
+        "reason": "模型提高 Hank 账户风险分"
+      }
+    },
+    {
+      "id": "model_scores_orion",
+      "source": "mdl_aml_ring",
+      "target": "biz_orion",
+      "relation": "scores",
+      "properties": {
+        "reason": "模型提高 Orion 主体风险分"
+      }
+    },
+    {
+      "id": "rule_scores_felix",
+      "source": "rule_shared_phone_kyc",
+      "target": "usr_felix",
+      "relation": "scores",
+      "properties": {
+        "reason": "共享手机号规则提高 Felix 身份风险分"
+      }
+    },
+    {
+      "id": "rule_scores_hank",
+      "source": "rule_shared_phone_kyc",
+      "target": "usr_hank",
+      "relation": "scores",
+      "properties": {
+        "reason": "共享手机号规则提高 Hank 身份风险分"
+      }
+    },
+    {
+      "id": "model_triggers_review",
+      "source": "mdl_aml_ring",
+      "target": "dec_manual_review",
+      "relation": "triggers",
+      "properties": {
+        "reason": "高 AML 风险分触发人工审核"
+      }
+    },
+    {
+      "id": "rule_triggers_review",
+      "source": "rule_shared_phone_kyc",
+      "target": "dec_manual_review",
+      "relation": "triggers",
+      "properties": {
+        "reason": "共享手机号规则触发人工审核"
+      }
+    },
+    {
+      "id": "review_triggers_freeze",
+      "source": "dec_manual_review",
+      "target": "act_account_freeze",
+      "relation": "triggers",
+      "properties": {
+        "reason": "审核确认后触发账户冻结"
+      }
+    },
+    {
+      "id": "review_triggers_sar",
+      "source": "dec_manual_review",
+      "target": "report_sar",
+      "relation": "triggers",
+      "properties": {
+        "reason": "审核确认后生成 SAR 报告"
+      }
+    }
+  ]
+}

@@ -1,2 +1,0 @@
-"""lineage_graphrag package."""
-

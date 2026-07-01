@@ -1,7 +1,7 @@
-﻿services:
+services:
   falkordb:
     image: falkordb/falkordb:latest
-    container_name: lineage-falkordb
+    container_name: graph-falkordb
     ports:
       - "6379:6379"
       - "3000:3000"

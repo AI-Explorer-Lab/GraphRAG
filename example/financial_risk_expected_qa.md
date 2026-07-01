@@ -1,6 +1,6 @@
 # 支付风控示例问答与期望回答
 
-本文档配合 `financial_risk_lineage.json` 和 `financial_risk_input.txt` 使用。JSON 是正式构图输入，文本是同一业务事实的自然语言表达；本文件只存放示例问题、影响分析场景和期望回答，不参与构图。
+本文档配合 `financial_risk_graph.json` 和 `financial_risk_input.txt` 使用。JSON 是正式构图输入，文本是同一业务事实的自然语言表达；本文件只存放示例问题、影响分析场景和期望回答，不参与构图。
 
 ## 普通问答
 
