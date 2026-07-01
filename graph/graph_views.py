@@ -6,10 +6,22 @@ import networkx as nx
 
 from constants.graph import ALLOWED_ENTITY_RELATIONS
 
-BUSINESS_RELATIONS = set(ALLOWED_ENTITY_RELATIONS)
-RAW_RELATIONS = {"has", "has_attribute", *ALLOWED_ENTITY_RELATIONS}
-SEMANTIC_RELATIONS = {"member_of", "has_keyword", "represents_community", "represented_by", "represents_entity"}
-GRAPH_VIEW_MODES = {"business", "entity_attribute", "semantic", "full"}
+LEVEL1_RELATIONS = {"has_attribute"}
+LEVEL2_RELATIONS = {"has", *ALLOWED_ENTITY_RELATIONS}
+LEVEL3_RELATIONS = {"has_keyword", "represents_entity"}
+LEVEL4_RELATIONS = {"member_of", "represents_community", "represented_by"}
+GRAPH_VIEW_MODES = {
+    "level1_attributes",
+    "level2_relations",
+    "level3_keywords",
+    "level4_communities",
+    "full",
+}
+GRAPH_VIEW_ALIASES = {
+    "business": "level2_relations",
+    "entity_attribute": "level1_attributes",
+    "semantic": "level4_communities",
+}
 
 
 def extract_graph(graph: nx.MultiDiGraph, view: str = "full") -> dict[str, Any]:
@@ -40,15 +52,18 @@ def _filter_graph_by_view(graph: nx.MultiDiGraph, view: str) -> nx.MultiDiGraph:
     selected_nodes: set[str] = set()
     selected_edges: list[tuple[str, str, dict[str, Any]]] = []
 
-    if mode == "business":
-        allowed_labels = {"entity"}
-        allowed_relations = BUSINESS_RELATIONS
-    elif mode == "entity_attribute":
+    if mode == "level1_attributes":
         allowed_labels = {"entity", "attribute"}
-        allowed_relations = RAW_RELATIONS
-    else:
+        allowed_relations = LEVEL1_RELATIONS
+    elif mode == "level2_relations":
+        allowed_labels = {"entity"}
+        allowed_relations = LEVEL2_RELATIONS
+    elif mode == "level3_keywords":
         allowed_labels = {"entity", "keyword", "community"}
-        allowed_relations = SEMANTIC_RELATIONS
+        allowed_relations = LEVEL3_RELATIONS
+    else:
+        allowed_labels = {"entity", "community"}
+        allowed_relations = LEVEL4_RELATIONS
 
     for u, v, data in graph.edges(data=True):
         relation = str(data.get("relation", "")).lower()
@@ -60,10 +75,12 @@ def _filter_graph_by_view(graph: nx.MultiDiGraph, view: str) -> nx.MultiDiGraph:
         selected_nodes.add(v)
         selected_edges.append((u, v, data))
 
-    if mode == "entity_attribute":
+    if mode == "level1_attributes":
         selected_nodes.update(node_id for node_id, label in labels.items() if label in allowed_labels)
-    elif mode == "semantic":
+    elif mode == "level3_keywords":
         selected_nodes.update(node_id for node_id, label in labels.items() if label in {"keyword", "community"})
+    elif mode == "level4_communities":
+        selected_nodes.update(node_id for node_id, label in labels.items() if label == "community")
     elif not selected_nodes:
         selected_nodes.update(node_id for node_id, label in labels.items() if label == "entity")
 
@@ -79,6 +96,7 @@ def _filter_graph_by_view(graph: nx.MultiDiGraph, view: str) -> nx.MultiDiGraph:
 
 def _normalize_view(view: str) -> str:
     mode = (view or "full").strip().lower()
+    mode = GRAPH_VIEW_ALIASES.get(mode, mode)
     if mode not in GRAPH_VIEW_MODES:
         return "full"
     return mode
