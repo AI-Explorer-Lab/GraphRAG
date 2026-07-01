@@ -49,10 +49,10 @@ class QueryService:
             retrieval=result.get("retrieval", {}),
         )
 
-    def get_subgraph(self, graph_id: str, node_id: Optional[str], hops: int) -> dict:
+    def get_subgraph(self, graph_id: str, node_id: Optional[str], hops: int, view: str = "full") -> dict:
         graph = self.repo.get_graph(graph_id)
         if graph is None:
             raise NotFoundException(f"graph_id '{graph_id}' not built")
         if not node_id:
-            return extract_graph(graph)
-        return extract_subgraph(graph, node_id=node_id, hops=hops)
+            return extract_graph(graph, view=view)
+        return extract_subgraph(graph, node_id=node_id, hops=hops, view=view)

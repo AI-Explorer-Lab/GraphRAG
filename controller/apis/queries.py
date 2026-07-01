@@ -32,6 +32,7 @@ def get_subgraph(
     graph_id: str,
     node_id: Optional[str] = Query(None, description="optional center node id"),
     hops: int = Query(1, ge=1, le=3),
+    view: str = Query("full", description="business, entity_attribute, semantic, or full"),
     service: QueryService = Depends(get_query_service),
 ):
-    return service.get_subgraph(graph_id=graph_id, node_id=node_id, hops=hops)
+    return service.get_subgraph(graph_id=graph_id, node_id=node_id, hops=hops, view=view)
