@@ -38,6 +38,7 @@ class ImpactService:
             change_spec=payload.change_spec,
             target_node_id=payload.target_node_id,
         )
+        report.impact_subgraph = _build_impact_subgraph(graph, report.evidence_paths)
         report.answer, report.answer_source, report.llm_called = self._summarize_impact(graph, payload, report)
         return report.model_dump()
 
@@ -123,6 +124,72 @@ def _impact_evidence_facts(graph: nx.MultiDiGraph, paths: list[Any]) -> list[str
         seen.add(fact)
         facts.append(fact)
     return facts
+
+
+def _build_impact_subgraph(graph: nx.MultiDiGraph, paths: list[Any]) -> dict[str, Any]:
+    node_ids: list[str] = []
+    seen_nodes: set[str] = set()
+    edges: list[dict[str, Any]] = []
+    seen_edges: set[tuple[str, str, str]] = set()
+
+    for path in paths:
+        path_nodes = list(path.path)
+        for node_id in path_nodes:
+            if node_id in seen_nodes:
+                continue
+            seen_nodes.add(node_id)
+            node_ids.append(node_id)
+
+        for index, relation in enumerate(path.relations):
+            if index + 1 >= len(path_nodes):
+                continue
+            source = path_nodes[index]
+            target = path_nodes[index + 1]
+            relation_text = str(relation)
+            edge_key = (source, target, relation_text)
+            if edge_key in seen_edges:
+                continue
+            seen_edges.add(edge_key)
+            edge_data = _matching_edge_data(graph, source, target, relation_text)
+            edges.append(
+                {
+                    "source": source,
+                    "target": target,
+                    "relation": edge_data.get("relation", relation_text),
+                    "relation_properties": edge_data.get("relation_properties", {}),
+                    "evidence_refs": edge_data.get("evidence_refs", []),
+                }
+            )
+
+    nodes = []
+    for node_id in node_ids:
+        node_data = graph.nodes.get(node_id, {})
+        nodes.append(
+            {
+                "id": node_id,
+                "display_id": _display_id(node_id, node_data),
+                "label": node_data.get("label", "entity"),
+                "level": node_data.get("level", 2),
+                "properties": node_data.get("properties", {}),
+            }
+        )
+    return {"nodes": nodes, "edges": edges, "view": "impact"}
+
+
+def _matching_edge_data(graph: nx.MultiDiGraph, source: str, target: str, relation: str) -> dict[str, Any]:
+    edge_bundle = graph.get_edge_data(source, target, default={})
+    for edge_data in edge_bundle.values():
+        if str(edge_data.get("relation", "")).lower() == str(relation).lower():
+            return edge_data
+    return {}
+
+
+def _display_id(node_id: str, node_data: dict[str, Any]) -> str:
+    if node_id.startswith("attr::"):
+        parts = node_id.split("::", 2)
+        if len(parts) == 3 and parts[2]:
+            return parts[2]
+    return node_id
 
 
 def _edge_id(graph: nx.MultiDiGraph, source: str, target: str, relation: str) -> str:

@@ -18,6 +18,7 @@ class ImpactReport(BaseModel):
     answer: str = ""
     answer_source: str = "graph"
     llm_called: bool = False
+    impact_subgraph: dict[str, Any] = Field(default_factory=dict)
     direct_impacts: list[str] = Field(default_factory=list)
     indirect_impacts: list[str] = Field(default_factory=list)
     target_impact: list[str] = Field(default_factory=list)
