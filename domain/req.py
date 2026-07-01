@@ -36,3 +36,6 @@ class ImpactRequest(BaseModel):
     graph_id: str
     change_spec: ChangeSpecModel
     target_node_id: Optional[str] = None
+    scenario: Optional[str] = None
+    question: Optional[str] = None
+    language: Optional[str] = None

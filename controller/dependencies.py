@@ -24,4 +24,4 @@ def get_query_service(request: Request) -> QueryService:
 
 
 def get_impact_service(request: Request) -> ImpactService:
-    return ImpactService(repo=get_repo(request))
+    return ImpactService(repo=get_repo(request), cfg=get_config(request))

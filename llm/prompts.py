@@ -101,6 +101,115 @@ def _contains_cjk(text: str) -> bool:
     return any("\u4e00" <= char <= "\u9fff" for char in text)
 
 
+def build_impact_prompt(
+    scenario: str,
+    change_target: str,
+    change_relation: str,
+    direct_impacts: list[str],
+    indirect_impacts: list[str],
+    scoped_impact: list[str],
+    target_impact: list[str],
+    evidence_facts: list[str],
+    language: str | None = None,
+) -> str:
+    if _wants_chinese(language, scenario):
+        return _build_chinese_impact_prompt(
+            scenario=scenario,
+            change_target=change_target,
+            change_relation=change_relation,
+            direct_impacts=direct_impacts,
+            indirect_impacts=indirect_impacts,
+            scoped_impact=scoped_impact,
+            target_impact=target_impact,
+            evidence_facts=evidence_facts,
+        )
+    language_rule = (
+        "The scenario is Chinese. Answer entirely in Chinese; do not use English sentences."
+        if _contains_cjk(scenario)
+        else "Answer in English."
+    )
+    return "\n".join(
+        [
+            "You are a business-facing graph impact analyst.",
+            "Explain the what-if impact using only the provided graph impact result.",
+            "Do not add facts that are not supported by the impact paths.",
+            language_rule,
+            "",
+            "Writing rules:",
+            "- Start with one direct conclusion about what is affected.",
+            "- Then write 2 to 3 compact bullets.",
+            "- Each bullet should explain: affected area, evidence meaning, and business consequence.",
+            "- Mention node ids and edge ids in parentheses when they are present in the evidence.",
+            "- Never write labels such as `id:`, `node id:`, `edge id:`, or `ids:`.",
+            "- Do not output a separate evidence checklist.",
+            "- Do not copy the raw direct/indirect lists mechanically.",
+            "- Use cautious wording such as may affect, may reduce, may delay, or needs re-evaluation.",
+            "- Do not claim missed true risk, fraud, or money laundering unless the evidence explicitly says so.",
+            "",
+            f"Scenario: {scenario}",
+            f"Changed target: {change_target}",
+            f"Change relation/type: {change_relation}",
+            f"Direct impacts: {', '.join(direct_impacts) if direct_impacts else 'None'}",
+            f"Indirect impacts: {', '.join(indirect_impacts) if indirect_impacts else 'None'}",
+            f"Scoped impacts: {', '.join(scoped_impact) if scoped_impact else 'None'}",
+            f"Target impact paths: {'; '.join(target_impact) if target_impact else 'None'}",
+            "",
+            "Evidence impact paths:",
+            *(evidence_facts or ["None"]),
+            "",
+            "Return the final answer only.",
+        ]
+    )
+
+
+def _wants_chinese(language: str | None, text: str) -> bool:
+    if language and language.strip().lower() in {"zh", "zh-cn", "cn", "chinese", "中文"}:
+        return True
+    return _contains_cjk(text)
+
+
+def _build_chinese_impact_prompt(
+    scenario: str,
+    change_target: str,
+    change_relation: str,
+    direct_impacts: list[str],
+    indirect_impacts: list[str],
+    scoped_impact: list[str],
+    target_impact: list[str],
+    evidence_facts: list[str],
+) -> str:
+    return "\n".join(
+        [
+            "你是面向业务人员的图谱影响分析助手。",
+            "请只根据下面的图谱影响分析结果解释 what-if 场景，不要补充证据之外的事实。",
+            "必须全程使用中文回答，不要输出英文句子。",
+            "",
+            "写作要求：",
+            "- 第一句直接给结论，说明这个变化会影响哪些核心对象或流程。",
+            "- 后面写 2 到 3 个简短 bullet。",
+            "- 每个 bullet 按“影响对象/环节 + 证据含义 + 业务后果”的方式解释。",
+            "- 提到节点时保留括号中的 node id；提到关系时保留括号中的 edge id。",
+            "- 禁止写 `id:`、`node id:`、`edge id:`、`ids:` 这类标签。",
+            "- 不要单独列证据清单，也不要机械复述 direct/indirect 列表。",
+            "- 用“可能影响、可能减少、可能延迟、需要重新评估”等审慎表达。",
+            "- 除非证据明确说明，否则不要说洗钱、欺诈、漏检真实风险。",
+            "",
+            f"场景：{scenario}",
+            f"变化对象：{change_target}",
+            f"变化类型：{change_relation}",
+            f"直接影响：{', '.join(direct_impacts) if direct_impacts else '无'}",
+            f"间接影响：{', '.join(indirect_impacts) if indirect_impacts else '无'}",
+            f"范围内影响：{', '.join(scoped_impact) if scoped_impact else '无'}",
+            f"目标影响路径：{'; '.join(target_impact) if target_impact else '无'}",
+            "",
+            "图谱影响路径：",
+            *(evidence_facts or ["无"]),
+            "",
+            "只返回最终答案。",
+        ]
+    )
+
+
 def build_decomposition_prompt(question: str, max_sub_questions: int = 3) -> str:
     return "\n".join(
         [
