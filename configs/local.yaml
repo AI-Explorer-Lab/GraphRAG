@@ -1,4 +1,4 @@
-app:
+﻿app:
   use_falkordb: true
   falkordb_url: redis://127.0.0.1:6379/0
   default_top_k: 8
@@ -9,8 +9,14 @@ app:
   enable_faiss: true
 
   llm:
-    active_provider: rightcode
+    active_provider: deepseek
     providers:
+      deepseek:
+        provider: deepseek
+        model: deepseek-v4-flash
+        api_key: "sk-4c19eba2248e470f8615dab0d14f1b66"
+        base_url: "https://api.deepseek.com/v1"
+        timeout_seconds: 90
       rightcode:
         provider: openai
         model: gpt-5.4-mini

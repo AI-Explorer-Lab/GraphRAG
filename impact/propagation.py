@@ -9,6 +9,9 @@ from domain.models import ChangeSpecModel, ImpactPath
 from domain.res import ImpactReport
 
 
+IMPACT_RELATIONS = {"provides_to", "scores", "triggers", "transitions"}
+
+
 class ImpactAnalyzer:
     def analyze(
         self,
@@ -37,7 +40,7 @@ class ImpactAnalyzer:
         if start not in graph:
             return []
         queue = deque([(start, [start], [], 0)])
-        seen: set[tuple[str, int]] = set()
+        seen_paths: set[tuple[tuple[str, ...], tuple[str, ...]]] = set()
         paths: list[ImpactPath] = []
 
         while queue:
@@ -45,14 +48,18 @@ class ImpactAnalyzer:
             if depth >= max_depth:
                 continue
             for _, nxt, edge_data in graph.out_edges(node, data=True):
-                relation = edge_data.get("relation", "")
-                next_depth = depth + 1
-                state = (nxt, next_depth)
-                if state in seen:
+                relation = str(edge_data.get("relation", "")).lower()
+                if relation not in IMPACT_RELATIONS:
                     continue
-                seen.add(state)
+                if nxt in path_nodes:
+                    continue
+                next_depth = depth + 1
                 next_nodes = path_nodes + [nxt]
                 next_relations = path_relations + [relation]
+                state = (tuple(next_nodes), tuple(next_relations))
+                if state in seen_paths:
+                    continue
+                seen_paths.add(state)
                 paths.append(ImpactPath(path=next_nodes, relations=next_relations, depth=next_depth))
                 queue.append((nxt, next_nodes, next_relations, next_depth))
         return paths

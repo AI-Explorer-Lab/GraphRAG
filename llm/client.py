@@ -29,7 +29,7 @@ class LLMClient:
         self.provider = self.settings.provider.strip().lower()
         self.client: Any = None
         self.last_error: str | None = None
-        if self.provider == "openai":
+        if _is_openai_compatible_provider(self.provider):
             self._init_openai_client()
 
     def _init_openai_client(self) -> None:
@@ -37,7 +37,7 @@ class LLMClient:
             logger.warning("OpenAI SDK not installed. Install 'openai' to enable real LLM calls.")
             return
         if not self.settings.api_key:
-            logger.warning("OPENAI_API_KEY is missing. Falling back to local answer mode.")
+            logger.warning("%s API key is missing. Falling back to local answer mode.", self.provider.upper())
             return
 
         kwargs: dict[str, Any] = {
@@ -54,7 +54,7 @@ class LLMClient:
             self.client = None
 
     def is_available(self) -> bool:
-        return self.provider == "openai" and self.client is not None
+        return _is_openai_compatible_provider(self.provider) and self.client is not None
 
     def generate(
         self,
@@ -130,7 +130,10 @@ class LLMClient:
             if json_mode:
                 kwargs["response_format"] = {"type": "json_object"}
             if max_output_tokens is not None:
-                kwargs["max_completion_tokens"] = max_output_tokens
+                kwargs[_chat_token_limit_param(self.settings)] = max_output_tokens
+            extra_body = _chat_extra_body(self.settings)
+            if extra_body:
+                kwargs["extra_body"] = extra_body
             resp = self.client.chat.completions.create(
                 **kwargs,
             )
@@ -181,6 +184,24 @@ def _prefer_responses_first(settings: LLMSettings) -> bool:
     base_url = (settings.base_url or "").lower()
     model = settings.model.lower()
     return "right.codes" in base_url or model.startswith("gpt-5")
+
+
+def _is_openai_compatible_provider(provider: str) -> bool:
+    return provider.strip().lower() in {"openai", "deepseek"}
+
+
+def _chat_token_limit_param(settings: LLMSettings) -> str:
+    if settings.model.lower().startswith("gpt-5"):
+        return "max_completion_tokens"
+    return "max_tokens"
+
+
+def _chat_extra_body(settings: LLMSettings) -> dict[str, Any]:
+    provider = settings.provider.strip().lower()
+    model = settings.model.strip().lower()
+    if provider == "deepseek" and model != "deepseek-reasoner":
+        return {"thinking": {"type": "disabled"}}
+    return {}
 
 
 def _prefer_low_reasoning(settings: LLMSettings) -> bool:

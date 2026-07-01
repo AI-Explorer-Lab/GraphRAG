@@ -67,6 +67,8 @@ class GraphRetriever:
             "paths": path2_results.get("scored_triples", []),
             "path1_results": path1_results,
             "path2_results": path2_results,
+            "node_names": _node_names_for_evidence(graph, dedup_triples, ranked_chunk_ids),
+            "edge_ids": _edge_ids_for_triples(graph, dedup_triples),
         }
 
 
@@ -134,3 +136,56 @@ def _relation_priority(triple: str) -> int:
     if relation == "transfers_to" and any("wallet" in endpoint.lower() for endpoint in (parts[0], parts[2])):
         return 3
     return _RELATION_PRIORITY.get(relation, 6)
+
+
+def _node_names_for_evidence(graph: nx.MultiDiGraph, triples: list[str], chunk_ids: list[str]) -> dict[str, str]:
+    node_ids: set[str] = set()
+    for triple in triples:
+        parts = [part.strip() for part in triple.strip("()").split(",")]
+        if len(parts) == 3:
+            node_ids.add(parts[0])
+            node_ids.add(parts[2])
+    for chunk_id in chunk_ids:
+        if chunk_id.startswith("entity::"):
+            node_ids.add(chunk_id.removeprefix("entity::"))
+        elif chunk_id.startswith("subgraph::"):
+            node_ids.add(chunk_id.removeprefix("subgraph::"))
+
+    names: dict[str, str] = {}
+    for node_id in node_ids:
+        data = graph.nodes.get(node_id, {})
+        props = data.get("properties", {})
+        name = props.get("name") if isinstance(props, dict) else None
+        if isinstance(name, str) and name.strip():
+            names[node_id] = name.strip()
+    return names
+
+
+def _edge_ids_for_triples(graph: nx.MultiDiGraph, triples: list[str]) -> dict[str, str]:
+    edge_ids: dict[str, str] = {}
+    for triple in triples:
+        parts = [part.strip() for part in triple.strip("()").split(",")]
+        if len(parts) != 3:
+            continue
+        source, relation, target = parts
+        edge_data_by_key = graph.get_edge_data(source, target, default={})
+        if not isinstance(edge_data_by_key, dict):
+            continue
+        for edge_data in edge_data_by_key.values():
+            if not isinstance(edge_data, dict) or str(edge_data.get("relation")) != relation:
+                continue
+            rel_props = edge_data.get("relation_properties", {})
+            if isinstance(rel_props, dict):
+                transition_id = str(rel_props.get("transition_id", "")).strip()
+                if transition_id:
+                    edge_ids[triple] = transition_id
+                    break
+            refs = edge_data.get("evidence_refs", [])
+            for ref in refs if isinstance(refs, list) else []:
+                ref_text = str(ref)
+                if ref_text.startswith("transition::"):
+                    edge_ids[triple] = ref_text.removeprefix("transition::")
+                    break
+            if triple in edge_ids:
+                break
+    return edge_ids

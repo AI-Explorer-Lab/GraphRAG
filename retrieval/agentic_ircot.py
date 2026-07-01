@@ -194,6 +194,8 @@ def _build_retrieval_result_from_results(results: list[dict[str, Any]], top_k: i
         "chunk_ids": [cid for cid, _ in chunk_pairs],
         "chunk_contents": [content for _, content in chunk_pairs],
         "paths": paths[:limit],
+        "node_names": _merge_node_names(results),
+        "edge_ids": _merge_edge_ids(results),
     }
 
 
@@ -209,6 +211,8 @@ def _merge_retrieval_results(base: dict[str, Any], inc: dict[str, Any], top_k: i
         "chunk_ids": [cid for cid, _ in merged_chunk_pairs],
         "chunk_contents": [content for _, content in merged_chunk_pairs],
         "paths": list(base.get("paths", []))[:limit] + list(inc.get("paths", []))[:limit],
+        "node_names": {**base.get("node_names", {}), **inc.get("node_names", {})},
+        "edge_ids": {**base.get("edge_ids", {}), **inc.get("edge_ids", {})},
     }
     merged["paths"] = merged["paths"][:limit]
     return merged
@@ -268,6 +272,24 @@ def _round_robin_unique_pairs(groups: list[list[tuple[Any, Any]]], limit: int) -
             if len(selected) >= limit:
                 return selected
     return selected
+
+
+def _merge_node_names(results: list[dict[str, Any]]) -> dict[str, str]:
+    merged: dict[str, str] = {}
+    for result in results:
+        names = result.get("node_names", {})
+        if isinstance(names, dict):
+            merged.update({str(key): str(value) for key, value in names.items() if str(value).strip()})
+    return merged
+
+
+def _merge_edge_ids(results: list[dict[str, Any]]) -> dict[str, str]:
+    merged: dict[str, str] = {}
+    for result in results:
+        edge_ids = result.get("edge_ids", {})
+        if isinstance(edge_ids, dict):
+            merged.update({str(key): str(value) for key, value in edge_ids.items() if str(value).strip()})
+    return merged
 
 
 def _extract_final_answer(reasoning: str) -> str | None:
