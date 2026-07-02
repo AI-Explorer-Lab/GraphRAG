@@ -36,8 +36,18 @@ class AnswerGenerator:
             **_collect_edge_ids(retrieval_result.get("chunk_contents", [])),
             **_normalize_edge_id_map(retrieval_result.get("edge_ids", {})),
         }
-        readable_triples = _format_readable_triples(triples, id_to_name, edge_ids)
-        chunks = _format_evidence_chunks(chunk_ids, retrieval_result.get("chunk_contents", []), id_to_name)
+        include_trace_ids = _wants_trace_ids(question)
+        readable_triples = _format_readable_triples(
+            triples,
+            id_to_name,
+            edge_ids if include_trace_ids else {},
+        )
+        chunks = _format_evidence_chunks(
+            chunk_ids,
+            retrieval_result.get("chunk_contents", []),
+            id_to_name,
+            include_trace_ids=include_trace_ids,
+        )
         impact_summary = None
         if impact_report:
             impact_summary = (
@@ -50,7 +60,7 @@ class AnswerGenerator:
             prompt=prompt,
             system_prompt=(
                 "You are a strict graph analysis assistant. Answer only from provided evidence. "
-                "Preserve node ids and edge ids in parentheses, but never write labels like id:."
+                "Preserve node ids in parentheses. Do not expose edge ids unless the user explicitly asks for evidence ids."
             ),
         )
         if llm_answer and not _looks_like_prompt_echo(llm_answer):
@@ -59,11 +69,16 @@ class AnswerGenerator:
         return _build_local_answer(question, readable_triples, chunks, impact_report)
 
 
-def _format_evidence_chunks(chunk_ids: list[str], chunk_contents: list[str], id_to_name: dict[str, str]) -> list[str]:
+def _format_evidence_chunks(
+    chunk_ids: list[str],
+    chunk_contents: list[str],
+    id_to_name: dict[str, str],
+    include_trace_ids: bool = False,
+) -> list[str]:
     formatted: list[str] = []
     for index, content in enumerate(chunk_contents):
         chunk_id = chunk_ids[index] if index < len(chunk_ids) else ""
-        formatted.append(_format_readable_chunk(content, chunk_id, id_to_name))
+        formatted.append(_format_readable_chunk(content, chunk_id, id_to_name, include_trace_ids))
     return formatted
 
 
@@ -140,7 +155,12 @@ def _format_readable_triples(
     return readable
 
 
-def _format_readable_chunk(content: str, chunk_id: str, id_to_name: dict[str, str]) -> str:
+def _format_readable_chunk(
+    content: str,
+    chunk_id: str,
+    id_to_name: dict[str, str],
+    include_trace_ids: bool = False,
+) -> str:
     payload = _parse_json_dict(content)
     if not payload:
         return _replace_known_ids(str(content), id_to_name, include_ids=True)
@@ -151,7 +171,9 @@ def _format_readable_chunk(content: str, chunk_id: str, id_to_name: dict[str, st
         source = _node_ref(source_id, id_to_name)
         target = _node_ref(target_id, id_to_name)
         relation = _clean_str(payload.get("relation"))
-        edge_id = _clean_str(payload.get("id")) or chunk_id.removeprefix("transition::")
+        edge_id = ""
+        if include_trace_ids:
+            edge_id = _clean_str(payload.get("id")) or chunk_id.removeprefix("transition::")
         props = payload.get("properties") if isinstance(payload.get("properties"), dict) else {}
         reason = _clean_str(props.get("reason") or props.get("description") or payload.get("description"))
         return _join_parts([_relationship_sentence(source, relation, target, edge_id), reason])
@@ -244,6 +266,31 @@ def _looks_like_prompt_echo(text: str) -> bool:
         "evidence facts for grounding",
     ]
     return any(marker in lowered for marker in markers) or text.strip().startswith("Question:")
+
+
+def _wants_trace_ids(question: str) -> bool:
+    lowered = question.lower()
+    return any(
+        token in lowered
+        for token in (
+            "edge id",
+            "edge ids",
+            "trace id",
+            "trace ids",
+            "transition id",
+            "transition ids",
+            "evidence id",
+            "evidence ids",
+            "证据id",
+            "证据 id",
+            "边id",
+            "边 id",
+            "关系id",
+            "关系 id",
+            "追踪id",
+            "追踪 id",
+        )
+    )
 
 
 def _clean_answer(text: str, id_to_name: dict[str, str]) -> str:

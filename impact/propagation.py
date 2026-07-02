@@ -5,11 +5,12 @@ from typing import Any
 
 import networkx as nx
 
+from constants.graph import ALLOWED_ENTITY_RELATIONS
 from domain.models import ChangeSpecModel, ImpactPath
 from domain.res import ImpactReport
 
 
-IMPACT_RELATIONS = {"provides_to", "scores", "triggers", "transitions"}
+IMPACT_RELATIONS = frozenset(ALLOWED_ENTITY_RELATIONS)
 
 
 class ImpactAnalyzer:

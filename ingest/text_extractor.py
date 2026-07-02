@@ -14,7 +14,7 @@ logger = get_logger(__name__)
 
 
 DEFAULT_SCHEMA_HINT = """\
-Return a compact JSON object with this exact shape:
+Return a faithful JSON object with this exact shape:
 {
   "relations": [
     {
@@ -29,14 +29,30 @@ Return a compact JSON object with this exact shape:
     }
   ]
 }
-Use stable snake_case ids. Only use entities and relations supported by the schema.
+Use stable semantic English snake_case ids. Do not use pinyin transliteration for Chinese names; translate the business concept only in the technical id.
+Preserve English names, acronyms, numbers, and brand/company tokens exactly in ids except for lowercasing and snake_case separators.
+Entity ids must be descriptive and stable across runs. Do not use ordinal placeholders such as transfer_1, transaction_2, node_a, or item_3.
+For transaction-event ids, include the source and target roles or counterparties, such as <source>_to_<target>_transaction.
+For Chinese descriptive words in ids, use English meaning or a role-based English phrase, never pinyin syllables copied from the Chinese text.
 Keep all user-facing content in Chinese when the input text is Chinese: source_name, target_name, and reason must preserve the input language.
 Do not translate Chinese entity names into English. Use short Chinese phrases copied or summarized from the input for source_name and target_name.
 Only technical ids should use ASCII snake_case.
-Keep output compact for interactive demos: at most 16 relations and at most 12 unique entities.
-For payment-risk graph, preserve the business flow across users, businesses, accounts, wallets, devices, phones, merchants, transactions, data sources, features, models, rules, decisions, actions, and reports.
-Prefer the most important subjects, accounts, devices, merchants, fund-flow events, features, models, rules, decisions, actions, and reports.
-Omit low-signal details instead of trying to cover every noun in the input.
+Extract every explicit business entity and business relation needed to preserve the described flow. Do not cap the number of relations or unique entities.
+For payment-risk graphs, preserve users, businesses, accounts, wallets, devices, phones, merchants, transaction events, data sources, features, models, rules, decisions, actions, and reports when they are explicitly mentioned.
+Do not collapse transaction events into direct account-to-account edges when the text explicitly describes a distinct transaction, transfer, payment, or fund-flow event. Keep that event as an intermediate transaction node.
+Phrases such as "a transfer", "one transfer", "a payment", "initiated a transfer", "wallet transfer", or their equivalents in other languages indicate a distinct transaction event.
+Do not invent transaction nodes for every transfer. If the text only says funds continue or flow from one existing account/merchant node to another without naming a separate event, use a direct transfers_to edge.
+Statements like "funds enter X and then continue/flow to Y" are direct X transfers_to Y edges unless the text explicitly says X initiated or executed a separate transaction/payment event.
+Use relation semantics consistently:
+- owns: a person or business owns, controls, holds, or uses a wallet, account, settlement account, or similar financial asset.
+- uses: a person or business uses a device, phone, data source, or tool. Do not use uses for financial account ownership/control.
+- transfers_to: funds move from a wallet/account/source into a transaction event, from a transaction event into an account/merchant, or between fund-flow nodes.
+- provides_to: a data source, transaction, device, phone, or feature supplies input to a feature, model, or rule.
+- scores: a model or rule assigns or raises risk for a user, account, business, merchant, or other evaluated object.
+- triggers: a model, rule, decision, or review triggers a downstream decision, action, report, or queue.
+When text says a model uses features and scores objects, extract both feature-to-model input edges and model-to-object scoring edges.
+When text says a rule scores subjects and triggers review, extract both rule-to-subject scoring edges and rule-to-review trigger edges.
+When text says review confirmation causes actions or reports, extract each action/report trigger edge.
 Keep source_name and target_name under 18 Chinese characters. Keep reason under 24 Chinese characters.
 Return compact minified JSON without pretty-print indentation.
 Do not invent entities that are not grounded in the input text.
@@ -76,7 +92,7 @@ class TextGraphExtractor:
             prompt=prompt,
             system_prompt=system_prompt,
             json_mode=True,
-            max_output_tokens=2500,
+            max_output_tokens=5000,
         )
         logger.info(
             "text extraction llm completed: elapsed_seconds=%.2f, response_chars=%s",
@@ -98,7 +114,7 @@ class TextGraphExtractor:
                 prompt=repair_prompt,
                 system_prompt=system_prompt,
                 json_mode=True,
-                max_output_tokens=2500,
+                max_output_tokens=5000,
             )
             logger.info(
                 "text extraction repair llm completed: elapsed_seconds=%.2f, response_chars=%s",
@@ -168,11 +184,11 @@ def _relations_payload_to_graph(payload: dict[str, Any]) -> dict[str, Any]:
     entities: dict[str, dict[str, Any]] = {}
     transitions: list[dict[str, Any]] = []
     allowed_relations = {"owns", "uses", "transfers_to", "provides_to", "scores", "triggers"}
-    for index, relation in enumerate(relations[:16]):
+    for index, relation in enumerate(relations):
         if not isinstance(relation, dict):
             raise ValueError(f"Relation at index {index} must be an object.")
-        source_id = _clean_id(relation.get("source_id"))
-        target_id = _clean_id(relation.get("target_id"))
+        source_id = _clean_id(relation.get("source_id"), relation.get("source_name"))
+        target_id = _clean_id(relation.get("target_id"), relation.get("target_name"))
         relation_name = str(relation.get("relation", "")).strip()
         if not source_id or not target_id:
             raise ValueError(f"Relation at index {index} must contain source_id and target_id.")
@@ -223,11 +239,30 @@ def _put_entity(entities: dict[str, dict[str, Any]], entity_id: str, name: Any, 
     }
 
 
-def _clean_id(value: Any) -> str:
+def _clean_id(value: Any, display_name: Any = None) -> str:
     raw = str(value or "").strip().lower()
     cleaned = re.sub(r"[^a-z0-9_]+", "_", raw)
     cleaned = re.sub(r"_+", "_", cleaned).strip("_")
+    name_id = _id_from_ascii_name(display_name)
+    if _should_prefer_ascii_name_id(cleaned, name_id):
+        return name_id
     return cleaned
+
+
+def _id_from_ascii_name(value: Any) -> str:
+    raw = str(value or "").strip()
+    tokens = re.findall(r"[A-Za-z0-9]+", raw)
+    if len(tokens) < 2:
+        return ""
+    return "_".join(token.lower() for token in tokens)
+
+
+def _should_prefer_ascii_name_id(current_id: str, name_id: str) -> bool:
+    if not current_id or not name_id:
+        return bool(name_id)
+    current_tokens = current_id.split("_")
+    name_tokens = name_id.split("_")
+    return len(current_tokens) == len(name_tokens) and len(name_tokens) >= 2
 
 
 def _parse_json_object(text: str) -> dict[str, Any]:
