@@ -37,19 +37,16 @@ Felix Gao 的高风险原因来自三类证据。第一，他持有 `wallet_feli
 - `txn_hank_orion transfers_to acct_orion`
 - `acct_orion transfers_to mch_nova`
 
-### 问题 3：AML 资金环模型使用了哪些特征，又影响哪些对象？
+### 问题 3：哪些特征通过 provides_to 直接输入 AML 资金环模型？
 
 期望回答：
 
-`feat_fund_flow_cycle` 和 `feat_mule_cluster_score` 会为 `mdl_aml_ring` 提供输入，因此 AML 资金环模型依赖这两个特征。模型会对 `acct_hank` 和 `biz_orion` 提高风险分，并触发 `dec_manual_review`。
+`feat_fund_flow_cycle` 和 `feat_mule_cluster_score` 会通过 `provides_to` 关系为 `mdl_aml_ring` 提供输入，因此 AML 资金环模型依赖这两个特征。
 
 关键关系：
 
 - `feat_fund_flow_cycle provides_to mdl_aml_ring`
 - `feat_mule_cluster_score provides_to mdl_aml_ring`
-- `mdl_aml_ring scores acct_hank`
-- `mdl_aml_ring scores biz_orion`
-- `mdl_aml_ring triggers dec_manual_review`
 
 ## 影响分析
 

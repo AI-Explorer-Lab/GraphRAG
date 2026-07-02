@@ -5,6 +5,7 @@ def build_answer_prompt(question: str, triples: list[str], chunks: list[str], im
     triple_limit = _evidence_fact_limit(question)
     chunk_limit = 10 if _needs_path_or_dependency_detail(question) else 8
     trace_ids_requested = _wants_trace_ids(question)
+    upstream_input_only = _is_upstream_input_question(question)
     prompt = [
         "You are a business-facing graph risk analyst.",
         "Answer only from the provided evidence, but do not expose the evidence table itself.",
@@ -24,6 +25,11 @@ def build_answer_prompt(question: str, triples: list[str], chunks: list[str], im
         "- Mention only facts that directly explain the asked subject.",
         "- Do not use strong crime labels such as money laundering or fraud unless the evidence explicitly says so; prefer cautious wording such as suspicious fund flow, mule-account risk, shared-KYC risk, or abnormal transaction pattern.",
         "- For path questions, output the ordered path hop by hop. Do not summarize away intermediate nodes.",
+        (
+            "- This is an upstream input question. Answer only the direct `provides_to` inputs to the model or rule named in the question. Do not mention `scores`, `triggers`, downstream reviews, actions, reports, or affected targets."
+            if upstream_input_only
+            else "- For upstream/input-feature questions, answer only the direct inputs unless the user also asks for downstream scoring, triggers, or affected targets."
+        ),
         "- For model/feature dependency questions, separate inputs/features from affected targets. Affected targets include direct `scores` targets and direct `triggers` targets from the model/rule, but not second-hop downstream actions unless explicitly asked.",
         "- If the evidence is incomplete, say what is missing instead of guessing.",
         (
@@ -42,21 +48,24 @@ def build_answer_prompt(question: str, triples: list[str], chunks: list[str], im
     ]
     if impact_summary:
         prompt.append(f"Impact summary: {impact_summary}")
-    prompt.extend(_answer_shape_rules(question))
+    prompt.extend(_answer_shape_rules(question, upstream_input_only=upstream_input_only))
     prompt.append("Return the final answer only.")
     return "\n".join(prompt)
 
 
-def _answer_shape_rules(question: str) -> list[str]:
+def _answer_shape_rules(question: str, upstream_input_only: bool = False) -> list[str]:
     if not _contains_cjk(question):
-        return [
+        rules = [
             "",
             "Output shape:",
             "- Start with a direct answer to the specific question.",
             "- If the question asks why/risk/cause, group 2-3 bullets by business reason.",
             "- If the question asks path/impact/listing, use the structure that best answers that task.",
         ]
-    return [
+        if upstream_input_only:
+            rules.append("- For this question, list only the direct upstream inputs and stop there.")
+        return rules
+    rules = [
         "",
         "中文输出要求：",
         "- 第一句必须直接回答当前问题，不要套用固定主体或固定结论。",
@@ -67,12 +76,16 @@ def _answer_shape_rules(question: str) -> list[str]:
         "- 如果问题是在问“为什么高风险 / 风险原因 / 判定依据”，第一句概括该主体的主要原因；后面用 2 到 3 个短横线 bullet，每个 bullet 解释一类业务原因。",
         "- 如果问题是在问资金路径、影响范围、上下游依赖、子图结构或对比关系，就按对应任务组织答案，不要强行写成高风险归因。",
         "- 路径题必须按顺序逐跳写清楚，保留中间节点，但不要输出底层边 ID。",
-        "- 模型/特征依赖题要分清“使用了哪些输入特征”和“影响了哪些对象”；影响对象包括模型/规则直接 `scores` 的对象，也包括直接 `triggers` 的对象，但除非问题明确问下游处置或影响链路，否则不要继续写冻结、SAR 等第二跳动作。",
+        "- 如果问题只问“输入、上游、provides_to 到模型、依赖哪些特征”，只回答直接输入特征，不要主动补充评分对象、触发节点或下游处置。",
+        "- 如果问题同时明确问“评分对象、触发对象、影响对象、下游”，再分清“使用了哪些输入特征”和“影响了哪些对象”；影响对象包括模型/规则直接 `scores` 的对象，也包括直接 `triggers` 的对象，但除非问题明确问下游处置或影响链路，否则不要继续写冻结、SAR 等第二跳动作。",
         "- 风险归因类 bullet 名称可使用：`资金路径`、`共享身份信号`、`规则命中与处置`；其他问题请使用更贴合问题的名称。",
         "- 除非证据明确写出，否则不要直接定性为“洗钱”或“欺诈”；优先使用“异常资金流转风险”“共享 KYC 风险”“mule account 风险”“可疑交易模式”等审慎表达。",
         "- 不要写 `关键证据：` 这种附录式列表。",
         "- 不要逐条复述所有关系；只保留能回答问题的主线。",
     ]
+    if upstream_input_only:
+        rules.append("- 本题只列出直接上游输入特征，列完即止；不要写评分对象、人工审核、冻结、SAR 或其他下游内容。")
+    return rules
 
 
 def _evidence_fact_limit(question: str) -> int:
@@ -102,6 +115,40 @@ def _needs_path_or_dependency_detail(question: str) -> bool:
             "model",
         )
     )
+
+
+def _is_upstream_input_question(question: str) -> bool:
+    lowered = question.lower()
+    asks_input = any(
+        token in lowered
+        for token in (
+            "输入",
+            "上游",
+            "provides_to",
+            "依赖哪些特征",
+            "哪些特征",
+            "input",
+            "upstream",
+            "feature",
+            "features",
+        )
+    )
+    asks_downstream = any(
+        token in lowered
+        for token in (
+            "评分对象",
+            "触发对象",
+            "影响对象",
+            "下游",
+            "处置",
+            "审核",
+            "scores",
+            "triggers",
+            "affected",
+            "downstream",
+        )
+    )
+    return asks_input and not asks_downstream
 
 
 def _wants_trace_ids(question: str) -> bool:
@@ -171,10 +218,13 @@ def build_impact_prompt(
             "- Start with one direct conclusion about what is affected.",
             "- Then write 2 to 3 compact bullets.",
             "- Each bullet should explain: affected area, evidence meaning, and business consequence.",
-            "- Mention node ids and edge ids in parentheses when they are present in the evidence.",
+            "- Mention readable node names and, when useful, node ids in parentheses.",
+            "- Do not include edge ids, transition ids, trace ids, raw internal tokens, or arrow-form edge ids.",
             "- Never write labels such as `id:`, `node id:`, `edge id:`, or `ids:`.",
             "- Do not output a separate evidence checklist.",
             "- Do not copy the raw direct/indirect lists mechanically.",
+            "- Use the direct impacts and target impact paths as the main line; mention indirect impacts only when they are business actions or decision points.",
+            "- If a path reaches a person or account through `scores`, treat that person/account as the scored object. Do not keep expanding into their owned assets, devices, or transfers unless the scenario explicitly asks for collateral spread.",
             "- Use cautious wording such as may affect, may reduce, may delay, or needs re-evaluation.",
             "- Do not claim missed true risk, fraud, or money laundering unless the evidence explicitly says so.",
             "",
@@ -220,9 +270,12 @@ def _build_chinese_impact_prompt(
             "- 第一句直接给结论，说明这个变化会影响哪些核心对象或流程。",
             "- 后面写 2 到 3 个简短 bullet。",
             "- 每个 bullet 按“影响对象/环节 + 证据含义 + 业务后果”的方式解释。",
-            "- 提到节点时保留括号中的 node id；提到关系时保留括号中的 edge id。",
+            "- 提到节点时用可读名称，必要时保留括号中的 node id。",
+            "- 不要输出 edge id、transition id、trace id 或内部追踪标识。",
             "- 禁止写 `id:`、`node id:`、`edge id:`、`ids:` 这类标签。",
             "- 不要单独列证据清单，也不要机械复述 direct/indirect 列表。",
+            "- 以直接影响和目标影响路径为主线；间接影响只挑业务动作、审核节点、处置节点等关键环节说明。",
+            "- 如果路径通过 `scores` 到达人或账户，默认把该人/账户视为评分影响对象；不要继续展开这个人名下的钱包、设备、转账等远端分支，除非场景明确要求连带扩散。",
             "- 用“可能影响、可能减少、可能延迟、需要重新评估”等审慎表达。",
             "- 除非证据明确说明，否则不要说洗钱、欺诈、漏检真实风险。",
             "",

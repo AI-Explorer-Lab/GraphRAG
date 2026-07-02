@@ -50,9 +50,9 @@ class ImpactService:
             change_target=_node_ref(graph, payload.change_spec.target),
             change_relation=payload.change_spec.relation,
             direct_impacts=[_node_ref(graph, node) for node in report.direct_impacts],
-            indirect_impacts=[_node_ref(graph, node) for node in report.indirect_impacts],
+            indirect_impacts=_prompt_indirect_refs(graph, report.evidence_paths),
             scoped_impact=[_node_ref(graph, node) for node in report.scoped_impact],
-            target_impact=report.target_impact,
+            target_impact=[_readable_path(graph, path) for path in report.target_impact],
             evidence_facts=evidence_facts,
             language=payload.language,
         )
@@ -84,12 +84,14 @@ def _impact_system_prompt(scenario: str, language: str | None = None) -> str:
             "你是严格的图谱影响分析助手。"
             "只能根据提供的影响路径解释。"
             "必须全程使用中文。"
-            "保留括号中的节点 ID 和关系 ID，但不要写 id: 这类标签。"
+            "节点可以保留括号中的 node id。"
+            "不要输出 edge id、transition id、trace id 或内部追踪标识。"
         )
     return (
         "You are a strict graph impact analysis assistant. "
         "Explain only from provided impact paths. "
-        "Preserve parenthesized node ids and edge ids, but never write labels like id:."
+        "You may preserve parenthesized node ids. "
+        "Do not output edge ids, transition ids, trace ids, or internal tracing tokens."
     )
 
 
@@ -113,9 +115,7 @@ def _impact_evidence_facts(graph: nx.MultiDiGraph, paths: list[Any]) -> list[str
                 continue
             source = nodes[index]
             target = nodes[index + 1]
-            edge_id = _edge_id(graph, source, target, relation)
-            edge_suffix = f" ({edge_id})" if edge_id else ""
-            hops.append(f"{_node_ref(graph, source)} --{relation}{edge_suffix}--> {_node_ref(graph, target)}")
+            hops.append(f"{_node_ref(graph, source)} --{relation}--> {_node_ref(graph, target)}")
         if not hops:
             continue
         fact = f"depth {path.depth}: " + " ; ".join(hops)
@@ -124,6 +124,29 @@ def _impact_evidence_facts(graph: nx.MultiDiGraph, paths: list[Any]) -> list[str
         seen.add(fact)
         facts.append(fact)
     return facts
+
+
+def _readable_path(graph: nx.MultiDiGraph, path: str) -> str:
+    node_ids = [node.strip() for node in path.split(" -> ") if node.strip()]
+    if not node_ids:
+        return path
+    return " -> ".join(_node_ref(graph, node_id) for node_id in node_ids)
+
+
+def _prompt_indirect_refs(graph: nx.MultiDiGraph, paths: list[Any]) -> list[str]:
+    node_ids: list[str] = []
+    seen: set[str] = set()
+    for path in paths:
+        if path.depth <= 1 or not path.path or not path.relations:
+            continue
+        node_id = path.path[-1]
+        if node_id in seen:
+            continue
+        relation = str(path.relations[-1]).lower()
+        if path.depth <= 2 or relation in {"scores", "triggers", "transitions"}:
+            seen.add(node_id)
+            node_ids.append(node_id)
+    return [_node_ref(graph, node_id) for node_id in sorted(node_ids)]
 
 
 def _build_impact_subgraph(graph: nx.MultiDiGraph, paths: list[Any]) -> dict[str, Any]:
