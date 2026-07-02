@@ -6,6 +6,7 @@ def build_answer_prompt(question: str, triples: list[str], chunks: list[str], im
     chunk_limit = 10 if _needs_path_or_dependency_detail(question) else 8
     trace_ids_requested = _wants_trace_ids(question)
     upstream_input_only = _is_upstream_input_question(question)
+    input_and_impact = _asks_input_and_impact_targets(question)
     prompt = [
         "You are a business-facing graph risk analyst.",
         "Answer only from the provided evidence, but do not expose the evidence table itself.",
@@ -30,6 +31,11 @@ def build_answer_prompt(question: str, triples: list[str], chunks: list[str], im
             if upstream_input_only
             else "- For upstream/input-feature questions, answer only the direct inputs unless the user also asks for downstream scoring, triggers, or affected targets."
         ),
+        (
+            "- This question asks for both model inputs and affected objects. Answer in two parts: direct `provides_to` input features; then direct affected objects including both `scores` targets and direct `triggers` review/decision nodes. Do not include second-hop actions or reports."
+            if input_and_impact
+            else ""
+        ),
         "- For model/feature dependency questions, separate inputs/features from affected targets. Affected targets include direct `scores` targets and direct `triggers` targets from the model/rule, but not second-hop downstream actions unless explicitly asked.",
         "- If the evidence is incomplete, say what is missing instead of guessing.",
         (
@@ -48,12 +54,12 @@ def build_answer_prompt(question: str, triples: list[str], chunks: list[str], im
     ]
     if impact_summary:
         prompt.append(f"Impact summary: {impact_summary}")
-    prompt.extend(_answer_shape_rules(question, upstream_input_only=upstream_input_only))
+    prompt.extend(_answer_shape_rules(question, upstream_input_only=upstream_input_only, input_and_impact=input_and_impact))
     prompt.append("Return the final answer only.")
     return "\n".join(prompt)
 
 
-def _answer_shape_rules(question: str, upstream_input_only: bool = False) -> list[str]:
+def _answer_shape_rules(question: str, upstream_input_only: bool = False, input_and_impact: bool = False) -> list[str]:
     if not _contains_cjk(question):
         rules = [
             "",
@@ -64,6 +70,8 @@ def _answer_shape_rules(question: str, upstream_input_only: bool = False) -> lis
         ]
         if upstream_input_only:
             rules.append("- For this question, list only the direct upstream inputs and stop there.")
+        if input_and_impact:
+            rules.append("- Use exactly two short sections: Inputs; Direct affected objects. Include direct trigger nodes in affected objects.")
         return rules
     rules = [
         "",
@@ -85,6 +93,8 @@ def _answer_shape_rules(question: str, upstream_input_only: bool = False) -> lis
     ]
     if upstream_input_only:
         rules.append("- 本题只列出直接上游输入特征，列完即止；不要写评分对象、人工审核、冻结、SAR 或其他下游内容。")
+    if input_and_impact:
+        rules.append("- 本题用两个简短部分回答：`使用的特征` 和 `直接影响对象/环节`。直接影响对象/环节必须同时包括直接 `scores` 的对象和直接 `triggers` 的审核/决策节点；不要写第二跳冻结、SAR 或报告。")
     return rules
 
 
@@ -139,6 +149,10 @@ def _is_upstream_input_question(question: str) -> bool:
             "评分对象",
             "触发对象",
             "影响对象",
+            "影响哪些对象",
+            "影响哪些",
+            "哪些对象",
+            "又影响",
             "下游",
             "处置",
             "审核",
@@ -149,6 +163,35 @@ def _is_upstream_input_question(question: str) -> bool:
         )
     )
     return asks_input and not asks_downstream
+
+
+def _asks_input_and_impact_targets(question: str) -> bool:
+    lowered = question.lower()
+    asks_input = any(
+        token in lowered
+        for token in (
+            "使用了哪些特征",
+            "哪些特征",
+            "输入",
+            "provides_to",
+            "input",
+            "features",
+        )
+    )
+    asks_impact = any(
+        token in lowered
+        for token in (
+            "又影响",
+            "影响哪些对象",
+            "影响哪些",
+            "哪些对象",
+            "评分对象",
+            "触发对象",
+            "affected",
+            "impact",
+        )
+    )
+    return asks_input and asks_impact
 
 
 def _wants_trace_ids(question: str) -> bool:
@@ -224,6 +267,7 @@ def build_impact_prompt(
             "- Do not output a separate evidence checklist.",
             "- Do not copy the raw direct/indirect lists mechanically.",
             "- Use the direct impacts and target impact paths as the main line; mention indirect impacts only when they are business actions or decision points.",
+            "- If the evidence contains `scores` paths, explicitly name the scored objects. If it reaches action/report nodes, explicitly name those actions or reports instead of only saying downstream actions.",
             "- If a path reaches a person or account through `scores`, treat that person/account as the scored object. Do not keep expanding into their owned assets, devices, or transfers unless the scenario explicitly asks for collateral spread.",
             "- Use cautious wording such as may affect, may reduce, may delay, or needs re-evaluation.",
             "- Do not claim missed true risk, fraud, or money laundering unless the evidence explicitly says so.",
@@ -275,6 +319,7 @@ def _build_chinese_impact_prompt(
             "- 禁止写 `id:`、`node id:`、`edge id:`、`ids:` 这类标签。",
             "- 不要单独列证据清单，也不要机械复述 direct/indirect 列表。",
             "- 以直接影响和目标影响路径为主线；间接影响只挑业务动作、审核节点、处置节点等关键环节说明。",
+            "- 如果证据中有 `scores` 路径，必须点名评分对象；如果路径到达 action/report 节点，必须点名这些处置或报告，不要只泛称“后续动作”。",
             "- 如果路径通过 `scores` 到达人或账户，默认把该人/账户视为评分影响对象；不要继续展开这个人名下的钱包、设备、转账等远端分支，除非场景明确要求连带扩散。",
             "- 用“可能影响、可能减少、可能延迟、需要重新评估”等审慎表达。",
             "- 除非证据明确说明，否则不要说洗钱、欺诈、漏检真实风险。",

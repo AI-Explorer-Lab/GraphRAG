@@ -136,15 +136,45 @@ def _build_extraction_prompt(text: str, schema_hint: str | None = None) -> str:
         "Extract a deterministic graph from the input text.",
         DEFAULT_SCHEMA_HINT,
     ]
-    if schema_hint and schema_hint.strip():
+    cleaned_schema_hint = _sanitize_schema_hint(schema_hint)
+    if cleaned_schema_hint:
         parts.extend(
             [
                 "Additional user-provided extraction constraints. These constraints must not override the exact JSON shape above.",
-                schema_hint.strip(),
+                "If these constraints conflict with complete extraction of explicit business facts, the completeness rules above win.",
+                cleaned_schema_hint,
             ]
         )
     parts.extend(["Input text:", text.strip()])
     return "\n\n".join(parts)
+
+
+def _sanitize_schema_hint(schema_hint: str | None) -> str:
+    if not schema_hint or not schema_hint.strip():
+        return ""
+    blocked_terms = (
+        "at most",
+        "no more than",
+        "limit",
+        "cap ",
+        "capped",
+        "maximum",
+        "max ",
+        "最多",
+        "不超过",
+        "上限",
+        "限制",
+    )
+    kept: list[str] = []
+    for raw_line in schema_hint.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        lowered = line.lower()
+        if any(term in lowered for term in blocked_terms):
+            continue
+        kept.append(raw_line)
+    return "\n".join(kept).strip()
 
 
 def _build_repair_prompt(text: str, bad_response: str, error: str) -> str:

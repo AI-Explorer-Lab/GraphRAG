@@ -48,6 +48,8 @@ class ImpactAnalyzer:
             node, path_nodes, path_relations, depth = queue.popleft()
             if depth >= max_depth:
                 continue
+            if path_relations and path_relations[-1] == "scores":
+                continue
             for _, nxt, edge_data in graph.out_edges(node, data=True):
                 relation = str(edge_data.get("relation", "")).lower()
                 if relation not in IMPACT_RELATIONS:
