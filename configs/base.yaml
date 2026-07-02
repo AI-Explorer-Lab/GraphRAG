@@ -7,6 +7,7 @@ app:
   decomposer_max_sub_questions: 3
   retrieval_embedding_model: all-MiniLM-L6-v2
   enable_faiss: true
+  retrieval_path_depth: 3
 
   llm:
     active_provider: stub

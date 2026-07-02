@@ -115,6 +115,7 @@ class AppConfig:
     decomposer_max_sub_questions: int = 3
     retrieval_embedding_model: str = "all-MiniLM-L6-v2"
     enable_faiss: bool = True
+    retrieval_path_depth: int = 3
 
     llm_active_provider: str = "default"
     llm_provider: str = "stub"
@@ -144,6 +145,7 @@ class AppConfig:
             "all-MiniLM-L6-v2",
         )
         enable_faiss_default = bool(agent_cfg.get("enable_faiss", True))
+        retrieval_path_depth_default = int(agent_cfg.get("retrieval_path_depth", 3))
 
         legacy_provider = _as_str(agent_cfg.get("llm_provider"), "stub")
         legacy_model = _as_str(agent_cfg.get("llm_model"), "gpt-4o-mini")
@@ -209,6 +211,7 @@ class AppConfig:
                 retrieval_embedding_model_default,
             ),
             enable_faiss=_env_bool("GRAPH_ENABLE_FAISS", enable_faiss_default),
+            retrieval_path_depth=int(os.getenv("GRAPH_RETRIEVAL_PATH_DEPTH", str(retrieval_path_depth_default))),
             llm_active_provider=active_provider,
             llm_provider=os.getenv("GRAPH_LLM_PROVIDER", provider_default),
             llm_model=model,

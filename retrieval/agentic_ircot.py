@@ -176,6 +176,7 @@ def _build_retrieval_result(
         "chunk_ids": list(dict.fromkeys(chunk_ids))[:limit],
         "chunk_contents": list(dict.fromkeys(chunk_contents))[:limit],
         "paths": paths[:limit],
+        "path_depth": None,
     }
 
 
@@ -194,6 +195,7 @@ def _build_retrieval_result_from_results(results: list[dict[str, Any]], top_k: i
         "chunk_ids": [cid for cid, _ in chunk_pairs],
         "chunk_contents": [content for _, content in chunk_pairs],
         "paths": paths[:limit],
+        "path_depth": _max_path_depth(results),
         "node_names": _merge_node_names(results),
         "edge_ids": _merge_edge_ids(results),
     }
@@ -211,6 +213,7 @@ def _merge_retrieval_results(base: dict[str, Any], inc: dict[str, Any], top_k: i
         "chunk_ids": [cid for cid, _ in merged_chunk_pairs],
         "chunk_contents": [content for _, content in merged_chunk_pairs],
         "paths": list(base.get("paths", []))[:limit] + list(inc.get("paths", []))[:limit],
+        "path_depth": _max_path_depth([base, inc]),
         "node_names": {**base.get("node_names", {}), **inc.get("node_names", {})},
         "edge_ids": {**base.get("edge_ids", {}), **inc.get("edge_ids", {})},
     }
@@ -273,6 +276,15 @@ def _round_robin_unique_pairs(groups: list[list[tuple[Any, Any]]], limit: int) -
                 return selected
     return selected
 
+
+
+def _max_path_depth(results: list[dict[str, Any]]) -> int | None:
+    depths: list[int] = []
+    for result in results:
+        raw_depth = result.get("path_depth")
+        if isinstance(raw_depth, int):
+            depths.append(raw_depth)
+    return max(depths) if depths else None
 
 def _merge_node_names(results: list[dict[str, Any]]) -> dict[str, str]:
     merged: dict[str, str] = {}

@@ -32,14 +32,11 @@ class DualPathFAISSRetriever:
         self.relation_index = FaissIndex(use_faiss=enable_faiss)
         self.triple_index = FaissIndex(use_faiss=enable_faiss)
         self.community_index = FaissIndex(use_faiss=enable_faiss)
-        self.chunk_index = FaissIndex(use_faiss=enable_faiss)
 
         self.node_ids: list[str] = []
         self.relation_records: list[EdgeRecord] = []
         self.triple_records: list[EdgeRecord] = []
         self.community_ids: list[str] = []
-        self.chunk_ids: list[str] = []
-        self.chunk_map: dict[str, str] = {}
 
         self._signature: tuple[int, int, int] | None = None
 
@@ -58,11 +55,10 @@ class DualPathFAISSRetriever:
 
         path1 = self._path1_node_relation(graph, query_vec, top_k)
         path2 = self._path2_triple_community(graph, query_vec, top_k)
-        chunk_hits = self._search_chunk_ids(query_vec, top_k)
 
         merged_chunk_ids: list[str] = []
         seen_chunk_ids: set[str] = set()
-        for cid in path1.get("chunk_ids", []) + path2.get("chunk_ids", []) + chunk_hits:
+        for cid in path1.get("chunk_ids", []) + path2.get("chunk_ids", []):
             if cid not in seen_chunk_ids:
                 seen_chunk_ids.add(cid)
                 merged_chunk_ids.append(cid)
@@ -83,14 +79,11 @@ class DualPathFAISSRetriever:
         self.relation_records = []
         self.triple_records = []
         self.community_ids = []
-        self.chunk_ids = list(chunks.keys())
-        self.chunk_map = dict(chunks)
 
         node_texts: list[str] = []
         relation_texts: list[str] = []
         triple_texts: list[str] = []
         community_texts: list[str] = []
-        chunk_texts: list[str] = [chunks[cid] for cid in self.chunk_ids]
 
         for node_id, data in graph.nodes(data=True):
             label = str(data.get("label", ""))
@@ -139,7 +132,6 @@ class DualPathFAISSRetriever:
         self.community_index.build(
             self.embedder.encode(community_texts) if community_texts else np.zeros((0, 384), dtype=np.float32)
         )
-        self.chunk_index.build(self.embedder.encode(chunk_texts) if chunk_texts else np.zeros((0, 384), dtype=np.float32))
 
     def _path1_node_relation(self, graph: nx.MultiDiGraph, query_vec: np.ndarray, top_k: int) -> dict[str, Any]:
         node_scores, node_indices = self.node_index.search(query_vec, top_k)
@@ -237,20 +229,6 @@ class DualPathFAISSRetriever:
             "chunk_ids": sorted(chunk_ids),
         }
 
-    def _search_chunk_ids(self, query_vec: np.ndarray, top_k: int) -> list[str]:
-        scores, indices = self.chunk_index.search(query_vec, top_k)
-        if indices.size == 0:
-            return []
-        ordered: list[str] = []
-        seen: set[str] = set()
-        for idx in indices[0]:
-            if idx < 0 or idx >= len(self.chunk_ids):
-                continue
-            chunk_id = self.chunk_ids[int(idx)]
-            if chunk_id not in seen:
-                seen.add(chunk_id)
-                ordered.append(chunk_id)
-        return ordered
 
 
 def _node_name(graph: nx.MultiDiGraph, node_id: str) -> str:
